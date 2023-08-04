@@ -2,6 +2,7 @@ import axios from "axios";
 import { actionTypes } from ".";
 import { mapLoginCreateData } from "@/domain/singIn";
 import { Dispatch } from "redux";
+import api from "@/services/api";
 
 interface Credentials {
   email: string;
@@ -11,8 +12,8 @@ interface Credentials {
 export const handleSingIn =
   (credentials: Credentials) => async (dispatch: Dispatch) => {
     try {
-      const url = `https://cnit-homolog.herokuapp.com/api/login`;
-      const response = await axios.post(url, credentials);
+      const url = `api/login`;
+      const response = await api.post(url, credentials);
       const result = mapLoginCreateData(response.data.result);
       // const mappedPermissions = mapPermissionData(result.data.result);
       if (result.success) {

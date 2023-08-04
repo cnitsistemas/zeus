@@ -2,17 +2,14 @@
 import { useEffect, useState } from "react";
 import Loading from "@/components/loading";
 import { connect } from "react-redux";
-import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card";
 import Logo from "@/assets/logo.png";
 import Image from "next/image";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { handleSingIn } from "@/redux/singIn/singInActions";
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useForm, SubmitHandler } from 'react-hook-form';
 import { useRouter } from "next/navigation";
+import { Box, Button, Checkbox, Flex, FormControl, FormHelperText, FormLabel, Heading, Input, Stack, Text, useColorModeValue } from "@chakra-ui/react";
 
 const AcessValidation = z.object({
   email: z.string().email({
@@ -55,58 +52,65 @@ function LoginPage(props: Props) {
 
   return (
     <>
-      <main className="flex min-h-screen bg-slate-50 items-center justify-center">
-        <Card className="w-[450px]">
-          <CardHeader className="flex items-center justify-center">
+      <Flex
+        minH={'100vh'}
+        align={'center'}
+        justify={'center'}
+        bg={useColorModeValue('gray.50', 'gray.800')}>
+        <Stack spacing={8} mx={'auto'} maxW={'lg'} py={12} px={6}>
+          <Stack align={'center'}>
             <Image src={Logo} width={210} alt="Picture of the author" />
-            <CardDescription>
+            {/* <Heading fontSize={'4xl'}>Sign in to your account</Heading> */}
+            <Text fontSize={'lg'} color={'gray.600'} align={'center'}>
               Bem vindo a nova versão do painel administrativo de gestão de rotas
               e alunos da CNIT.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
+            </Text>
+          </Stack>
+          <Box
+            rounded={'lg'}
+            bg={useColorModeValue('white', 'gray.700')}
+            boxShadow={'lg'}
+            p={8}>
             <form onSubmit={handleSubmit(onSubmit)}>
-              <div className="grid gap-2">
-                <div className="grid gap-1">
-                  <Label className="sr-only" htmlFor="email">
-                    Email
-                  </Label>
+              <Stack spacing={4}>
+                <FormControl id="email">
+                  <FormLabel>Email</FormLabel>
                   <Input
                     id="email"
                     placeholder="name@example.com"
                     type="email"
-                    autoCapitalize="none"
-                    autoComplete="email"
-                    autoCorrect="off"
                     disabled={isLoading}
-                    className="mb-2"
                     {...register('email')}
                   />
-                  <p>{errors?.email?.message && <p>{errors.email.message}</p>}</p>
+                  {errors?.email?.message && <FormHelperText>{errors.email.message}</FormHelperText>}
+                </FormControl>
+                <FormControl id="password">
+                  <FormLabel>Password</FormLabel>
                   <Input
                     id="password"
                     placeholder="**********"
                     type="password"
-                    autoCapitalize="none"
-                    autoComplete="password"
-                    autoCorrect="off"
                     disabled={isLoading}
-                    className="mb-2"
                     {...register('password')}
                   />
-                  <p>{errors?.password?.message && <p>{errors.password.message}</p>}</p>
-                </div>
-                <Button disabled={isLoading}>
-                  {/* {isLoading && (
-              <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-            )} */}
-                  Entrar
-                </Button>
-              </div>
+                  {errors?.password?.message && <FormHelperText>{errors.password.message}</FormHelperText>}
+                </FormControl>
+                <Stack spacing={10}>
+                  <Button
+                    type="submit"
+                    bg={'blue.400'}
+                    color={'white'}
+                    _hover={{
+                      bg: 'blue.500',
+                    }}>
+                    Entrar
+                  </Button>
+                </Stack>
+              </Stack>
             </form>
-          </CardContent>
-        </Card>
-      </main >
+          </Box>
+        </Stack>
+      </Flex>
     </>
   );
 }

@@ -1,11 +1,9 @@
 "use client"
-import "@/app/globals.css";
 import type { Metadata } from "next";
 import { ReduxProviders } from "@/redux/provider";
-import { ThemeProvider } from "@/app/theme-provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { persist } from "@/redux/store";
-import DashbordLayout from "@/theme/dashbord";
+import { Providers } from "../theme-provider";
 
 export const metadata: Metadata = {
   title: "CNIT - Serviços de Transporte LTDA",
@@ -23,9 +21,9 @@ export default function NoAuthenticatedLayout({
       <body>
         <ReduxProviders>
           <PersistGate loading={null} persistor={persist}>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Providers>
               {children}
-            </ThemeProvider>
+            </Providers>
           </PersistGate>
         </ReduxProviders>
       </body>

@@ -1,32 +1,31 @@
 "use client"
-import TeamSwitcher from "./components/team-switcher";
-import { MainNav } from "./components/main-nav";
-import { Search } from "./components/search";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
-import { useTheme } from "next-themes";
-import UserNav from "./components/user-nav";
 import { connect } from "react-redux";
 import { useEffect, useState } from "react";
 import LoadingComponent from "@/components/loading";
 import { useRouter } from "next/navigation";
+import {
+  Box,
+  useColorModeValue,
+  Drawer,
+  DrawerContent,
+  useDisclosure,
+  Flex,
+} from '@chakra-ui/react'
+import { SidebarContent } from "./components/sidebar";
+import { MobileNav } from "./components/mobile-nav";
 
 function DashbordLayout({
   children,
-  token
+  token,
+  avatar
 }: {
   children: React.ReactNode;
   token: any;
+  avatar: string;
 }) {
   const router = useRouter();
-  const { setTheme } = useTheme();
   const [loading, setLoading] = useState<Boolean>(true);
+  const { isOpen, onOpen, onClose } = useDisclosure()
 
   useEffect(() => {
     async function isAuthenticated(token: String) {
@@ -42,42 +41,31 @@ function DashbordLayout({
   return (
     <>
       {loading ?
-        <main className="flex min-h-screen bg-slate-50 items-center justify-center">
+        <Flex
+          minH={'100vh'}
+          align={'center'}
+          justify={'center'}
+          bg={useColorModeValue('gray.50', 'gray.800')}>
           <LoadingComponent loading={loading} color="#ff7a2d" />
-        </main>
-        : <main className="flex-col md:flex">
-          <div className="border-b">
-            <div className="flex h-16 items-center px-4">
-              <TeamSwitcher />
-              <MainNav className="mx-6" />
-              <div className="ml-auto flex items-center space-x-4">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="icon">
-                      <Sun className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
-                      <Moon className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
-                      <span className="sr-only">Toggle theme</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => setTheme("light")}>
-                      Light
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("dark")}>
-                      Dark
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => setTheme("system")}>
-                      System
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <Search />
-                <UserNav />
-              </div>
-            </div>
-          </div>
-          <div className="flex-1 space-y-4 p-8 pt-6">{children}</div>
-        </main>}
+        </Flex>
+        : <Box minH="100vh" bg={useColorModeValue('gray.100', 'gray.900')}>
+          <SidebarContent onClose={() => onClose} display={{ base: 'none', md: 'block' }} />
+          <Drawer
+            isOpen={isOpen}
+            placement="left"
+            onClose={onClose}
+            returnFocusOnClose={false}
+            onOverlayClick={onClose}
+            size="full">
+            <DrawerContent>
+              <SidebarContent onClose={onClose} />
+            </DrawerContent>
+          </Drawer>
+          <MobileNav onOpen={onOpen} avatar={avatar} />
+          <Box ml={{ base: 0, md: 60 }} p="4">
+            {children}
+          </Box>
+        </Box>}
     </>
   );
 }
@@ -85,6 +73,7 @@ function DashbordLayout({
 const mapStateToProps = (state: any) => {
   return {
     token: (state.singin.auth && state.singin.auth.accessToken) || null,
+    avatar: (state.singin.auth && state.singin.auth.avatar) || null,
   };
 };
 export default connect(mapStateToProps, {})(DashbordLayout);

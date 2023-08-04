@@ -1,8 +1,7 @@
 "use client"
-import "@/app/globals.css";
 import type { Metadata } from "next";
 import { ReduxProviders } from "@/redux/provider";
-import { ThemeProvider } from "@/app/theme-provider";
+import { Providers } from "@/app/theme-provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { persist } from "@/redux/store";
 import DashbordLayout from "@/theme/dashbord";
@@ -23,14 +22,14 @@ export default function AuthenticatedLayout({
       <body>
         <ReduxProviders>
           <PersistGate loading={null} persistor={persist}>
-            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Providers>
               <DashbordLayout>
                 {children}
               </DashbordLayout>
-            </ThemeProvider>
+            </Providers>
           </PersistGate>
         </ReduxProviders>
       </body>
-    </html>
+    </html >
   );
 }
