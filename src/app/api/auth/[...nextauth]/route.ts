@@ -55,11 +55,6 @@ const handler = NextAuth({
 
   secret: process.env.JWT_SECRET,
   callbacks: {
-    // async signIn({ account, user }) {
-    //   console.log(account);
-    //   if (!user.access_token) return false;
-    //   return true;
-    // },
     async jwt({ token, user, account }) {
       if (account && user) {
         return {

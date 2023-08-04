@@ -10,8 +10,20 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { connect } from "react-redux";
+import { handleSingOut } from '@/redux/singIn/singInActions';
 
-export function UserNav() {
+interface Props {
+  handleSingOut: (token: String) => Promise<any>;
+  acessToken: String;
+}
+
+function UserNav(props: Props) {
+  const { handleSingOut, acessToken } = props;
+
+  const logout = (): void => {
+    handleSingOut(acessToken);
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -48,7 +60,7 @@ export function UserNav() {
           <DropdownMenuItem>New Team</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={() => logout()}>
           Log out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
         </DropdownMenuItem>
@@ -56,3 +68,12 @@ export function UserNav() {
     </DropdownMenu>
   );
 }
+
+const mapStateToProps = (state: any) => {
+  return {
+    acessToken: (state.singin.auth && state.singin.auth.acessToken) || null,
+  }
+};
+export default connect(mapStateToProps, {
+  handleSingOut
+})(UserNav);

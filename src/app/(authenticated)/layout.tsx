@@ -1,8 +1,11 @@
-import "./globals.css";
+"use client"
+import "@/app/globals.css";
 import type { Metadata } from "next";
-import { ThemeProvider } from "./theme-provider";
 import { ReduxProviders } from "@/redux/provider";
-import AuthContext from "./auth-provider";
+import { ThemeProvider } from "@/app/theme-provider";
+import { PersistGate } from "redux-persist/integration/react";
+import { persist } from "@/redux/store";
+import DashbordLayout from "@/theme/dashbord";
 
 export const metadata: Metadata = {
   title: "CNIT - Serviços de Transporte LTDA",
@@ -10,20 +13,22 @@ export const metadata: Metadata = {
     "App da empresa CNIT focado em gerencia de transporte de alunos.",
 };
 
-export default function RootLayout({
+export default function AuthenticatedLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body>
         <ReduxProviders>
-          <AuthContext>
+          <PersistGate loading={null} persistor={persist}>
             <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-              {children}
+              <DashbordLayout>
+                {children}
+              </DashbordLayout>
             </ThemeProvider>
-          </AuthContext>
+          </PersistGate>
         </ReduxProviders>
       </body>
     </html>

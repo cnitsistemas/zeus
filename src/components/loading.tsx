@@ -1,7 +1,6 @@
-import { CSSProperties } from "react";
 import BarLoader from "react-spinners/BarLoader";
 
-function Loading(props: any) {
+function LoadingComponent(props: any) {
   const { loading, color } = props;
 
   return (
@@ -18,4 +17,4 @@ function Loading(props: any) {
   );
 }
 
-export default Loading;
+export default LoadingComponent;

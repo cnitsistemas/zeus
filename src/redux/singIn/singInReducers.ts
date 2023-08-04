@@ -1,8 +1,14 @@
 import { actionTypes } from ".";
 
-let singIn = JSON.parse(sessionStorage.getItem("auth") || "{}");
+interface State {
+  auth: any;
+  signUp: any;
+  requiredAuth: boolean;
+  methodAccess: any;
+  permissions: any[];
+}
 
-const initialState = {
+const initialState: State = {
   auth: null,
   signUp: {},
   requiredAuth: false,
@@ -10,7 +16,7 @@ const initialState = {
   permissions: [],
 };
 
-const SingInReducer = (state = singIn || initialState, action: any) => {
+const SingInReducer = (state: State = initialState, action: any): State => {
   let newState = state;
   switch (action.type) {
     case actionTypes.SET_ACCESS_USER: {
@@ -34,10 +40,10 @@ const SingInReducer = (state = singIn || initialState, action: any) => {
       };
       break;
     }
-    case actionTypes.SET_METHOD_LOGIN: {
+    case actionTypes.SET_LOGOUT: {
       newState = {
         ...state,
-        methodAccess: action.payload,
+        auth: action.payload,
       };
       break;
     }
@@ -53,11 +59,7 @@ const SingInReducer = (state = singIn || initialState, action: any) => {
       break;
     }
   }
-  if (newState) {
-    sessionStorage.setItem("auth", JSON.stringify(newState));
-  } else {
-    sessionStorage.removeItem("auth");
-  }
+
   return newState;
 };
 

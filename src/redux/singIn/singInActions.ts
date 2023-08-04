@@ -1,6 +1,7 @@
 import axios from "axios";
 import { actionTypes } from ".";
 import { mapLoginCreateData } from "@/domain/singIn";
+import { Dispatch } from "redux";
 
 interface Credentials {
   email: string;
@@ -8,7 +9,7 @@ interface Credentials {
 }
 
 export const handleSingIn =
-  (credentials: Credentials) => async (dispatch: any, api: any) => {
+  (credentials: Credentials) => async (dispatch: Dispatch) => {
     try {
       const url = `https://cnit-homolog.herokuapp.com/api/login`;
       const response = await axios.post(url, credentials);
@@ -22,15 +23,21 @@ export const handleSingIn =
       return result;
     } catch (e: unknown) {
       console.log(e);
-      dispatch({
-        type: actionTypes.SET_LOGIN,
-        payload: {
-          status: false,
-          userData: null,
-        },
-      });
     }
   };
+
+export const handleSingOut = (token: String) => async (dispatch: Dispatch) => {
+  try {
+    dispatch(singOut(token));
+  } catch (e: unknown) {
+    console.log(e);
+  }
+};
+
+export const singOut = (token: String) => ({
+  type: actionTypes.SET_LOGOUT,
+  payload: {},
+});
 
 export const setAccessUser = (accessUser: any) => ({
   type: actionTypes.SET_ACCESS_USER,
