@@ -4,6 +4,7 @@ import {
   Alert,
   AlertIcon,
   Box,
+  Button,
   Container,
   Flex,
   Heading,
@@ -23,34 +24,53 @@ import { connect } from "react-redux";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { InfoIcon } from "lucide-react";
 import Pagination from "@/components/pagination";
+import Dialog from "@/components/dialog";
+import { fetchRoutes } from "@/redux/routes/routesActions";
+import { FaPlus } from "react-icons/fa";
+import Details from "./details";
 
 interface Props {
   fetchStudents: (page: any) => Promise<any>;
+  fetchRoutes: () => Promise<any>;
   students: Array<any>;
   totalPages: number;
   selectedPage: number;
   total: number;
+  routes: Array<any>;
 };
 
 function StudentsPage({
   fetchStudents,
+  fetchRoutes,
   students,
   selectedPage,
   totalPages,
-  total
+  total,
+  routes
 }: Props) {
   const [rows, setRows] = useState<Array<any>>([]);
   const [page, setPage] = useState<unknown | String>(null);
-  const [deleteDialog, setDeleteDialog] = useState<Boolean>(false);
-  const [selectedStudent, setSelectedStudent] = useState<Object>({});
+  const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
+  const [selectedStudent, setSelectedStudent] = useState<any>({});
   const [viewDialog, setViewDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentTotalPages, setCurrentTotalPages] = useState<number>(1);
   const [currentTotalResults, setCurrentTotalResults] = useState<number>(1);
 
   useEffect(() => {
-    fetchStudents(1);
-  }, [])
+    setPage(selectedPage);
+  }, [selectedPage]);
+
+  useEffect(() => {
+    if (page) {
+      fetchStudents(page);
+      fetchRoutes();
+    }
+  }, [
+    page,
+    fetchStudents,
+    fetchRoutes
+  ])
 
   useEffect(() => {
     if (students && students.length > 0) {
@@ -70,20 +90,63 @@ function StudentsPage({
     fetchStudents(page).then(() => { });
   };
 
+  const handleOpenDeleteDialog = (): void => {
+    setDeleteDialog(true);
+  };
+
+  const handleCloseDeleteDialog = (): void => {
+    setDeleteDialog(false);
+  };
+
+  const handleOpenViewDialog = () => {
+    setViewDialog(true);
+  };
+
+  const handleCloseViewDialog = () => {
+    setViewDialog(false);
+  };
+
+  const fetchRotaName = (id: String) => {
+    const studentRoute = routes && routes.find((item: any) => {
+      return item.id === id;
+    })
+    return studentRoute && studentRoute.name;
+  };
+
   return (
     <Container maxW='container.2xl' px={20}>
       <Flex
-        fontSize={8}
         flexDirection={"row"}
+        justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <Heading size='lg' color="primary.400" mr={2}>Alunos</Heading>
-        <Tooltip hasArrow label='A tela de alunos é responsável pelo cadastro, edição, visualização e exclusão dos alunos transportados pelo CNIT, 
+        <Flex flexDirection={"column"}>
+          <Flex
+            fontSize={8}
+            flexDirection={"row"}
+            alignItems={"center"}
+          >
+            <Heading size='lg' color="primary.400" mr={2}>Alunos</Heading>
+            <Tooltip hasArrow label='A tela de alunos é responsável pelo cadastro, edição, visualização e exclusão dos alunos transportados pelo CNIT, 
 				sendo possível vinculá-los às mais variadas rotas cadastradas no sistema.' bg='gray.200' color='black'>
-          <InfoIcon size={15} />
-        </Tooltip>
+              <InfoIcon size={15} />
+            </Tooltip>
+          </Flex>
+          <Text color="gray.600" my={4}>Os alunos estão presente nas principais rotas de tráfego do CNIT, sendo um dos principais pilares da aplicação.</Text>
+        </Flex>
+        <Button
+          size='md'
+
+          leftIcon={<FaPlus />}
+          bg="primary.400"
+          color={"white"}
+          _hover={{
+            bg: "primary.500",
+          }}>
+          Cadastrar
+        </Button>
       </Flex>
-      <Text color="gray.600" my={4}>Os alunos estão presente nas principais rotas de tráfego do CNIT, sendo um dos principais pilares da aplicação.</Text>
+
       {students && students.length > 0 ? <>
         <Box border='1px' borderColor='gray.100' px={4} borderRadius={10}>
           <TableContainer mt={10}>
@@ -101,30 +164,43 @@ function StudentsPage({
                   return <>
                     <Tr key={row.id}>
                       <Td>{row.name}</Td>
-                      <Td>{row.rota_id}</Td>
+                      <Td>{fetchRotaName(row.rota_id)}</Td>
                       <Td>{row.shift}</Td>
                       <Td>
-                        <IconButton
-                          size="lg"
-                          variant="ghost"
-                          aria-label="open menu"
-                          icon={<FaEye />}
-                          onClick={() => { }}
-                        />
-                        <IconButton
-                          size="lg"
-                          variant="ghost"
-                          aria-label="open menu"
-                          icon={<FaEdit />}
-                          onClick={() => { }}
-                        />
-                        <IconButton
-                          size="lg"
-                          variant="ghost"
-                          aria-label="open menu"
-                          icon={<FaTrash />}
-                          onClick={() => { }}
-                        />
+                        <Tooltip hasArrow label='Visualizar aluno' bg='gray.200' color='black'>
+                          <IconButton
+                            size="lg"
+                            variant="ghost"
+                            aria-label="visualizar aluno"
+                            icon={<FaEye />}
+                            onClick={() => {
+                              setSelectedStudent(row);
+                              handleOpenViewDialog();
+                            }}
+                          />
+                        </Tooltip>
+                        <Tooltip hasArrow label='Editar aluno' bg='gray.200' color='black'>
+                          <IconButton
+                            size="lg"
+                            variant="ghost"
+                            aria-label="editar aluno"
+                            icon={<FaEdit />}
+                            onClick={() => { }}
+                          />
+                        </Tooltip>
+                        <Tooltip hasArrow label='Deletar aluno' bg='gray.200' color='black'>
+                          <IconButton
+                            size="lg"
+                            variant="ghost"
+                            colorScheme="red"
+                            aria-label="deletar aluno"
+                            icon={<FaTrash />}
+                            onClick={() => {
+                              setSelectedStudent(row);
+                              handleOpenDeleteDialog();
+                            }}
+                          />
+                        </Tooltip>
                       </Td>
                     </Tr>
                   </>
@@ -146,19 +222,54 @@ function StudentsPage({
         pageSize={currentTotalPages}
         className="mb-10"
       />}
+
+      {selectedStudent && <Dialog
+        title={`${selectedStudent.name}`}
+        content={
+          <Details
+            fetchRotaName={fetchRotaName}
+            selectedStudent={selectedStudent}
+          />}
+        confirmButton={false}
+        cancelButton={true}
+        confirmButtonText="Sim"
+        cancelButtonText="Fechar"
+        handleConfirm={() => { }}
+        confirmButtonError={false}
+        openDialog={viewDialog}
+        setCloseDialog={handleCloseViewDialog}
+        size="6xl"
+      />}
+
+      <Dialog
+        title="Deletar aluno?"
+        content={`Tem certeza que deseja deletar ${selectedStudent.name}?`}
+        cancelButton={true}
+        cancelButtonText="Não"
+        confirmButton={true}
+        confirmButtonError={true}
+        confirmButtonText="Sim"
+        handleConfirm={() => { }}
+        openDialog={deleteDialog}
+        setCloseDialog={handleCloseDeleteDialog}
+        size="xl"
+      />
     </Container>
   );
 }
 
 const mapStateToProps = (state: any) => {
+  console.log(state);
   return {
     accessToken: (state.singin.auth && state.singin.auth.accessToken) || null,
     students: (state.students && state.students.students) || [],
     totalPages: (state.students && state.students.pagination && state.students.pagination.totalPages) || 1,
     selectedPage: (state.students && state.students.pagination && state.students.pagination.page) || 1,
     total: (state.students && state.students.pagination && state.students.pagination.total) || 1,
+    routes: (state.routes && state.routes.routes) || null,
   };
 };
 export default connect(mapStateToProps, {
-  fetchStudents
+  fetchStudents,
+  fetchRoutes
 })(StudentsPage);
