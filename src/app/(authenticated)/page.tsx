@@ -1,7 +1,7 @@
 "use client";
 import { Text } from "@chakra-ui/react";
 import { Metadata } from "next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { connect } from "react-redux";
 export const metadata: Metadata = {
   title: "CNIT - Home",
@@ -16,7 +16,11 @@ interface Props {
 function HomeComponent(props: Props) {
   const { token } = props;
   const [loading, setLoading] = useState<Boolean>(true);
+  useEffect(() => {
+    const sessionRoot = JSON.parse(window.localStorage.getItem('persist:root') || '{}')
 
+    console.log(sessionRoot)
+  }, []);
   return (
     <main>
       <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
