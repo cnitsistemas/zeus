@@ -9,6 +9,7 @@ import {
   Flex,
   Heading,
   IconButton,
+  Link,
   Table,
   TableContainer,
   Tbody,
@@ -28,6 +29,7 @@ import Dialog from "@/components/dialog";
 import { fetchRoutes } from "@/redux/routes/routesActions";
 import { FaPlus } from "react-icons/fa";
 import Details from "./details";
+import { useRouter } from "next/navigation";
 
 interface Props {
   fetchStudents: (page: any) => Promise<any>;
@@ -48,6 +50,7 @@ function StudentsPage({
   total,
   routes
 }: Props) {
+  const router = useRouter();
   const [rows, setRows] = useState<Array<any>>([]);
   const [page, setPage] = useState<unknown | String>(null);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
@@ -136,7 +139,7 @@ function StudentsPage({
         </Flex>
         <Button
           size='md'
-
+          onClick={() => router.push("/estudantes/create/new")}
           leftIcon={<FaPlus />}
           bg="primary.400"
           color={"white"}
@@ -259,7 +262,6 @@ function StudentsPage({
 }
 
 const mapStateToProps = (state: any) => {
-  console.log(state);
   return {
     accessToken: (state.singin.auth && state.singin.auth.accessToken) || null,
     students: (state.students && state.students.students) || [],

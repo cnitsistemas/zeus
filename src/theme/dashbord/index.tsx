@@ -35,6 +35,7 @@ function DashbordLayout({
   const [loading, setLoading] = useState<Boolean>(true);
   const [collapse, setCollapse] = useState<Boolean>(true);
   const bgColorMain = { light: "white", dark: "#1A202C" };
+  const backgroundBgColor = { light: "gray.100", dark: "#1A202C" };
   const { colorMode } = useColorMode();
 
   useEffect(() => {
@@ -59,7 +60,7 @@ function DashbordLayout({
             bg={useColorModeValue('gray.100', 'gray.800')}>
             <LoadingComponent loading={loading} color="#ff7a2d" />
           </Flex>
-          : <HStack w="full" h="100vh" bg="gray.100" padding={3} alignItems={"flex-start"} >
+          : <HStack w="full" h="100vh" bg={backgroundBgColor[colorMode]} padding={3} alignItems={"flex-start"} >
             <Flex
               as="aside"
               w="full"

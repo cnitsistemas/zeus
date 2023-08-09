@@ -76,8 +76,9 @@ export const AvatarBox = ({
         </Flex>
       )}
       <IconButton
+        mb={!collapse ? 5 : 0}
         size="lg"
-        variant="ghost"
+        variant="link"
         aria-label="open menu"
         color={colorMode === "light" ? "orange.600" : "white"}
         icon={colorMode === "light" ? <FaMoon /> : <FaSun />}
