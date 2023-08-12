@@ -5,7 +5,7 @@ import {
     FieldValues,
     UseControllerProps,
 } from "react-hook-form";
-import { Input, FormErrorMessage, FormLabel, FormControl } from "@chakra-ui/react";
+import { Input, FormLabel, FormControl, FormErrorMessage } from "@chakra-ui/react";
 
 interface ControlledInputMaskProps<
     FormValues extends FieldValues = FieldValues,
@@ -55,6 +55,7 @@ function CustomInputMask<
                 placeholder={placeholder}
                 focusBorderColor='primary.400'
             />
+            <FormErrorMessage>{error?.message}</FormErrorMessage>
         </FormControl>
     );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { Text } from "@chakra-ui/react";
+import { Container, Text } from "@chakra-ui/react";
 import { Metadata } from "next";
 import { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -23,9 +23,11 @@ function HomeComponent(props: Props) {
   }, []);
   return (
     <main>
-      <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
-        Dashboard
-      </Text>
+      <Container maxW='container.2xl' px={{ xl: 20, sm: 0 }}>
+        <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
+          Dashboard
+        </Text>
+      </Container>
     </main>
   );
 }

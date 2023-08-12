@@ -30,6 +30,7 @@ import { fetchRoutes } from "@/redux/routes/routesActions";
 import { FaPlus } from "react-icons/fa";
 import Details from "./details";
 import { useRouter } from "next/navigation";
+import BreadcrumbComponent from "@/components/breadcrumb";
 
 interface Props {
   fetchStudents: (page: any) => Promise<any>;
@@ -40,6 +41,11 @@ interface Props {
   total: number;
   routes: Array<any>;
 };
+
+const breadcrumbItens: Array<any> = [
+  { name: "Inicio", link: "/" },
+  { name: "Alunos", link: null }
+];
 
 function StudentsPage({
   fetchStudents,
@@ -117,7 +123,8 @@ function StudentsPage({
   };
 
   return (
-    <Container maxW='container.2xl' px={20}>
+    <Container maxW='container.2xl' px={{ xl: 20, sm: 0 }}>
+      <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
       <Flex
         flexDirection={"row"}
         justifyContent={"space-between"}
@@ -135,10 +142,10 @@ function StudentsPage({
               <InfoIcon size={15} />
             </Tooltip>
           </Flex>
-          <Text color="gray.600" my={4}>Os alunos estão presente nas principais rotas de tráfego do CNIT, sendo um dos principais pilares da aplicação.</Text>
+          <Text color="gray.600" my={4} mx={2}>Os alunos estão presente nas principais rotas de tráfego do CNIT, sendo um dos principais pilares da aplicação.</Text>
         </Flex>
         <Button
-          size='md'
+          w="48"
           onClick={() => router.push("/estudantes/create/new")}
           leftIcon={<FaPlus />}
           bg="primary.400"
@@ -169,7 +176,7 @@ function StudentsPage({
                       <Td>{row.name}</Td>
                       <Td>{fetchRotaName(row.rota_id)}</Td>
                       <Td>{row.shift}</Td>
-                      <Td>
+                      <Td display="flex" flexDirection="row" justifyContent="center">
                         <Tooltip hasArrow label='Visualizar aluno' bg='gray.200' color='black'>
                           <IconButton
                             size="lg"

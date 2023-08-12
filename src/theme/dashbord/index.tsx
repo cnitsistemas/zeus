@@ -9,6 +9,7 @@ import {
   HStack,
   IconButton,
   useColorMode,
+  Hide,
 } from '@chakra-ui/react'
 import { Sidebar } from "./components/sidebar";
 import { MdMenu } from "react-icons/md";
@@ -61,28 +62,31 @@ function DashbordLayout({
             <LoadingComponent loading={loading} color="#ff7a2d" />
           </Flex>
           : <HStack w="full" h="100vh" bg={backgroundBgColor[colorMode]} padding={3} alignItems={"flex-start"} >
-            <Flex
-              as="aside"
-              w="full"
-              h="full"
-              maxW={collapse ? 350 : 100}
-              bg="#ff7a2d"
-              alignItems="start"
-              padding={6}
-              flexDirection="column"
-              justifyContent="space-between"
-              transition="ease-in-out .2s"
-              borderRadius="3xl"
-            >
-              <Sidebar
-                collapse={collapse}
-                avatar={avatar}
-                name={name}
-                email={email}
-                token={token}
-                handleSingOut={handleSingOut}
-              />
-            </Flex>
+            <Hide below='lg'>
+              <Flex
+                as="aside"
+                w="full"
+                h="full"
+                maxW={collapse ? 350 : 100}
+                bg="#ff7a2d"
+                alignItems="start"
+                padding={6}
+                flexDirection="column"
+                justifyContent="space-between"
+                transition="ease-in-out .2s"
+                borderRadius="3xl"
+              >
+
+                <Sidebar
+                  collapse={collapse}
+                  avatar={avatar}
+                  name={name}
+                  email={email}
+                  token={token}
+                  handleSingOut={handleSingOut}
+                />
+              </Flex>
+            </Hide>
             <Flex
               as="main"
               w="full"
@@ -91,18 +95,21 @@ function DashbordLayout({
               flexDirection="row"
               position="relative"
               borderRadius="3xl"
-              pt={20}
+              pt={10}
               px={6}
               overflow={"auto"}
             >
-              <IconButton
-                aria-label="Menu Colapse"
-                icon={<MdMenu />}
-                position="absolute"
-                top={6}
-                left={6}
-                onClick={() => setCollapse(!collapse)}
-              />
+              <Hide below='lg'>
+                <IconButton
+                  aria-label="Menu Colapse"
+                  icon={<MdMenu />}
+                  position="absolute"
+                  float={{ sm: "right" }}
+                  top={6}
+                  left={6}
+                  onClick={() => setCollapse(!collapse)}
+                />
+              </Hide>
               {children}
             </Flex>
           </HStack>

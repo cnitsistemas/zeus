@@ -53,6 +53,7 @@ function ControlledSelect<
       <Select<Option, IsMulti, Group>
         options={options}
         focusBorderColor="primary.400"
+        selectedOptionStyle="check"
         {...selectProps}
         {...field}
       />
