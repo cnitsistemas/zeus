@@ -1,5 +1,7 @@
 "use client";
 import {
+  AbsoluteCenter,
+  Box,
   Button,
   Container,
   Divider,
@@ -10,7 +12,9 @@ import {
   Grid,
   GridItem,
   Heading,
-  Input
+  Input,
+  useColorMode,
+  useToast
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -23,77 +27,18 @@ import { useRouter } from "next/navigation";
 import { fetchAddressByCEP, setCEP } from "@/redux/address/addressActions";
 import InputMask from "react-input-mask";
 import BreadcrumbComponent from "@/components/breadcrumb";
-import { ChakraStylesConfig, Select } from "chakra-react-select";
+import { Select } from "chakra-react-select";
 import { RouteOption } from "@/domain/route/routeDTO";
-
-const shiftList = [
-  { value: 'Manhã', label: 'Manhã' },
-  { value: 'Tarde', label: 'Tarde' },
-  { value: 'Noite', label: 'Noite' }
-];
-const teachingList = [
-  { value: 'Infantil', label: 'Infantil' },
-  { value: 'Fundamental', label: 'Fundamental' },
-  { value: 'Médio', label: 'Médio' },
-  { value: 'Superior', label: 'Superior' }
-];
-
-const breadcrumbItens: Array<any> = [
-  { name: "Inicio", link: "/" },
-  { name: "Alunos", link: "/estudantes" },
-  { name: "Cadastrar/Editar aluno", link: null }
-];
-
-const selectSchema = z.object({
-  label: z.string(),
-  value: z.string(),
-});
-
-const FormValidation = z.object({
-  name: z.string().min(4, {
-    message: "O nome do aluno deve ter 4 caracteres ou mais.",
-  }),
-  teaching: selectSchema.required(),
-  shift: selectSchema.required(),
-  serie: z
-    .string()
-    .min(4, { message: "A senha de usuário deve ter 4 caracteres ou mais." }),
-
-  schoolName: z
-    .string()
-    .min(4, { message: "A senha de usuário deve ter 4 caracteres ou mais." }),
-  departureTime: z.string().min(4, { message: "O horário de ida deve ter 4 caracteres ou mais." }),
-  backTime: z.string().min(4, { message: "O horário de volta deve ter 4 caracteres ou mais." }),
-});
-
-type FormInput = z.infer<typeof FormValidation>;
-type SelectReason = z.infer<typeof selectSchema>;
-
-interface PropsStudent {
-  params: { id: string };
-  routes: Array<any>;
-  fetchRoutes: () => void;
-  setCEP: (cep: string) => void;
-  fetchAddressByCEP: (callback: Array<any>) => void;
-};
-
-const defaultValues: FormInput = {
-  name: "",
-  serie: "",
-  schoolName: "",
-  teaching: { value: 'Infantil', label: 'Infantil' },
-  shift: { value: 'Manhã', label: 'Manhã' },
-  departureTime: "",
-  backTime: "",
-};
-
+import { createStudents, editStudent } from "@/redux/students/studentsActions";
 
 function StudentPage({
   params,
   routes,
   fetchRoutes,
   setCEP,
-  fetchAddressByCEP
+  fetchAddressByCEP,
+  editStudent,
+  createStudents
 }: PropsStudent) {
   const {
     control,
@@ -105,16 +50,11 @@ function StudentPage({
     resolver: zodResolver(FormValidation),
     defaultValues,
   });
-  const router = useRouter();
   const { id } = params;
-  const [studentId, setStudentId] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [serie, setSerie] = useState<string>("");
-  const [teaching, setTeaching] = useState<any>("");
-  const [shift, setShift] = useState<string>("");
-  const [schoolName, setSchoolName] = useState<string>("");
-  const [departureTime, setDepartureTime] = useState<string>("");
-  const [backTime, setBackTime] = useState<string>("");
+  const router = useRouter();
+  const toast = useToast();
+  const { colorMode } = useColorMode();
+  const bgColorDivider = { light: "white", dark: "#1A202C" };
   const [routersList, setRoutersList] = useState<Array<any>>([]);
   const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null);
   const [dataCEP, setDataCEP] = useState<string>("");
@@ -136,8 +76,87 @@ function StudentPage({
     fetchRoutes();
   }
 
-  const onSubmit: SubmitHandler<FormInput> = (data) => {
-    console.log(selectedRoute);
+  const clearStatesForm = (): void => {
+    reset(defaultValues);
+    setSelectedRoute(null);
+    setDataCEP('');
+    setAddress('');
+    setNeighborhood('');
+    setNumber('');
+    setComplement('');
+    setCity('');
+    setState('');
+  };
+
+  const onSubmit: SubmitHandler<FormInput> = async (data) => {
+    setIsLoading(true);
+    const formData = {
+      nome: data.name,
+      serie: data.serie,
+      ensino: data.teaching?.value,
+      turno: data.shift.value,
+      nome_escola: data.schoolName,
+      hora_ida: data.departureTime,
+      hora_volta: data.backTime,
+      cep: dataCEP,
+      endereco: address,
+      bairro: neighborhood,
+      numero: number,
+      complemento: complement,
+      cidade: city,
+      estado: state,
+      rota_id: selectedRoute?.value,
+      _method: id !== "new" ? "PUT" : "POST"
+    };
+
+    if (id !== "new") {
+      await editStudent({ id: id, data: formData }).then((res) => {
+        if (res.success) {
+          toast({
+            title: 'Aluno Editado',
+            description: "Aluno editado com sucesso!",
+            status: 'success',
+            duration: 7000,
+            isClosable: true,
+          })
+          clearStatesForm();
+          setIsLoading(false);
+        } else {
+          toast({
+            title: 'Erro',
+            description: "Erro ao editar aluno!",
+            status: 'error',
+            duration: 7000,
+            isClosable: true,
+          })
+        }
+      })
+        .catch((e) => console.warn(e))
+
+    } else {
+      await createStudents(formData).then((res) => {
+        if (res.success) {
+          toast({
+            title: 'Aluno Cadastrado',
+            description: "Aluno cadastrado com sucesso!",
+            status: 'success',
+            duration: 7000,
+            isClosable: true,
+          })
+          clearStatesForm();
+          setIsLoading(false);
+        } else {
+          toast({
+            title: 'Erro',
+            description: "Erro ao cadastrar aluno!",
+            status: 'error',
+            duration: 7000,
+            isClosable: true,
+          })
+        }
+      })
+        .catch((e) => console.warn(e))
+    }
 
   };
 
@@ -171,7 +190,6 @@ function StudentPage({
           flexDirection={"row"}
           justifyContent={"space-between"}
           alignItems={"center"}
-          mb={10}
         >
           <Flex flexDirection={"column"}>
             <Flex
@@ -183,8 +201,14 @@ function StudentPage({
             </Flex>
           </Flex>
         </Flex>
+        <Box position='relative' py='8'>
+          <Divider />
+          <AbsoluteCenter bg={bgColorDivider[colorMode]} px='4'>
+            Dados Pessoais
+          </AbsoluteCenter>
+        </Box>
         <form onSubmit={handleSubmit(onSubmit)} >
-          <Grid templateColumns={{ '2xl': 'repeat(6, 1fr)', xl: 'repeat(3, 1fr)', sm: 'repeat(1, 1fr)', }} gap={3}>
+          <Grid templateColumns={{ '2xl': 'repeat(6, 1fr)', xl: 'repeat(3, 1fr)', sm: 'repeat(1, 1fr)', }} gap={4}>
             <GridItem colSpan={{ xl: 2, sm: 3 }}>
               <FormControl id="name" isInvalid={!!errors.name}>
                 <FormLabel fontWeight="bold">Nome:</FormLabel>
@@ -281,7 +305,12 @@ function StudentPage({
               />
             </GridItem>
           </Grid>
-          <Divider my={6} />
+          <Box position='relative' py='8'>
+            <Divider />
+            <AbsoluteCenter bg={bgColorDivider[colorMode]} px='4'>
+              Dados de endereço
+            </AbsoluteCenter>
+          </Box>
           <Grid templateColumns={{ '2xl': 'repeat(6, 1fr)', xl: 'repeat(2, 1fr)', sm: 'repeat(1, 1fr)', }} gap={3}>
             <GridItem colSpan={{ xl: 1, sm: 3 }}>
               <FormControl id="cep">
@@ -375,7 +404,7 @@ function StudentPage({
                 />
               </FormControl>
             </GridItem>
-            <GridItem colSpan={{ xl: 2, sm: 3 }}>
+            <GridItem colSpan={{ xl: 1, sm: 3 }}>
               <FormControl id="state">
                 <FormLabel fontWeight="bold">Estado:</FormLabel>
                 <Input
@@ -422,8 +451,70 @@ function StudentPage({
       </Container >
     </>
   );
+};
 
-}
+const shiftList = [
+  { value: 'Manhã', label: 'Manhã' },
+  { value: 'Tarde', label: 'Tarde' },
+  { value: 'Noite', label: 'Noite' }
+];
+const teachingList = [
+  { value: 'Infantil', label: 'Infantil' },
+  { value: 'Fundamental', label: 'Fundamental' },
+  { value: 'Médio', label: 'Médio' },
+  { value: 'Superior', label: 'Superior' }
+];
+
+const breadcrumbItens: Array<any> = [
+  { name: "Inicio", link: "/" },
+  { name: "Alunos", link: "/estudantes" },
+  { name: "Cadastrar/Editar aluno", link: null }
+];
+
+const selectSchema = z.object({
+  label: z.string(),
+  value: z.string(),
+});
+
+const FormValidation = z.object({
+  name: z.string().min(4, {
+    message: "O nome do aluno deve ter 4 caracteres ou mais.",
+  }),
+  teaching: selectSchema.required(),
+  shift: selectSchema.required(),
+  serie: z
+    .string()
+    .min(4, { message: "A senha de usuário deve ter 4 caracteres ou mais." }),
+
+  schoolName: z
+    .string()
+    .min(4, { message: "A senha de usuário deve ter 4 caracteres ou mais." }),
+  departureTime: z.string().min(4, { message: "O horário de ida deve ter 4 caracteres ou mais." }),
+  backTime: z.string().min(4, { message: "O horário de volta deve ter 4 caracteres ou mais." }),
+});
+
+type FormInput = z.infer<typeof FormValidation>;
+type SelectReason = z.infer<typeof selectSchema>;
+
+interface PropsStudent {
+  params: { id: string };
+  routes: Array<any>;
+  fetchRoutes: () => void;
+  setCEP: (cep: string) => void;
+  fetchAddressByCEP: (callback: Array<any>) => void;
+  editStudent: ({ id, data }: { id: String; data: any }) => Promise<any>;
+  createStudents: (data: any) => Promise<any>;
+};
+
+const defaultValues: FormInput = {
+  name: "",
+  serie: "",
+  schoolName: "",
+  teaching: { value: 'Infantil', label: 'Infantil' },
+  shift: { value: 'Manhã', label: 'Manhã' },
+  departureTime: "",
+  backTime: "",
+};
 
 const mapStateToProps = (state: any) => {
   return {
@@ -432,5 +523,7 @@ const mapStateToProps = (state: any) => {
 };
 export default connect(mapStateToProps, {
   setCEP,
-  fetchAddressByCEP
+  fetchAddressByCEP,
+  editStudent,
+  createStudents
 })(StudentPage);

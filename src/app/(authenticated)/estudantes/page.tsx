@@ -9,7 +9,6 @@ import {
   Flex,
   Heading,
   IconButton,
-  Link,
   Table,
   TableContainer,
   Tbody,
@@ -31,21 +30,6 @@ import { FaPlus } from "react-icons/fa";
 import Details from "./details";
 import { useRouter } from "next/navigation";
 import BreadcrumbComponent from "@/components/breadcrumb";
-
-interface Props {
-  fetchStudents: (page: any) => Promise<any>;
-  fetchRoutes: () => Promise<any>;
-  students: Array<any>;
-  totalPages: number;
-  selectedPage: number;
-  total: number;
-  routes: Array<any>;
-};
-
-const breadcrumbItens: Array<any> = [
-  { name: "Inicio", link: "/" },
-  { name: "Alunos", link: null }
-];
 
 function StudentsPage({
   fetchStudents,
@@ -266,7 +250,22 @@ function StudentsPage({
       />
     </Container>
   );
-}
+};
+
+interface Props {
+  fetchStudents: (page: any) => Promise<any>;
+  fetchRoutes: () => Promise<any>;
+  students: Array<any>;
+  totalPages: number;
+  selectedPage: number;
+  total: number;
+  routes: Array<any>;
+};
+
+const breadcrumbItens: Array<any> = [
+  { name: "Inicio", link: "/" },
+  { name: "Alunos", link: null }
+];
 
 const mapStateToProps = (state: any) => {
   return {

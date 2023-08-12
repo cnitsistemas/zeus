@@ -61,8 +61,9 @@ export const createStudents = (data: any) => async (dispatch: Dispatch) => {
         type: actionTypes.CREATE_STUDENTS,
         payload: response,
       });
+      return response;
     } else {
-      console.log(response);
+      return response;
     }
   } catch (e) {
     console.log(e);
@@ -84,8 +85,10 @@ export const editStudent =
           type: actionTypes.CREATE_STUDENTS,
           payload: response,
         });
+        return response;
       } else {
         console.log(response);
+        return response;
       }
     } catch (e) {
       console.log(e);
@@ -106,8 +109,9 @@ export const deleteStudents =
           type: actionTypes.DELETE_STUDENTS,
           payload: response,
         });
+        return response;
       } else {
-        console.log(response);
+        return response;
       }
     } catch (e) {
       console.log(e);

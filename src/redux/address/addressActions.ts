@@ -14,7 +14,6 @@ export const setCEP = (cep: String) => (dispatch: Dispatch) => {
 
 export const fetchAddressByCEP =
   (callback: any) => async (dispatch: Dispatch, getState: UseSelector) => {
-    console.log(callback);
     const callbackErrorFilter =
       callback &&
       callback.filter(
