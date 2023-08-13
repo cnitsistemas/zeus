@@ -22,20 +22,20 @@ interface Students {
 
 interface Student {
   id: number;
-  name: String;
+  nome: String;
   serie: String;
-  teaching: String;
-  shift: String;
-  schoolName: String;
-  departureTime: String;
-  backTime: String;
+  ensino: String;
+  turno: String;
+  nome_escola: String;
+  hora_ida: String;
+  hora_volta: String;
   cep: String;
-  address: String;
-  neighborhood: String;
-  number: String;
-  complement: String;
-  city: String;
-  state: String;
+  endereco: String;
+  bairro: String;
+  numero: String;
+  complemento: String;
+  cidade: String;
+  estado: String;
   rota_id: number;
   created_at: String;
   updated_at: String;
@@ -43,11 +43,10 @@ interface Student {
 }
 
 export const mapFetchStudentsResponse = (students: any) => {
-  console.log(students);
   return (
     (students["data"] &&
       students["data"].length > 0 &&
-      students["data"].map((student: any) => {
+      students["data"].map((student: Student) => {
         return {
           id: student["id"],
           name: student["nome"],

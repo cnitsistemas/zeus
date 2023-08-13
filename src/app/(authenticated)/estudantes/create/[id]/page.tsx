@@ -29,7 +29,7 @@ import InputMask from "react-input-mask";
 import BreadcrumbComponent from "@/components/breadcrumb";
 import { Select } from "chakra-react-select";
 import { RouteOption } from "@/domain/route/routeDTO";
-import { createStudents, editStudent } from "@/redux/students/studentsActions";
+import { createStudents, editStudent, fetchStudentId } from "@/redux/students/studentsActions";
 
 function StudentPage({
   params,
@@ -38,7 +38,8 @@ function StudentPage({
   setCEP,
   fetchAddressByCEP,
   editStudent,
-  createStudents
+  createStudents,
+  fetchStudentId
 }: PropsStudent) {
   const {
     control,
@@ -71,6 +72,44 @@ function StudentPage({
       setRoutersList(routes.map(route => { return { value: route.id, label: route.name } }));
     }
   }, [routes]);
+
+  useEffect(() => {
+    if (id && id !== "new") {
+      fetchStudentId(id).then((res) => {
+        console.log(res);
+        if (res.success) {
+          const defaultValues: FormInput = {
+            name: res.data?.name,
+            serie: res.data?.serie,
+            schoolName: res.data?.schoolName,
+            teaching: { value: res.data?.teaching, label: res.data?.teaching },
+            shift: { value: res.data?.shift, label: res.data?.shift },
+            departureTime: res.data?.departureTime,
+            backTime: res.data?.backTime,
+          };
+
+          reset(defaultValues);
+          setSelectedRoute(res.data?.rota_id);
+          setDataCEP(res.data?.cep);
+          setAddress(res.data?.address);
+          setNeighborhood(res.data?.neighborhood);
+          setNumber(res.data?.number);
+          setComplement(res.data?.complement);
+          setCity(res.data?.city);
+          setState(res.data?.state);
+        } else {
+          toast({
+            title: 'Erro',
+            description: "Erro ao carregar dados do aluno!",
+            status: 'error',
+            duration: 7000,
+            isClosable: true,
+          })
+        }
+      })
+        .catch((e) => console.warn(e))
+    }
+  }, [id]);
 
   const updateRoutesList = (): void => {
     fetchRoutes();
@@ -504,6 +543,7 @@ interface PropsStudent {
   fetchAddressByCEP: (callback: Array<any>) => void;
   editStudent: ({ id, data }: { id: String; data: any }) => Promise<any>;
   createStudents: (data: any) => Promise<any>;
+  fetchStudentId: (id: string) => Promise<any>;
 };
 
 const defaultValues: FormInput = {
@@ -525,5 +565,6 @@ export default connect(mapStateToProps, {
   setCEP,
   fetchAddressByCEP,
   editStudent,
-  createStudents
+  createStudents,
+  fetchStudentId
 })(StudentPage);

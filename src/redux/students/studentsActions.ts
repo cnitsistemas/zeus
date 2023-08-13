@@ -31,7 +31,7 @@ export const fetchStudents = (page: String) => async (dispatch: Dispatch) => {
   }
 };
 
-export const fetchStudentId = (id: String) => async (dispatch: Dispatch) => {
+export const fetchStudentId = (id: string) => async (dispatch: Dispatch) => {
   try {
     const url = `api/alunos/${id}`;
     const apiResponse = await api.get(url, {
@@ -39,10 +39,22 @@ export const fetchStudentId = (id: String) => async (dispatch: Dispatch) => {
     });
     const response = mapFetchStudentIdResponse(apiResponse.data.data);
 
-    dispatch({
-      type: actionTypes.SET_STUDENTS_ID,
-      payload: response,
-    });
+    if (apiResponse?.data.success) {
+      dispatch({
+        type: actionTypes.SET_STUDENTS_ID,
+        payload: response,
+      });
+
+      return {
+        ...apiResponse.data,
+        data: response,
+      };
+    } else {
+      return {
+        ...apiResponse.data,
+        data: response,
+      };
+    }
   } catch (e) {
     console.log(e);
   }

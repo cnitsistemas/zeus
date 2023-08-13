@@ -91,11 +91,11 @@ function StudentsPage({
     setDeleteDialog(false);
   };
 
-  const handleOpenViewDialog = () => {
+  const handleOpenViewDialog = (): void => {
     setViewDialog(true);
   };
 
-  const handleCloseViewDialog = () => {
+  const handleCloseViewDialog = (): void => {
     setViewDialog(false);
   };
 
@@ -179,7 +179,7 @@ function StudentsPage({
                             variant="ghost"
                             aria-label="editar aluno"
                             icon={<FaEdit />}
-                            onClick={() => { }}
+                            onClick={() => { router.push(`/estudantes/create/${row.id}`) }}
                           />
                         </Tooltip>
                         <Tooltip hasArrow label='Deletar aluno' bg='gray.200' color='black'>
