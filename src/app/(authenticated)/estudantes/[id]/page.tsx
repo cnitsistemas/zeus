@@ -76,8 +76,8 @@ function StudentPage({
   useEffect(() => {
     if (id && id !== "new") {
       fetchStudentId(id).then((res) => {
-        console.log(res);
         if (res.success) {
+          const routeSelected = routes.find(route => route.id === res.data?.rota_id);
           const defaultValues: FormInput = {
             name: res.data?.name,
             serie: res.data?.serie,
@@ -87,9 +87,8 @@ function StudentPage({
             departureTime: res.data?.departureTime,
             backTime: res.data?.backTime,
           };
-
           reset(defaultValues);
-          setSelectedRoute(res.data?.rota_id);
+          setSelectedRoute({ value: routeSelected.id, label: routeSelected.name });
           setDataCEP(res.data?.cep);
           setAddress(res.data?.address);
           setNeighborhood(res.data?.neighborhood);
@@ -297,6 +296,7 @@ function StudentPage({
                 label="Ensino:"
                 placeholder="Ensino"
                 options={teachingList}
+                isDisabled={isLoading}
               />
             </GridItem>
             <GridItem colSpan={2}>
@@ -306,6 +306,7 @@ function StudentPage({
                 label="Turno:"
                 placeholder="Turno"
                 options={shiftList}
+                isDisabled={isLoading}
               />
             </GridItem>
             <GridItem colSpan={2}>
@@ -320,6 +321,7 @@ function StudentPage({
                   onChange={setSelectedRoute}
                   focusBorderColor='primary.400'
                   selectedOptionStyle="check"
+                  isDisabled={isLoading}
                 />
               </FormControl>
             </GridItem>
@@ -331,6 +333,7 @@ function StudentPage({
                   label="Horário de Ida:"
                   placeholder="Horário de Ida"
                   mask="99:99"
+                  disabled={isLoading}
                 />
               </GridItem>
             </GridItem>
@@ -341,6 +344,7 @@ function StudentPage({
                 label="Horário de Volta:"
                 placeholder="Horário de Volta"
                 mask="99:99"
+                disabled={isLoading}
               />
             </GridItem>
           </Grid>
@@ -394,9 +398,7 @@ function StudentPage({
                   type="text"
                   disabled={isLoading}
                   value={neighborhood}
-                  onChange={(e) => {
-                    setNeighborhood(e.target.value);
-                  }}
+                  onChange={(e) => { setNeighborhood(e.target.value) }}
                   focusBorderColor='primary.400'
                 />
               </FormControl>
@@ -482,6 +484,8 @@ function StudentPage({
               _hover={{
                 bg: "orange.400",
               }}
+              isLoading={isLoading}
+              spinnerPlacement='start'
             >
               Salvar
             </Button>

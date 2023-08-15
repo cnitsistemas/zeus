@@ -14,6 +14,7 @@ interface ControlledInputMaskProps<
     placeholder?: string;
     label?: string;
     mask?: string;
+    disabled?: boolean;
 }
 
 /**
@@ -31,6 +32,7 @@ function CustomInputMask<
     shouldUnregister,
     placeholder,
     mask,
+    disabled,
     ...selectProps
 }: ControlledInputMaskProps<FormValues>) {
     const {
@@ -54,6 +56,7 @@ function CustomInputMask<
                 {...field}
                 placeholder={placeholder}
                 focusBorderColor='primary.400'
+                isDisabled={disabled}
             />
             <FormErrorMessage>{error?.message}</FormErrorMessage>
         </FormControl>

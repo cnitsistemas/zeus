@@ -9,38 +9,38 @@ interface ProposDetails {
 const Details = ({ fetchRotaName, selectedStudent }: ProposDetails) => {
   return (
     <>
-      <Flex flexDirection={"row"} h={"full"}>
+      <Flex flexDirection={"row"} h={"full"} w={"full"} key={selectedStudent.id}>
         <Container>
           <TableContainer mt={10}>
             <Table variant='simple'>
               <Tbody>
                 <Tr>
                   <Td fontWeight={"bold"}>Nome</Td>
-                  <Td>{selectedStudent.name}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.name}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Série</Td>
-                  <Td>{selectedStudent.serie}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.serie}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Ensino</Td>
-                  <Td>{selectedStudent.teaching}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.teaching}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Turno</Td>
-                  <Td>{selectedStudent.shift}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.shift}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Nome da escola</Td>
-                  <Td>{selectedStudent.schoolName}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.schoolName}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Horário de ida</Td>
-                  <Td>{selectedStudent.departureTime}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.departureTime}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Horário de volta</Td>
-                  <Td>{selectedStudent.backTime}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.backTime}</Td>
                 </Tr>
               </Tbody>
             </Table>
@@ -52,37 +52,37 @@ const Details = ({ fetchRotaName, selectedStudent }: ProposDetails) => {
               <Tbody>
                 <Tr>
                   <Td fontWeight={"bold"}>CEP</Td>
-                  <Td>{selectedStudent.cep}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.cep}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Endereço</Td>
-                  <Td>{selectedStudent.address}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.address}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Bairro</Td>
-                  <Td>{selectedStudent.neighborhood}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.neighborhood}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Número</Td>
-                  <Td>{selectedStudent.number}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.number}</Td>
                 </Tr>
                 {selectedStudent.complement && <><Tr>
                   <Td fontWeight={"bold"}>Complemento</Td>
-                  <Td>{selectedStudent.complement}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.complement}</Td>
                 </Tr>
                 </>
                 }
                 <Tr>
                   <Td fontWeight={"bold"}>Cidade</Td>
-                  <Td>{selectedStudent.city}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.city}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Estado</Td>
-                  <Td>{selectedStudent.state}</Td>
+                  <Td whiteSpace="pre-wrap">{selectedStudent.state}</Td>
                 </Tr>
                 <Tr>
                   <Td fontWeight={"bold"}>Rota</Td>
-                  <Td>{fetchRotaName(selectedStudent.rota_id)}</Td>
+                  <Td whiteSpace="pre-wrap">{fetchRotaName(selectedStudent.rota_id)}</Td>
                 </Tr>
               </Tbody>
             </Table>

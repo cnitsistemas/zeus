@@ -1,5 +1,5 @@
 "use client";
-import { fetchStudents } from "@/redux/students/studentsActions";
+import { deleteStudents, fetchStudents } from "@/redux/students/studentsActions";
 import {
   Alert,
   AlertIcon,
@@ -17,7 +17,8 @@ import {
   Th,
   Thead,
   Tooltip,
-  Tr
+  Tr,
+  useToast
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
@@ -30,10 +31,13 @@ import { FaPlus } from "react-icons/fa";
 import Details from "./details";
 import { useRouter } from "next/navigation";
 import BreadcrumbComponent from "@/components/breadcrumb";
+import TableSkeleton from "@/components/table-skeleton";
+import ModalComponent from "@/components/modal";
 
 function StudentsPage({
   fetchStudents,
   fetchRoutes,
+  deleteStudents,
   students,
   selectedPage,
   totalPages,
@@ -41,6 +45,8 @@ function StudentsPage({
   routes
 }: Props) {
   const router = useRouter();
+  const toast = useToast();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [rows, setRows] = useState<Array<any>>([]);
   const [page, setPage] = useState<unknown | String>(null);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
@@ -56,7 +62,7 @@ function StudentsPage({
 
   useEffect(() => {
     if (page) {
-      fetchStudents(page);
+      fetchStudents(page).then(() => setIsLoading(false));
       fetchRoutes();
     }
   }, [
@@ -79,8 +85,9 @@ function StudentsPage({
   }, [page, totalPages, total]);
 
   const handlePageChange = (page: number): void => {
+    setIsLoading(true);
     setCurrentPage(page);
-    fetchStudents(page).then(() => { });
+    fetchStudents(page).then(() => { setIsLoading(false) });
   };
 
   const handleOpenDeleteDialog = (): void => {
@@ -106,6 +113,34 @@ function StudentsPage({
     return studentRoute && studentRoute.name;
   };
 
+  const handleDeleteStudent = async () => {
+    setIsLoading(true);
+    handleCloseDeleteDialog();
+    await deleteStudents(selectedStudent?.id).then((res) => {
+      if (res.success) {
+        toast({
+          title: 'Aluno removido',
+          description: "Aluno removido com sucesso!",
+          status: 'success',
+          duration: 7000,
+          isClosable: true,
+        })
+        setSelectedStudent({});
+        fetchStudents(page).then(() => { setIsLoading(false) });
+      } else {
+        setIsLoading(false);
+        toast({
+          title: 'Erro',
+          description: "Erro ao remover aluno!",
+          status: 'error',
+          duration: 7000,
+          isClosable: true,
+        })
+      }
+    })
+  };
+
+
   return (
     <Container maxW='container.2xl' px={{ xl: 20, sm: 0 }}>
       <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
@@ -122,7 +157,7 @@ function StudentsPage({
           >
             <Heading size='lg' color="primary.400" mr={2}>Alunos</Heading>
             <Tooltip hasArrow label='A tela de alunos é responsável pelo cadastro, edição, visualização e exclusão dos alunos transportados pelo CNIT, 
-				sendo possível vinculá-los às mais variadas rotas cadastradas no sistema.' bg='gray.200' color='black'>
+				sendo possível vinculá-los às mais variadas rotas cadastradas no sistema.' bg='gray.100' color='black'>
               <InfoIcon size={15} />
             </Tooltip>
           </Flex>
@@ -130,7 +165,7 @@ function StudentsPage({
         </Flex>
         <Button
           w="48"
-          onClick={() => router.push("/estudantes/create/new")}
+          onClick={() => router.push("/estudantes/new")}
           leftIcon={<FaPlus />}
           bg="primary.400"
           color={"white"}
@@ -141,72 +176,74 @@ function StudentsPage({
         </Button>
       </Flex>
 
-      {students && students.length > 0 ? <>
-        <Box border='1px' borderColor='gray.100' px={4} borderRadius={10}>
-          <TableContainer mt={10}>
-            <Table variant='simple'>
-              <Thead>
-                <Tr>
-                  <Th>Nome</Th>
-                  <Th>Rota</Th>
-                  <Th>Turno</Th>
-                  <Th></Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {rows && rows.length > 0 && rows.map((row) => {
-                  return <>
-                    <Tr key={row.id}>
-                      <Td>{row.name}</Td>
-                      <Td>{fetchRotaName(row.rota_id)}</Td>
-                      <Td>{row.shift}</Td>
-                      <Td display="flex" flexDirection="row" justifyContent="center">
-                        <Tooltip hasArrow label='Visualizar aluno' bg='gray.200' color='black'>
-                          <IconButton
-                            size="lg"
-                            variant="ghost"
-                            aria-label="visualizar aluno"
-                            icon={<FaEye />}
-                            onClick={() => {
-                              setSelectedStudent(row);
-                              handleOpenViewDialog();
-                            }}
-                          />
-                        </Tooltip>
-                        <Tooltip hasArrow label='Editar aluno' bg='gray.200' color='black'>
-                          <IconButton
-                            size="lg"
-                            variant="ghost"
-                            aria-label="editar aluno"
-                            icon={<FaEdit />}
-                            onClick={() => { router.push(`/estudantes/create/${row.id}`) }}
-                          />
-                        </Tooltip>
-                        <Tooltip hasArrow label='Deletar aluno' bg='gray.200' color='black'>
-                          <IconButton
-                            size="lg"
-                            variant="ghost"
-                            colorScheme="red"
-                            aria-label="deletar aluno"
-                            icon={<FaTrash />}
-                            onClick={() => {
-                              setSelectedStudent(row);
-                              handleOpenDeleteDialog();
-                            }}
-                          />
-                        </Tooltip>
-                      </Td>
-                    </Tr>
-                  </>
-                })}
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Box>
-      </> : <Alert status='info'>
-        <AlertIcon />
-        Não há alunos cadastrados nessa sessão! Adicione alunos clicando no botão de cadastro!
-      </Alert>}
+      {isLoading ? <TableSkeleton /> :
+        students && students.length > 0 ? <>
+          <Box border='1px' borderColor='gray.100' px={4} borderRadius={10}>
+            <TableContainer mt={10}>
+              <Table variant='simple'>
+                <Thead>
+                  <Tr>
+                    <Th>Nome</Th>
+                    <Th>Rota</Th>
+                    <Th>Turno</Th>
+                    <Th></Th>
+                  </Tr>
+                </Thead>
+                <Tbody>
+                  {rows && rows.length > 0 && rows.map((row) => {
+                    return <>
+                      <Tr key={row.id}>
+                        <Td>{row.name}</Td>
+                        <Td>{fetchRotaName(row.rota_id)}</Td>
+                        <Td>{row.shift}</Td>
+                        <Td display="flex" flexDirection="row" justifyContent="center">
+                          <Tooltip hasArrow label='Visualizar aluno' bg='gray.200' color='black'>
+                            <IconButton
+                              size="lg"
+                              variant="ghost"
+                              aria-label="visualizar aluno"
+                              icon={<FaEye />}
+                              onClick={() => {
+                                setSelectedStudent(row);
+                                handleOpenViewDialog();
+                              }}
+                            />
+                          </Tooltip>
+                          <Tooltip hasArrow label='Editar aluno' bg='gray.200' color='black'>
+                            <IconButton
+                              size="lg"
+                              variant="ghost"
+                              aria-label="editar aluno"
+                              icon={<FaEdit />}
+                              onClick={() => { router.push(`/estudantes/${row.id}`) }}
+                            />
+                          </Tooltip>
+                          <Tooltip hasArrow label='Deletar aluno' bg='gray.200' color='black'>
+                            <IconButton
+                              size="lg"
+                              variant="ghost"
+                              colorScheme="red"
+                              aria-label="deletar aluno"
+                              icon={<FaTrash />}
+                              onClick={() => {
+                                setSelectedStudent(row);
+                                handleOpenDeleteDialog();
+                              }}
+                            />
+                          </Tooltip>
+                        </Td>
+                      </Tr>
+                    </>
+                  })}
+                </Tbody>
+              </Table>
+            </TableContainer>
+          </Box>
+        </> : <Alert status='info'>
+          <AlertIcon />
+          Não há alunos cadastrados nessa sessão! Adicione alunos clicando no botão de cadastro!
+        </Alert>
+      }
 
       {students && students.length > 0 && <Pagination
         onPageChange={handlePageChange}
@@ -217,7 +254,7 @@ function StudentsPage({
         className="mb-10"
       />}
 
-      {selectedStudent && <Dialog
+      {selectedStudent && <ModalComponent
         title={`${selectedStudent.name}`}
         content={
           <Details
@@ -243,7 +280,7 @@ function StudentsPage({
         confirmButton={true}
         confirmButtonError={true}
         confirmButtonText="Sim"
-        handleConfirm={() => { }}
+        handleConfirm={handleDeleteStudent}
         openDialog={deleteDialog}
         setCloseDialog={handleCloseDeleteDialog}
         size="xl"
@@ -255,6 +292,7 @@ function StudentsPage({
 interface Props {
   fetchStudents: (page: any) => Promise<any>;
   fetchRoutes: () => Promise<any>;
+  deleteStudents: (studentId: string) => Promise<any>;
   students: Array<any>;
   totalPages: number;
   selectedPage: number;
@@ -279,5 +317,6 @@ const mapStateToProps = (state: any) => {
 };
 export default connect(mapStateToProps, {
   fetchStudents,
-  fetchRoutes
+  fetchRoutes,
+  deleteStudents
 })(StudentsPage);

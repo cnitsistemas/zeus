@@ -108,7 +108,7 @@ export const editStudent =
   };
 
 export const deleteStudents =
-  (studentId: String) => async (dispatch: Dispatch) => {
+  (studentId: string) => async (dispatch: Dispatch) => {
     try {
       const url = `api/alunos/${studentId}`;
       const apiResponse = await api.delete(url, {

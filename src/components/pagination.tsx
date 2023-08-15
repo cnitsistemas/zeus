@@ -39,9 +39,6 @@ const Pagination: FC<Props> = ({
 
   const lastPage = paginationRange[paginationRange.length - 1];
 
-  const baseStyles =
-    "px-2.5 py-2 flex justify-center items-center rounded-md text-[1rem] bg-white hover:bg-grey-300 text-purple-700 font-bold select-none cursor-pointer";
-
   return (
     <main id="pagination">
       <Flex w='100%' p={4} my={3} gap={2} py={10} flexDirection={"row"} justifyContent={"center"}>
@@ -65,7 +62,7 @@ const Pagination: FC<Props> = ({
         {paginationRange.map((pageNumber, index) => {
           if (pageNumber === "DOTS") {
             return (
-              <Text key={index} className="select-none">
+              <Text key={`pagination-${index}`} className="select-none">
                 ...
               </Text>
             );
