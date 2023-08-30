@@ -9,7 +9,7 @@ interface PropsAvatar {
   avatar: string
   name: string;
   email: string;
-  handleSingOut: (token: string) => Promise<void>;
+  handleSingOut: () => void;
   token: string;
 }
 
@@ -25,9 +25,7 @@ export const AvatarBox = ({
   const { colorMode, toggleColorMode } = useColorMode();
 
   const handleLogout = () => {
-    handleSingOut(token).then(() => {
-      router.push("/login")
-    });
+    handleSingOut();
   };
 
   return (

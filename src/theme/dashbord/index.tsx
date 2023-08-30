@@ -1,5 +1,5 @@
 "use client"
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import LoadingComponent from "@/components/loading";
 import { useRouter } from "next/navigation";
@@ -13,7 +13,9 @@ import {
 } from '@chakra-ui/react'
 import { Sidebar } from "./components/sidebar";
 import { MdMenu } from "react-icons/md";
-import { handleSingOut } from "@/redux/singIn/singInActions";
+import { handleSingOut } from "@/store/modules/singIn/singInActions";
+import { SingInState } from "@/store/modules/singIn/singInReducers";
+import { useAppDispatch } from "@/hooks/useRedux";
 
 interface PropsDashbord {
   children: React.ReactNode;
@@ -24,20 +26,19 @@ interface PropsDashbord {
   handleSingOut: (token: string) => Promise<void>;
 };
 
-function DashbordLayout({
-  children,
-  token,
-  avatar,
-  name,
-  email,
-  handleSingOut
-}: PropsDashbord) {
+function DashbordLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [loading, setLoading] = useState<Boolean>(true);
   const [collapse, setCollapse] = useState<Boolean>(true);
   const bgColorMain = { light: "white", dark: "#1A202C" };
   const backgroundBgColor = { light: "gray.100", dark: "#1A202C" };
   const { colorMode } = useColorMode();
+  const singInState = useSelector(SingInState);
+  const dispatch = useAppDispatch();
+  const token = (singInState.auth && singInState.auth.accessToken) || null
+  const avatar = (singInState.auth && singInState.auth.avatar) || null
+  const name = singInState.auth && singInState.auth.name || null
+  const email = singInState.auth && singInState.auth.email || null
 
   useEffect(() => {
     async function isAuthenticated(token: String) {
@@ -49,6 +50,12 @@ function DashbordLayout({
     }
     isAuthenticated(token);
   }, []);
+
+  const handleLogoff = () => {
+    dispatch(handleSingOut(token)).then(() => {
+      router.push("/login")
+    });
+  }
 
   return (
     <>
@@ -83,7 +90,7 @@ function DashbordLayout({
                   name={name}
                   email={email}
                   token={token}
-                  handleSingOut={handleSingOut}
+                  handleSingOut={handleLogoff}
                 />
               </Flex>
             </Hide>

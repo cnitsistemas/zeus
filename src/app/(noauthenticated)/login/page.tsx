@@ -4,7 +4,7 @@ import Loading from "@/components/loading";
 import { connect } from "react-redux";
 import Logo from "@/assets/logo.png";
 import Image from "next/image";
-import { handleSingIn } from "@/redux/singIn/singInActions";
+import { handleSingIn } from "@/store/modules/singIn/singInActions";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { useForm, SubmitHandler } from "react-hook-form";

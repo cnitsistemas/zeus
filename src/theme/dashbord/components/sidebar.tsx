@@ -10,7 +10,7 @@ interface PropsSidebar {
   name: string;
   email: string;
   token: string;
-  handleSingOut: (token: string) => Promise<void>;
+  handleSingOut: () => void;
 };
 
 export const Sidebar = ({

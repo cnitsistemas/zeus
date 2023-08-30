@@ -29,7 +29,7 @@ import InputMask from "react-input-mask";
 import BreadcrumbComponent from "@/components/breadcrumb";
 import { Select } from "chakra-react-select";
 import { RouteOption } from "@/domain/route/routeDTO";
-import { createStudents, editStudent, fetchStudentId } from "@/redux/students/studentsActions";
+import { createStudents, editStudent, fetchStudentId } from "@/store/modules/students/studentsActions";
 import { FormValidation, selectSchema } from "@/validators/studanteSchema";
 
 function StudentPage({
