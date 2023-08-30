@@ -8,7 +8,7 @@ import {
 } from "@/domain/studant/studentsDTO";
 import withAuthHeader from "@/lib/withAuthHeader";
 
-export const fetchStudents = (page: String) => async (dispatch: Dispatch) => {
+export const fetchStudents = (page: number) => async (dispatch: Dispatch) => {
   try {
     const url = `api/alunos?page=${page}`;
     const apiResponse = await api.get(url, {
@@ -84,28 +84,28 @@ export const createStudents = (data: any) => async (dispatch: Dispatch) => {
 
 export const editStudent =
   ({ id, data }: { id: String; data: any }) =>
-  async (dispatch: Dispatch) => {
-    try {
-      const url = `api/alunos/${id}`;
-      const apiResponse = await api.post(url, data, {
-        ...withAuthHeader(),
-      });
-      const response = apiResponse.data;
-
-      if (response.success) {
-        dispatch({
-          type: actionTypes.CREATE_STUDENTS,
-          payload: response,
+    async (dispatch: Dispatch) => {
+      try {
+        const url = `api/alunos/${id}`;
+        const apiResponse = await api.post(url, data, {
+          ...withAuthHeader(),
         });
-        return response;
-      } else {
-        console.log(response);
-        return response;
+        const response = apiResponse.data;
+
+        if (response.success) {
+          dispatch({
+            type: actionTypes.CREATE_STUDENTS,
+            payload: response,
+          });
+          return response;
+        } else {
+          console.log(response);
+          return response;
+        }
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+    };
 
 export const deleteStudents =
   (studentId: string) => async (dispatch: Dispatch) => {

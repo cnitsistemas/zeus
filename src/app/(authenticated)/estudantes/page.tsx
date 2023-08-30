@@ -1,5 +1,4 @@
 "use client";
-import { deleteStudents, fetchStudents } from "@/redux/students/studentsActions";
 import {
   Alert,
   AlertIcon,
@@ -21,40 +20,48 @@ import {
   useToast
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { InfoIcon } from "lucide-react";
 import Pagination from "@/components/pagination";
 import Dialog from "@/components/dialog";
-import { fetchRoutes } from "@/redux/routes/routesActions";
 import { FaPlus } from "react-icons/fa";
 import Details from "./details";
 import { useRouter } from "next/navigation";
 import BreadcrumbComponent from "@/components/breadcrumb";
 import TableSkeleton from "@/components/table-skeleton";
 import ModalComponent from "@/components/modal";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { StudantState } from "@/store/modules/students/studentsReducers";
+import { RouteState } from "@/store/modules/routes/routesReducers";
+import { deleteStudents, fetchStudents } from "@/store/modules/students/studentsActions";
+import { fetchRoutes } from "@/store/modules/routes/routesActions";
 
-function StudentsPage({
-  fetchStudents,
-  fetchRoutes,
-  deleteStudents,
-  students,
-  selectedPage,
-  totalPages,
-  total,
-  routes
-}: Props) {
+const breadcrumbItens: Array<any> = [
+  { name: "Inicio", link: "/" },
+  { name: "Alunos", link: null }
+];
+
+function StudentsPage() {
   const router = useRouter();
   const toast = useToast();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [rows, setRows] = useState<Array<any>>([]);
-  const [page, setPage] = useState<unknown | String>(null);
+  const [page, setPage] = useState<number>(1);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<any>({});
   const [viewDialog, setViewDialog] = useState(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [currentTotalPages, setCurrentTotalPages] = useState<number>(1);
   const [currentTotalResults, setCurrentTotalResults] = useState<number>(1);
+  const studantState = useSelector(StudantState);
+  const routeState = useSelector(RouteState);
+  const dispatch = useAppDispatch();
+  const students = (studantState && studantState.students) || [];
+  const totalPages = (studantState && studantState.pagination && studantState.pagination.totalPages) || 1;
+  const selectedPage = (studantState && studantState.pagination && studantState.pagination.page) || 1;
+  const total = (studantState && studantState.pagination && studantState.pagination.total) || 1;
+  const routes = (routeState && routeState.routes) || null;
 
   useEffect(() => {
     setPage(selectedPage);
@@ -62,14 +69,10 @@ function StudentsPage({
 
   useEffect(() => {
     if (page) {
-      fetchStudents(page).then(() => setIsLoading(false));
-      fetchRoutes();
+      dispatch(fetchStudents(page)).then(() => setIsLoading(false));
+      dispatch(fetchRoutes());
     }
-  }, [
-    page,
-    fetchStudents,
-    fetchRoutes
-  ])
+  }, [page, dispatch])
 
   useEffect(() => {
     if (students && students.length > 0) {
@@ -87,7 +90,7 @@ function StudentsPage({
   const handlePageChange = (page: number): void => {
     setIsLoading(true);
     setCurrentPage(page);
-    fetchStudents(page).then(() => { setIsLoading(false) });
+    dispatch(fetchStudents(page)).then(() => { setIsLoading(false) });
   };
 
   const handleOpenDeleteDialog = (): void => {
@@ -116,7 +119,7 @@ function StudentsPage({
   const handleDeleteStudent = async () => {
     setIsLoading(true);
     handleCloseDeleteDialog();
-    await deleteStudents(selectedStudent?.id).then((res) => {
+    await dispatch(deleteStudents(selectedStudent?.id)).then((res) => {
       if (res.success) {
         toast({
           title: 'Aluno removido',
@@ -126,7 +129,7 @@ function StudentsPage({
           isClosable: true,
         })
         setSelectedStudent({});
-        fetchStudents(page).then(() => { setIsLoading(false) });
+        dispatch(fetchStudents(page)).then(() => { setIsLoading(false) });
       } else {
         setIsLoading(false);
         toast({
@@ -289,34 +292,4 @@ function StudentsPage({
   );
 };
 
-interface Props {
-  fetchStudents: (page: any) => Promise<any>;
-  fetchRoutes: () => Promise<any>;
-  deleteStudents: (studentId: string) => Promise<any>;
-  students: Array<any>;
-  totalPages: number;
-  selectedPage: number;
-  total: number;
-  routes: Array<any>;
-};
-
-const breadcrumbItens: Array<any> = [
-  { name: "Inicio", link: "/" },
-  { name: "Alunos", link: null }
-];
-
-const mapStateToProps = (state: any) => {
-  return {
-    accessToken: (state.singin.auth && state.singin.auth.accessToken) || null,
-    students: (state.students && state.students.students) || [],
-    totalPages: (state.students && state.students.pagination && state.students.pagination.totalPages) || 1,
-    selectedPage: (state.students && state.students.pagination && state.students.pagination.page) || 1,
-    total: (state.students && state.students.pagination && state.students.pagination.total) || 1,
-    routes: (state.routes && state.routes.routes) || null,
-  };
-};
-export default connect(mapStateToProps, {
-  fetchStudents,
-  fetchRoutes,
-  deleteStudents
-})(StudentsPage);
+export default StudentsPage;

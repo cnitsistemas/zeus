@@ -1,4 +1,5 @@
 import { actionTypes } from ".";
+import { RootState } from "@/store";
 
 interface State {
   routes: any;
@@ -31,3 +32,4 @@ const RouteReducer = (state: State = initialState, action: any): State => {
 };
 
 export default RouteReducer;
+export const RouteState = (state: RootState) => state.routes;

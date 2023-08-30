@@ -1,12 +1,12 @@
 import { Container, Flex, Table, TableContainer, Tbody, Td, Tr } from "@chakra-ui/react";
 import React from "react";
 
-interface ProposDetails {
+interface PropsDetails {
   fetchRotaName: (id: String) => React.ReactNode;
   selectedStudent: any;
 };
 
-const Details = ({ fetchRotaName, selectedStudent }: ProposDetails) => {
+const Details = ({ fetchRotaName, selectedStudent }: PropsDetails) => {
   return (
     <>
       <Flex flexDirection={"row"} h={"full"} w={"full"} key={selectedStudent.id}>

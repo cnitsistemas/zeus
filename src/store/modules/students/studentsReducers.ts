@@ -1,4 +1,5 @@
 import { actionTypes } from ".";
+import { RootState } from "@/store";
 
 interface State {
   students: any;
@@ -50,3 +51,4 @@ const StudantReducer = (state: State = initialState, action: any): State => {
 };
 
 export default StudantReducer;
+export const StudantState = (state: RootState) => state.students;

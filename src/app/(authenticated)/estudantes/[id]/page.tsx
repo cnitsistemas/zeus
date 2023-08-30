@@ -24,12 +24,13 @@ import ControlledSelect from "@/components/controller-select";
 import { connect } from "react-redux";
 import CustomInputMask from "@/components/input-mask";
 import { useRouter } from "next/navigation";
-import { fetchAddressByCEP, setCEP } from "@/redux/address/addressActions";
+import { fetchAddressByCEP, setCEP } from "@/store/modules/address/addressActions";
 import InputMask from "react-input-mask";
 import BreadcrumbComponent from "@/components/breadcrumb";
 import { Select } from "chakra-react-select";
 import { RouteOption } from "@/domain/route/routeDTO";
 import { createStudents, editStudent, fetchStudentId } from "@/redux/students/studentsActions";
+import { FormValidation, selectSchema } from "@/validators/studanteSchema";
 
 function StudentPage({
   params,
@@ -514,27 +515,6 @@ const breadcrumbItens: Array<any> = [
   { name: "Cadastrar/Editar aluno", link: null }
 ];
 
-const selectSchema = z.object({
-  label: z.string(),
-  value: z.string(),
-});
-
-const FormValidation = z.object({
-  name: z.string().min(4, {
-    message: "O nome do aluno deve ter 4 caracteres ou mais.",
-  }),
-  teaching: selectSchema.required(),
-  shift: selectSchema.required(),
-  serie: z
-    .string()
-    .min(4, { message: "A senha de usuário deve ter 4 caracteres ou mais." }),
-
-  schoolName: z
-    .string()
-    .min(4, { message: "A senha de usuário deve ter 4 caracteres ou mais." }),
-  departureTime: z.string().min(4, { message: "O horário de ida deve ter 4 caracteres ou mais." }),
-  backTime: z.string().min(4, { message: "O horário de volta deve ter 4 caracteres ou mais." }),
-});
 
 type FormInput = z.infer<typeof FormValidation>;
 type SelectReason = z.infer<typeof selectSchema>;

@@ -1,5 +1,5 @@
 import { actionTypes } from ".";
-import { RootState } from "./../store";
+import { RootState } from "@/store";
 
 interface State {
   address: any;

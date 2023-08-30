@@ -1,4 +1,5 @@
 import { actionTypes } from ".";
+import { RootState } from "@/store";
 
 interface State {
   auth: any;
@@ -64,3 +65,4 @@ const SingInReducer = (state: State = initialState, action: any): State => {
 };
 
 export default SingInReducer;
+export const SingInState = (state: RootState) => state.singin;
