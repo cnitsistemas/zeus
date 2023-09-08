@@ -25,16 +25,19 @@ interface MobileProps extends FlexProps {
 
 export const MobileNav = ({ onOpen, avatar, ...rest }: MobileProps) => {
   const { colorMode, toggleColorMode } = useColorMode();
-
+  const bgFlex = useColorModeValue("white", "gray.900");
+  const borderFlex = useColorModeValue("gray.200", "gray.700");
+  const bgMenuList = useColorModeValue("white", "gray.900")
+  const borderColorMenuList = useColorModeValue("gray.200", "gray.700")
   return (
     <Flex
       ml={{ base: 0, md: 60 }}
       px={{ base: 4, md: 4 }}
       height="20"
       alignItems="center"
-      bg={useColorModeValue("white", "gray.900")}
+      bg={bgFlex}
       borderBottomWidth="1px"
-      borderBottomColor={useColorModeValue("gray.200", "gray.700")}
+      borderBottomColor={borderFlex}
       justifyContent={{ base: "space-between", md: "flex-end" }}
       {...rest}
     >
@@ -94,8 +97,8 @@ export const MobileNav = ({ onOpen, avatar, ...rest }: MobileProps) => {
               </HStack>
             </MenuButton>
             <MenuList
-              bg={useColorModeValue("white", "gray.900")}
-              borderColor={useColorModeValue("gray.200", "gray.700")}
+              bg={bgMenuList}
+              borderColor={borderColorMenuList}
             >
               <MenuItem>Profile</MenuItem>
               <MenuItem>Settings</MenuItem>

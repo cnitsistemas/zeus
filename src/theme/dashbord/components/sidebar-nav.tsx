@@ -79,12 +79,14 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
 };
 
 export const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
+  const colorBox = useColorModeValue("white", "gray.900")
+  const borderBox = useColorModeValue("gray.200", "gray.700")
   return (
     <Box
       transition="3s ease"
-      bg={useColorModeValue("white", "gray.900")}
+      bg={colorBox}
       borderRight="1px"
-      borderRightColor={useColorModeValue("gray.200", "gray.700")}
+      borderRightColor={borderBox}
       w={{ base: "full", md: 60 }}
       pos="fixed"
       h="full"

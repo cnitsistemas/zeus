@@ -12,7 +12,7 @@ import React from "react";
 interface PropsNavItem {
   item: any,
   isActive: Boolean,
-  collapse: Boolean
+  collapse: Boolean,
 };
 
 export const NavItem = ({ item, isActive, collapse }: PropsNavItem) => {

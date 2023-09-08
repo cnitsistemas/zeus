@@ -72,7 +72,7 @@ function StudentsPage() {
       dispatch(fetchStudents(page)).then(() => setIsLoading(false));
       dispatch(fetchRoutes());
     }
-  }, [page, dispatch])
+  }, [dispatch])
 
   useEffect(() => {
     if (students && students.length > 0) {
@@ -193,9 +193,9 @@ function StudentsPage() {
                   </Tr>
                 </Thead>
                 <Tbody>
-                  {rows && rows.length > 0 && rows.map((row) => {
+                  {rows && rows.length > 0 && rows.map((row: any, index) => {
                     return <>
-                      <Tr key={row.id}>
+                      <Tr key={index}>
                         <Td>{row.name}</Td>
                         <Td>{fetchRotaName(row.rota_id)}</Td>
                         <Td>{row.shift}</Td>
@@ -204,7 +204,7 @@ function StudentsPage() {
                             <IconButton
                               size="lg"
                               variant="ghost"
-                              aria-label="visualizar aluno"
+                              aria-label="visualizar"
                               icon={<FaEye />}
                               onClick={() => {
                                 setSelectedStudent(row);
@@ -216,7 +216,7 @@ function StudentsPage() {
                             <IconButton
                               size="lg"
                               variant="ghost"
-                              aria-label="editar aluno"
+                              aria-label="editar"
                               icon={<FaEdit />}
                               onClick={() => { router.push(`/estudantes/${row.id}`) }}
                             />
@@ -226,7 +226,7 @@ function StudentsPage() {
                               size="lg"
                               variant="ghost"
                               colorScheme="red"
-                              aria-label="deletar aluno"
+                              aria-label="deletar"
                               icon={<FaTrash />}
                               onClick={() => {
                                 setSelectedStudent(row);
@@ -235,7 +235,7 @@ function StudentsPage() {
                             />
                           </Tooltip>
                         </Td>
-                      </Tr>
+                      </Tr >
                     </>
                   })}
                 </Tbody>
@@ -248,32 +248,36 @@ function StudentsPage() {
         </Alert>
       }
 
-      {students && students.length > 0 && <Pagination
-        onPageChange={handlePageChange}
-        totalCount={currentTotalResults}
-        siblingCount={1}
-        currentPage={currentPage}
-        pageSize={currentTotalPages}
-        className="mb-10"
-      />}
+      {
+        students && students.length > 0 && <Pagination
+          onPageChange={handlePageChange}
+          totalCount={currentTotalResults}
+          siblingCount={1}
+          currentPage={currentPage}
+          pageSize={currentTotalPages}
+          className="mb-10"
+        />
+      }
 
-      {selectedStudent && <ModalComponent
-        title={`${selectedStudent.name}`}
-        content={
-          <Details
-            fetchRotaName={fetchRotaName}
-            selectedStudent={selectedStudent}
-          />}
-        confirmButton={false}
-        cancelButton={true}
-        confirmButtonText="Sim"
-        cancelButtonText="Fechar"
-        handleConfirm={() => { }}
-        confirmButtonError={false}
-        openDialog={viewDialog}
-        setCloseDialog={handleCloseViewDialog}
-        size="6xl"
-      />}
+      {
+        selectedStudent && <ModalComponent
+          title={`${selectedStudent.name}`}
+          content={
+            <Details
+              fetchRotaName={fetchRotaName}
+              selectedStudent={selectedStudent}
+            />}
+          confirmButton={false}
+          cancelButton={true}
+          confirmButtonText="Sim"
+          cancelButtonText="Fechar"
+          handleConfirm={() => { }}
+          confirmButtonError={false}
+          openDialog={viewDialog}
+          setCloseDialog={handleCloseViewDialog}
+          size="6xl"
+        />
+      }
 
       <Dialog
         title="Deletar aluno?"
@@ -288,7 +292,7 @@ function StudentsPage() {
         setCloseDialog={handleCloseDeleteDialog}
         size="xl"
       />
-    </Container>
+    </Container >
   );
 };
 

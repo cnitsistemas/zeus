@@ -16,20 +16,14 @@ import { MdMenu } from "react-icons/md";
 import { handleSingOut } from "@/store/modules/singIn/singInActions";
 import { SingInState } from "@/store/modules/singIn/singInReducers";
 import { useAppDispatch } from "@/hooks/useRedux";
-
-interface PropsDashbord {
-  children: React.ReactNode;
-  token: any;
-  avatar: string;
-  name: string;
-  email: string;
-  handleSingOut: (token: string) => Promise<void>;
-};
+import { usePathname } from 'next/navigation'
 
 function DashbordLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const [loading, setLoading] = useState<Boolean>(true);
-  const [collapse, setCollapse] = useState<Boolean>(true);
+  const pathname = usePathname()
+  const [loading, setLoading] = useState<boolean>(true);
+  const [collapse, setCollapse] = useState<boolean>(true);
+  const bgFlex = useColorModeValue('gray.100', 'gray.800');
   const bgColorMain = { light: "white", dark: "#1A202C" };
   const backgroundBgColor = { light: "gray.100", dark: "#1A202C" };
   const { colorMode } = useColorMode();
@@ -65,7 +59,7 @@ function DashbordLayout({ children }: { children: React.ReactNode }) {
             minH={'100vh'}
             align={'center'}
             justify={'center'}
-            bg={useColorModeValue('gray.100', 'gray.800')}>
+            bg={bgFlex}>
             <LoadingComponent loading={loading} color="#ff7a2d" />
           </Flex>
           : <HStack w="full" h="100vh" bg={backgroundBgColor[colorMode]} padding={3} alignItems={"flex-start"} >
@@ -91,6 +85,7 @@ function DashbordLayout({ children }: { children: React.ReactNode }) {
                   email={email}
                   token={token}
                   handleSingOut={handleLogoff}
+                  pathname={pathname}
                 />
               </Flex>
             </Hide>
@@ -125,15 +120,4 @@ function DashbordLayout({ children }: { children: React.ReactNode }) {
     </>
   );
 }
-
-const mapStateToProps = (state: any) => {
-  return {
-    token: (state.singin.auth && state.singin.auth.accessToken) || null,
-    avatar: (state.singin.auth && state.singin.auth.avatar) || null,
-    name: state.singin.auth && state.singin.auth.name || null,
-    email: state.singin.auth && state.singin.auth.email || null,
-  };
-};
-export default connect(mapStateToProps, {
-  handleSingOut
-})(DashbordLayout);
+export default DashbordLayout;

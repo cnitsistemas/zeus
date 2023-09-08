@@ -11,6 +11,7 @@ interface PropsSidebar {
   email: string;
   token: string;
   handleSingOut: () => void;
+  pathname: string;
 };
 
 export const Sidebar = ({
@@ -20,11 +21,12 @@ export const Sidebar = ({
   email,
   handleSingOut,
   token,
+  pathname
 }: PropsSidebar) => (
   <React.Fragment>
     <Box w="full">
       <Logo collapse={collapse} />
-      <Navigation collapse={collapse} />
+      <Navigation collapse={collapse} pathname={pathname} />
     </Box>
     <AvatarBox
       collapse={collapse}

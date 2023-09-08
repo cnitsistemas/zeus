@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from "react";
-import Loading from "@/components/loading";
-import { connect } from "react-redux";
 import Logo from "@/assets/logo.png";
 import Image from "next/image";
 import { handleSingIn } from "@/store/modules/singIn/singInActions";
@@ -22,6 +20,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import { Suspense } from 'react'
+import { useAppDispatch } from "@/hooks/useRedux";
 
 const AcessValidation = z.object({
   email: z.string().email({
@@ -34,12 +33,7 @@ const AcessValidation = z.object({
 
 type FormInput = z.infer<typeof AcessValidation>;
 
-interface Props {
-  handleSingIn: (data: any) => Promise<any>;
-  accessToken: string;
-}
-
-function LoginPage(props: Props) {
+function LoginPage() {
   const {
     register,
     handleSubmit,
@@ -52,9 +46,11 @@ function LoginPage(props: Props) {
     },
   });
   const router = useRouter();
-  const { accessToken, handleSingIn } = props;
   const [loading, setLoading] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const bgFlex = useColorModeValue("gray.50", "gray.800");
+  const bgBox = useColorModeValue("white", "gray.700");
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setTimeout(() => {
@@ -64,7 +60,7 @@ function LoginPage(props: Props) {
 
   const onSubmit: SubmitHandler<FormInput> = (data) => {
     setIsLoading(true);
-    handleSingIn(data).then(() => {
+    dispatch(handleSingIn(data)).then(() => {
       setIsLoading(false);
       router.push("/");
     });
@@ -77,7 +73,7 @@ function LoginPage(props: Props) {
           minH={"100vh"}
           align={"center"}
           justify={"center"}
-          bg={useColorModeValue("gray.50", "gray.800")}
+          bg={bgFlex}
         >
           <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
             <Stack align={"center"}>
@@ -89,7 +85,7 @@ function LoginPage(props: Props) {
             </Stack>
             <Box
               rounded={"lg"}
-              bg={useColorModeValue("white", "gray.700")}
+              bg={bgBox}
               boxShadow={"lg"}
               p={8}
             >
@@ -149,6 +145,4 @@ const mapStateToProps = (state: any) => {
     accessToken: (state.singin.auth && state.singin.auth.accessToken) || null,
   };
 };
-export default connect(mapStateToProps, {
-  handleSingIn,
-})(LoginPage);
+export default LoginPage;

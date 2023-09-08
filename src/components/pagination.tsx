@@ -69,6 +69,7 @@ const Pagination: FC<Props> = ({
           }
           return (
             <Button
+              key={`pagination-${index}`}
               colorScheme={pageNumber === currentPage ? "primary" : ""}
               color={pageNumber === currentPage ? "white" : "black"}
               variant='solid'

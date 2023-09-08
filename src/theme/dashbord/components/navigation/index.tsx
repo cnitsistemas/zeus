@@ -29,13 +29,13 @@ const items = [
     type: "link",
     label: "Usuários",
     icon: FaUserFriends,
-    path: "/",
+    path: "/usuarios",
   },
   {
     type: "link",
     label: "Papéis",
     icon: FaSuitcase,
-    path: "/",
+    path: "/papeis",
   },
 
   {
@@ -61,16 +61,16 @@ const items = [
     type: "link",
     label: "Settings",
     icon: MdOutlineSettingsInputComposite,
-    path: "/",
+    path: "/configuracoes",
   },
 ];
 
-export const Navigation = ({ collapse }: { collapse: Boolean }) => (
+export const Navigation = ({ collapse, pathname }: { collapse: Boolean, pathname: string }) => (
   <List w="full" my={8}>
-    {items.map((item, index) => (
-      <ListItem key={index}>
-        <NavItem item={item} isActive={index === 0} collapse={collapse} />
+    {items.map((item, index) => {
+      return <ListItem key={index}>
+        <NavItem item={item} isActive={item.path === pathname} collapse={collapse} />
       </ListItem>
-    ))}
+    })}
   </List>
 );

@@ -54,7 +54,7 @@ export default function ModalComponent({
             </Button>}
             {confirmButton && confirmButtonError ? <Button colorScheme='red' ml={3} onClick={handleConfirm}>
               {confirmButtonText}
-            </Button> : confirmButton ? <Button colorScheme='red' ml={3} onClick={handleConfirm}>
+            </Button> : confirmButton ? <Button colorScheme='orange' ml={3} onClick={handleConfirm}>
               {confirmButtonText}
             </Button> : <></>}
           </ModalFooter>

@@ -23,7 +23,8 @@ export const AvatarBox = ({
 }: PropsAvatar) => {
   const router = useRouter();
   const { colorMode, toggleColorMode } = useColorMode();
-
+  const bgMunuList = useColorModeValue("white", "gray.900");
+  const borderMenuList = useColorModeValue("gray.200", "gray.700")
   const handleLogout = () => {
     handleSingOut();
   };
@@ -47,8 +48,8 @@ export const AvatarBox = ({
           <Avatar name="Design To Chakra UI" bg="teal.300" src={avatar} />
         </MenuButton>
         <MenuList
-          bg={useColorModeValue("white", "gray.900")}
-          borderColor={useColorModeValue("gray.200", "gray.700")}
+          bg={bgMunuList}
+          borderColor={borderMenuList}
         >
           <MenuItem>Profile</MenuItem>
           <MenuItem>Settings</MenuItem>

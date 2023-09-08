@@ -21,7 +21,7 @@ import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { z } from "zod";
 import ControlledSelect from "@/components/controller-select";
-import { connect } from "react-redux";
+import { useSelector } from "react-redux";
 import CustomInputMask from "@/components/input-mask";
 import { useRouter } from "next/navigation";
 import { fetchAddressByCEP, setCEP } from "@/store/modules/address/addressActions";
@@ -31,17 +31,44 @@ import { Select } from "chakra-react-select";
 import { RouteOption } from "@/domain/route/routeDTO";
 import { createStudents, editStudent, fetchStudentId } from "@/store/modules/students/studentsActions";
 import { FormValidation, selectSchema } from "@/validators/studanteSchema";
+import { RouteState } from "@/store/modules/routes/routesReducers";
+import { useAppDispatch } from "@/hooks/useRedux";
+import { fetchRoutes } from "@/store/modules/routes/routesActions";
 
-function StudentPage({
-  params,
-  routes,
-  fetchRoutes,
-  setCEP,
-  fetchAddressByCEP,
-  editStudent,
-  createStudents,
-  fetchStudentId
-}: PropsStudent) {
+const shiftList = [
+  { value: 'Manhã', label: 'Manhã' },
+  { value: 'Tarde', label: 'Tarde' },
+  { value: 'Noite', label: 'Noite' }
+];
+const teachingList = [
+  { value: 'Infantil', label: 'Infantil' },
+  { value: 'Fundamental', label: 'Fundamental' },
+  { value: 'Médio', label: 'Médio' },
+  { value: 'Superior', label: 'Superior' }
+];
+
+const breadcrumbItens: Array<any> = [
+  { name: "Inicio", link: "/" },
+  { name: "Alunos", link: "/estudantes" },
+  { name: "Cadastrar/Editar aluno", link: null }
+];
+
+
+type FormInput = z.infer<typeof FormValidation>;
+type SelectReason = z.infer<typeof selectSchema>;
+
+
+const defaultValues: FormInput = {
+  name: "",
+  serie: "",
+  schoolName: "",
+  teaching: { value: 'Infantil', label: 'Infantil' },
+  shift: { value: 'Manhã', label: 'Manhã' },
+  departureTime: "",
+  backTime: "",
+};
+
+function CreateStudantePage({ params }: { params: { id: string } }) {
   const {
     control,
     register,
@@ -55,6 +82,7 @@ function StudentPage({
   const { id } = params;
   const router = useRouter();
   const toast = useToast();
+  const dispatch = useAppDispatch();
   const { colorMode } = useColorMode();
   const bgColorDivider = { light: "white", dark: "#1A202C" };
   const [routersList, setRoutersList] = useState<Array<any>>([]);
@@ -67,18 +95,20 @@ function StudentPage({
   const [city, setCity] = useState<string>("");
   const [state, setState] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const routeState = useSelector(RouteState);
+  const routes = routeState && routeState.routes || null;
 
   useEffect(() => {
     if (routes && routes.length > 0) {
-      setRoutersList(routes.map(route => { return { value: route.id, label: route.name } }));
+      setRoutersList(routes.map((route: any) => { return { value: route.id, label: route.name } }));
     }
   }, [routes]);
 
   useEffect(() => {
     if (id && id !== "new") {
-      fetchStudentId(id).then((res) => {
+      dispatch(fetchStudentId(id)).then((res) => {
         if (res.success) {
-          const routeSelected = routes.find(route => route.id === res.data?.rota_id);
+          const routeSelected = routes.find((route: any) => route.id === res.data?.rota_id);
           const defaultValues: FormInput = {
             name: res.data?.name,
             serie: res.data?.serie,
@@ -112,7 +142,7 @@ function StudentPage({
   }, [id]);
 
   const updateRoutesList = (): void => {
-    fetchRoutes();
+    dispatch(fetchRoutes())
   }
 
   const clearStatesForm = (): void => {
@@ -127,7 +157,7 @@ function StudentPage({
     setState('');
   };
 
-  const onSubmit: SubmitHandler<FormInput> = async (data) => {
+  const onSubmit: SubmitHandler<FormInput> = (data) => {
     setIsLoading(true);
     const formData = {
       nome: data.name,
@@ -149,7 +179,7 @@ function StudentPage({
     };
 
     if (id !== "new") {
-      await editStudent({ id: id, data: formData }).then((res) => {
+      dispatch(editStudent({ id: id, data: formData })).then((res) => {
         if (res.success) {
           toast({
             title: 'Aluno Editado',
@@ -173,7 +203,7 @@ function StudentPage({
         .catch((e) => console.warn(e))
 
     } else {
-      await createStudents(formData).then((res) => {
+      dispatch(createStudents(formData)).then((res) => {
         if (res.success) {
           toast({
             title: 'Aluno Cadastrado',
@@ -201,7 +231,7 @@ function StudentPage({
 
   useEffect(() => {
     if (dataCEP && dataCEP.length === 9) {
-      fetchAddressByCEP([{
+      dispatch(fetchAddressByCEP([{
         name: 'address-by-cep',
         type: 'error',
         callback: () => {
@@ -217,7 +247,7 @@ function StudentPage({
           setCity(response.city);
           setState(response.state);
         }
-      }])
+      }]))
     }
   }, [dataCEP, fetchAddressByCEP])
 
@@ -370,7 +400,7 @@ function StudentPage({
                   value={dataCEP}
                   onChange={(e) => {
                     setDataCEP(e.target.value);
-                    setCEP(e.target.value);
+                    dispatch(setCEP(e.target.value));
                   }}
                   focusBorderColor='primary.400'
                 />
@@ -497,58 +527,4 @@ function StudentPage({
   );
 };
 
-const shiftList = [
-  { value: 'Manhã', label: 'Manhã' },
-  { value: 'Tarde', label: 'Tarde' },
-  { value: 'Noite', label: 'Noite' }
-];
-const teachingList = [
-  { value: 'Infantil', label: 'Infantil' },
-  { value: 'Fundamental', label: 'Fundamental' },
-  { value: 'Médio', label: 'Médio' },
-  { value: 'Superior', label: 'Superior' }
-];
-
-const breadcrumbItens: Array<any> = [
-  { name: "Inicio", link: "/" },
-  { name: "Alunos", link: "/estudantes" },
-  { name: "Cadastrar/Editar aluno", link: null }
-];
-
-
-type FormInput = z.infer<typeof FormValidation>;
-type SelectReason = z.infer<typeof selectSchema>;
-
-interface PropsStudent {
-  params: { id: string };
-  routes: Array<any>;
-  fetchRoutes: () => void;
-  setCEP: (cep: string) => void;
-  fetchAddressByCEP: (callback: Array<any>) => void;
-  editStudent: ({ id, data }: { id: String; data: any }) => Promise<any>;
-  createStudents: (data: any) => Promise<any>;
-  fetchStudentId: (id: string) => Promise<any>;
-};
-
-const defaultValues: FormInput = {
-  name: "",
-  serie: "",
-  schoolName: "",
-  teaching: { value: 'Infantil', label: 'Infantil' },
-  shift: { value: 'Manhã', label: 'Manhã' },
-  departureTime: "",
-  backTime: "",
-};
-
-const mapStateToProps = (state: any) => {
-  return {
-    routes: (state.routes && state.routes.routes) || null,
-  };
-};
-export default connect(mapStateToProps, {
-  setCEP,
-  fetchAddressByCEP,
-  editStudent,
-  createStudents,
-  fetchStudentId
-})(StudentPage);
+export default CreateStudantePage;

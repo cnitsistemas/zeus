@@ -2,7 +2,14 @@ import axios from "axios";
 import { actionTypes } from ".";
 import { mapLoginCreateData } from "@/domain/singIn";
 import { Dispatch } from "redux";
-import api from "@/services/api";
+
+const api = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json'
+  }
+});
 
 interface Credentials {
   email: string;
@@ -14,7 +21,8 @@ export const handleSingIn =
     try {
       const url = `api/login`;
       const response = await api.post(url, credentials);
-      const result = mapLoginCreateData(response.data.result);
+      const data = response.data
+      const result = mapLoginCreateData(data.result);
       // const mappedPermissions = mapPermissionData(result.data.result);
       if (result.success) {
         dispatch(setAccessUser(result));

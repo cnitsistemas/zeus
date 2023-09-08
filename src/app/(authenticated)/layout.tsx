@@ -25,7 +25,7 @@ export default function AuthenticatedLayout({
         <ReduxProviders>
           <PersistGate loading={null} persistor={persist}>
             <Providers>
-              <DashbordLayout>
+              <DashbordLayout >
                 {children}
               </DashbordLayout>
             </Providers>

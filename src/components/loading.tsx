@@ -1,7 +1,12 @@
 import BarLoader from "react-spinners/BarLoader";
 
-function LoadingComponent(props: any) {
-  const { loading, color } = props;
+function LoadingComponent({
+  loading,
+  color
+}: {
+  loading: boolean,
+  color: string
+}) {
 
   return (
     <div className="sweet-loading">
