@@ -60,7 +60,7 @@ function StudentsPage() {
   const studantState = useSelector(StudantState);
   const routeState = useSelector(RouteState);
   const dispatch = useAppDispatch();
-  const students = (studantState && studantState.students) || [];
+  const students = studantState && studantState.students;
   const totalPages =
     (studantState &&
       studantState.pagination &&
@@ -85,7 +85,7 @@ function StudentsPage() {
       dispatch(fetchStudents(page)).then(() => setIsLoading(false));
       dispatch(fetchAllRoutes());
     }
-  }, [dispatch]);
+  }, [dispatch, page]);
 
   useEffect(() => {
     if (students && students.length > 0) {
@@ -97,7 +97,7 @@ function StudentsPage() {
     if (selectedPage) setCurrentPage(selectedPage);
     if (totalPages) setCurrentTotalPages(totalPages);
     if (total) setCurrentTotalResults(total);
-  }, [page, totalPages, total]);
+  }, [page, totalPages, total, selectedPage]);
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);

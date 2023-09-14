@@ -1,5 +1,14 @@
-"use client"
-import { Avatar, Button, Divider, Grid, IconButton, Link, Paper, Typography } from "@mui/material";
+"use client";
+import {
+  Avatar,
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Link,
+  Paper,
+  Typography,
+} from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { connect } from "react-redux";
 // import { CustomInput } from "../../components/Common/CustomInput/CustomInput";
@@ -11,7 +20,7 @@ import { connect } from "react-redux";
 // import 'react-notifications/lib/notifications.css';
 // import CustomSelectChip from "../../components/CustomSelectChip";
 // import { fetchAllRoles } from "../../redux/actions/roles";
-import PhotoCamera from '@mui/icons-material/PhotoCamera';
+import PhotoCamera from "@mui/icons-material/PhotoCamera";
 // import CustomBreadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 // import { DAFAULT_AVATAR } from "../../config";
 // import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -20,7 +29,7 @@ import PhotoCamera from '@mui/icons-material/PhotoCamera';
 // import { v4 as uuidv4 } from 'uuid';
 
 const breadcrumbs = [
-  <Link underline="hover" key="1" color="inherit" href="/" onClick={() => { }}>
+  <Link underline="hover" key="1" color="inherit" href="/" onClick={() => {}}>
     Inicio
   </Link>,
   <Link
@@ -28,7 +37,7 @@ const breadcrumbs = [
     key="2"
     color="inherit"
     href="/usuarios"
-    onClick={() => { }}
+    onClick={() => {}}
   >
     Usuários
   </Link>,
@@ -73,11 +82,11 @@ const User = ({ params }: { params: { id: string } }) => {
   // }, [fetchUserId, id]);
 
   const clearStatesForm = () => {
-    setName('');
-    setEmail('');
-    setPassword('');
-    setCPassword('');
-    setFullName('');
+    setName("");
+    setEmail("");
+    setPassword("");
+    setCPassword("");
+    setFullName("");
     setSelectRoles([]);
     setAvatar(null);
     setViewAvatar("");
@@ -107,7 +116,6 @@ const User = ({ params }: { params: { id: string } }) => {
     //     }
     //   );
     // }
-
   };
 
   const handleSendForm = async (imgUrl: any) => {
@@ -122,7 +130,6 @@ const User = ({ params }: { params: { id: string } }) => {
     //   roles: selectRoles,
     //   _method: userId ? "PUT" : "POST",
     // };
-
     // if (userId) {
     //   await editUser({ id: userId, data: data }).then((res) => {
     //     if (res.success) {
@@ -133,7 +140,6 @@ const User = ({ params }: { params: { id: string } }) => {
     //     }
     //   })
     //     .catch((e) => console.warn(e))
-
     // } else {
     //   await createUsers(data).then((res) => {
     //     if (res.success) {
@@ -160,61 +166,90 @@ const User = ({ params }: { params: { id: string } }) => {
             <CustomBreadcrumbs breadcrumbs={breadcrumbs} />
           </Grid> */}
         <Grid item xs={12} md={4} lg={4}>
-          {userId ? <><Typography>Editar usuário</Typography></> :
-            <><Typography>Cadastrar novo usuário</Typography></>}
+          {userId ? (
+            <>
+              <Typography>Editar usuário</Typography>
+            </>
+          ) : (
+            <>
+              <Typography>Cadastrar novo usuário</Typography>
+            </>
+          )}
           <Paper
             sx={{
               p: 2,
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <Grid container spacing={2} sx={{ marginBottom: "2rem" }}>
-              <Grid item xs={12} md={12} lg={12} sx={{ margin: "80px 24px 40px" }}>
-                {!urlAvatar ?
-                  <IconButton color="primary" aria-label="upload picture" component="label" sx={{
-                    width: "144px",
-                    height: "144px",
-                    margin: "auto",
-                    display: "flex",
-                    cursor: "pointer",
-                    overflow: "hidden",
-                    borderRadius: "50%",
-                    alignItems: "center",
-                    position: "relative",
-                    justifyContent: "center",
-                    border: '1px dashed rgba(145, 158, 171, 0.32)',
-                  }}>
-                    {viewAvatar && <Avatar
-                      alt="User Image"
-                      src={viewAvatar}
-                      sx={{ width: 130, height: 130 }}
-                    />}
+              <Grid
+                item
+                xs={12}
+                md={12}
+                lg={12}
+                sx={{ margin: "80px 24px 40px" }}
+              >
+                {!urlAvatar ? (
+                  <IconButton
+                    color="primary"
+                    aria-label="upload picture"
+                    component="label"
+                    sx={{
+                      width: "144px",
+                      height: "144px",
+                      margin: "auto",
+                      display: "flex",
+                      cursor: "pointer",
+                      overflow: "hidden",
+                      borderRadius: "50%",
+                      alignItems: "center",
+                      position: "relative",
+                      justifyContent: "center",
+                      border: "1px dashed rgba(145, 158, 171, 0.32)",
+                    }}
+                  >
+                    {viewAvatar && (
+                      <Avatar
+                        alt="User Image"
+                        src={viewAvatar}
+                        sx={{ width: 130, height: 130 }}
+                      />
+                    )}
                     <input
                       hidden
                       accept="image/*"
                       type="file"
                       onChange={(e: any) => {
-                        setAvatar((e.target.files[0]))
-                        setViewAvatar(URL.createObjectURL(e.target.files[0]))
+                        setAvatar(e.target.files[0]);
+                        setViewAvatar(URL.createObjectURL(e.target.files[0]));
                       }}
                       style={{
                         display: !avatar ? "inline" : "none",
-                      }} />
-                    <PhotoCamera sx={{
-                      position: 'absolute',
-                      color: !avatar ? '#ff7a2d' : 'white',
-                      opacity: !avatar ? 1 : 0.2,
-                      top: '35%'
-                    }} />
-                    <Typography sx={{
-                      position: 'absolute',
-                      color: !avatar ? '#ff7a2d' : 'white',
-                      fontSize: '12px',
-                      opacity: !avatar ? 1 : 0.2,
-                      bottom: '35%'
-                    }} variant="body1">Carregar foto</Typography>
-                  </IconButton> :
+                      }}
+                    />
+                    <PhotoCamera
+                      sx={{
+                        position: "absolute",
+                        color: !avatar ? "#ff7a2d" : "white",
+                        opacity: !avatar ? 1 : 0.2,
+                        top: "35%",
+                      }}
+                    />
+                    <Typography
+                      sx={{
+                        position: "absolute",
+                        color: !avatar ? "#ff7a2d" : "white",
+                        fontSize: "12px",
+                        opacity: !avatar ? 1 : 0.2,
+                        bottom: "35%",
+                      }}
+                      variant="body1"
+                    >
+                      Carregar foto
+                    </Typography>
+                  </IconButton>
+                ) : (
                   <Avatar
                     sx={{
                       margin: "auto",
@@ -224,33 +259,38 @@ const User = ({ params }: { params: { id: string } }) => {
                       position: "relative",
                       justifyContent: "center",
                       width: 130,
-                      height: 130
+                      height: 130,
                     }}
                     alt="User Image"
                     src={urlAvatar}
-                  />}
-                <Typography sx={{
-                  margin: '16px auto 0px',
-                  lineHeight: 1.5,
-                  fontSize: '0.75rem',
-                  fontWeight: 400,
-                  color: 'rgb(99, 115, 129)',
-                  display: 'block',
-                  textAlign: 'center',
-                }}>
-                  Permitido *.jpeg, *.jpg, *.png, *.gif<br />
+                  />
+                )}
+                <Typography
+                  sx={{
+                    margin: "16px auto 0px",
+                    lineHeight: 1.5,
+                    fontSize: "0.75rem",
+                    fontWeight: 400,
+                    color: "rgb(99, 115, 129)",
+                    display: "block",
+                    textAlign: "center",
+                  }}
+                >
+                  Permitido *.jpeg, *.jpg, *.png, *.gif
+                  <br />
                   tamanho máximo de 3,1 MB
                 </Typography>
-                {urlAvatar &&
+                {urlAvatar && (
                   <Button
                     onClick={() => handleChangeAvatar()}
                     variant="contained"
                     color="error"
                     fullWidth
-                    sx={{ color: '#fff', marginTop: '10px' }}
+                    sx={{ color: "#fff", marginTop: "10px" }}
                   >
                     Remover Foto
-                  </Button>}
+                  </Button>
+                )}
                 {/* {viewProgressUpload && <CustomProgress progress={percent} />} */}
               </Grid>
             </Grid>
@@ -261,8 +301,8 @@ const User = ({ params }: { params: { id: string } }) => {
             sx={{
               marginTop: 5,
               p: 2,
-              display: 'flex',
-              flexDirection: 'column',
+              display: "flex",
+              flexDirection: "column",
             }}
           >
             <Grid container spacing={1} sx={{ marginBottom: "2rem" }}>
@@ -353,12 +393,30 @@ const User = ({ params }: { params: { id: string } }) => {
                 </Grid> */}
             </Grid>
             <Divider variant="middle" />
-            <Grid container spacing={2} sx={{ marginY: "1rem", display: 'flex', flexDirection: 'row', justifyContent: 'end' }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{
+                marginY: "1rem",
+                display: "flex",
+                flexDirection: "row",
+                justifyContent: "end",
+              }}
+            >
               <Grid item xs={12} md={2} lg={2}>
-                <Button variant="outlined" fullWidth onClick={() => { }}>Voltar</Button>
+                <Button variant="outlined" fullWidth onClick={() => {}}>
+                  Voltar
+                </Button>
               </Grid>
               <Grid item xs={12} md={2} lg={2}>
-                <Button onClick={() => handleUploadSendForm()} variant="contained" fullWidth sx={{ color: '#fff' }}>Salvar</Button>
+                <Button
+                  onClick={() => handleUploadSendForm()}
+                  variant="contained"
+                  fullWidth
+                  sx={{ color: "#fff" }}
+                >
+                  Salvar
+                </Button>
               </Grid>
             </Grid>
           </Paper>
@@ -368,13 +426,4 @@ const User = ({ params }: { params: { id: string } }) => {
   );
 };
 
-const mapStateToProps = (state: any) => {
-  return {
-    allRoles: (state.roles && state.roles.allRoles) || null,
-    loading: (state.ui && state.ui.loading) || null
-  };
-}
-
-export default connect(
-  mapStateToProps, {
-})(User);
+export default User;
