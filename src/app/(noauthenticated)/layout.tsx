@@ -3,6 +3,7 @@ import { ReduxProviders } from "@/store/provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { persist } from "@/store";
 import { Providers } from "../theme-provider";
+import ThemeRegistry from "../ThemeRegistry";
 
 export default function NoAuthenticatedLayout({
   children,
@@ -14,9 +15,9 @@ export default function NoAuthenticatedLayout({
       <body>
         <ReduxProviders>
           <PersistGate loading={null} persistor={persist}>
-            <Providers>
+            <ThemeRegistry options={{ key: 'mui' }}>
               {children}
-            </Providers>
+            </ThemeRegistry>
           </PersistGate>
         </ReduxProviders>
       </body>

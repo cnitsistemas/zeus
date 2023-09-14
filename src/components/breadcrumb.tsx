@@ -1,18 +1,17 @@
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink } from "@chakra-ui/react";
-import { BiChevronRight } from "react-icons/bi";
+"use client"
+import { Breadcrumbs, Stack } from "@mui/material";
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
 export default function BreadcrumbComponent({ breadcrumbItens }: { breadcrumbItens: any }) {
   return (<>
-    <Breadcrumb
-      spacing='8px'
-      separator={<BiChevronRight />}
-      mb={5}
-      fontSize={16}>
-      {breadcrumbItens && breadcrumbItens.length > 0 && breadcrumbItens.map((item: any, index: any) => {
-        return <BreadcrumbItem key={index} isCurrentPage={!item?.link} color={!item?.link ? 'primary.400' : 'gray.500'}>
-          <BreadcrumbLink href={item?.link}>{item?.name}</BreadcrumbLink>
-        </BreadcrumbItem>
-      })}
-    </Breadcrumb>
+    <Stack spacing={2} >
+      <Breadcrumbs
+        sx={{ fontSize: '14px' }}
+        separator={<ArrowForwardIosIcon sx={{ fontSize: 10 }} />}
+        aria-label="breadcrumb"
+      >
+        {breadcrumbItens}
+      </Breadcrumbs>
+    </Stack>
   </>)
 }

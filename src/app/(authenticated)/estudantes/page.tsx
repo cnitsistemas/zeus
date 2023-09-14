@@ -1,45 +1,48 @@
 "use client";
-import {
-  Alert,
-  AlertIcon,
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  IconButton,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-  useToast
-} from "@chakra-ui/react";
+import { useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
-import { InfoIcon } from "lucide-react";
-import Pagination from "@/components/pagination";
-import Dialog from "@/components/dialog";
-import { FaPlus } from "react-icons/fa";
 import Details from "./details";
 import { useRouter } from "next/navigation";
-import BreadcrumbComponent from "@/components/breadcrumb";
-import TableSkeleton from "@/components/table-skeleton";
-import ModalComponent from "@/components/modal";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { StudantState } from "@/store/modules/students/studentsReducers";
 import { RouteState } from "@/store/modules/routes/routesReducers";
-import { deleteStudents, fetchStudents } from "@/store/modules/students/studentsActions";
-import { fetchRoutes } from "@/store/modules/routes/routesActions";
+import {
+  deleteStudents,
+  fetchStudents,
+} from "@/store/modules/students/studentsActions";
+import { fetchAllRoutes } from "@/store/modules/routes/routesActions";
+import {
+  Alert,
+  Button,
+  Grid,
+  IconButton,
+  Link,
+  Pagination,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import CustomTootip from "@/components/CustomTootip";
+import CustomizedDialogs from "@/components/CustomDialog";
+import { TitlePage } from "./style";
+import AddIcon from "@mui/icons-material/Add";
 
-const breadcrumbItens: Array<any> = [
-  { name: "Inicio", link: "/" },
-  { name: "Alunos", link: null }
+const breadcrumbItens = [
+  <Link underline="hover" key="1" color="inherit" href="/">
+    Inicio
+  </Link>,
+  <Typography key="2" color="#ff7a2d" sx={{ fontSize: 14 }}>
+    Alunos
+  </Typography>,
 ];
 
 function StudentsPage() {
@@ -58,10 +61,20 @@ function StudentsPage() {
   const routeState = useSelector(RouteState);
   const dispatch = useAppDispatch();
   const students = (studantState && studantState.students) || [];
-  const totalPages = (studantState && studantState.pagination && studantState.pagination.totalPages) || 1;
-  const selectedPage = (studantState && studantState.pagination && studantState.pagination.page) || 1;
-  const total = (studantState && studantState.pagination && studantState.pagination.total) || 1;
-  const routes = (routeState && routeState.routes) || null;
+  const totalPages =
+    (studantState &&
+      studantState.pagination &&
+      studantState.pagination.totalPages) ||
+    1;
+  const selectedPage =
+    (studantState && studantState.pagination && studantState.pagination.page) ||
+    1;
+  const total =
+    (studantState &&
+      studantState.pagination &&
+      studantState.pagination.total) ||
+    1;
+  const routes = (routeState && routeState.allRoutes) || null;
 
   useEffect(() => {
     setPage(selectedPage);
@@ -70,9 +83,9 @@ function StudentsPage() {
   useEffect(() => {
     if (page) {
       dispatch(fetchStudents(page)).then(() => setIsLoading(false));
-      dispatch(fetchRoutes());
+      dispatch(fetchAllRoutes());
     }
-  }, [dispatch])
+  }, [dispatch]);
 
   useEffect(() => {
     if (students && students.length > 0) {
@@ -84,13 +97,18 @@ function StudentsPage() {
     if (selectedPage) setCurrentPage(selectedPage);
     if (totalPages) setCurrentTotalPages(totalPages);
     if (total) setCurrentTotalResults(total);
-
   }, [page, totalPages, total]);
 
-  const handlePageChange = (page: number): void => {
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    dispatch(fetchStudents(value)).then(() => {
+      setIsLoading(false);
+    });
+  };
+
+  const handlePageChange = (page: number) => {
     setIsLoading(true);
     setCurrentPage(page);
-    dispatch(fetchStudents(page)).then(() => { setIsLoading(false) });
   };
 
   const handleOpenDeleteDialog = (): void => {
@@ -110,9 +128,11 @@ function StudentsPage() {
   };
 
   const fetchRotaName = (id: String) => {
-    const studentRoute = routes && routes.find((item: any) => {
-      return item.id === id;
-    })
+    const studentRoute =
+      routes &&
+      routes.find((item: any) => {
+        return item.id === id;
+      });
     return studentRoute && studentRoute.name;
   };
 
@@ -122,178 +142,263 @@ function StudentsPage() {
     await dispatch(deleteStudents(selectedStudent?.id)).then((res) => {
       if (res.success) {
         toast({
-          title: 'Aluno removido',
+          title: "Aluno removido",
           description: "Aluno removido com sucesso!",
-          status: 'success',
+          status: "success",
           duration: 7000,
           isClosable: true,
-        })
+        });
         setSelectedStudent({});
-        dispatch(fetchStudents(page)).then(() => { setIsLoading(false) });
+        dispatch(fetchStudents(page)).then(() => {
+          setIsLoading(false);
+        });
       } else {
         setIsLoading(false);
         toast({
-          title: 'Erro',
+          title: "Erro",
           description: "Erro ao remover aluno!",
-          status: 'error',
+          status: "error",
           duration: 7000,
           isClosable: true,
-        })
+        });
       }
-    })
+    });
   };
 
-
   return (
-    <Container maxW='container.2xl' px={{ xl: 20, sm: 0 }}>
-      <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
-      <Flex
-        flexDirection={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Flex flexDirection={"column"}>
-          <Flex
-            fontSize={8}
-            flexDirection={"row"}
-            alignItems={"center"}
-          >
-            <Heading size='lg' color="primary.400" mr={2}>Alunos</Heading>
-            <Tooltip hasArrow label='A tela de alunos é responsável pelo cadastro, edição, visualização e exclusão dos alunos transportados pelo CNIT, 
-				sendo possível vinculá-los às mais variadas rotas cadastradas no sistema.' bg='gray.100' color='black'>
-              <InfoIcon size={15} />
-            </Tooltip>
-          </Flex>
-          <Text color="gray.600" my={4} mx={2}>Os alunos estão presente nas principais rotas de tráfego do CNIT, sendo um dos principais pilares da aplicação.</Text>
-        </Flex>
-        <Button
-          w="48"
-          onClick={() => router.push("/estudantes/new")}
-          leftIcon={<FaPlus />}
-          bg="primary.400"
-          color={"white"}
-          _hover={{
-            bg: "primary.500",
-          }}>
-          Cadastrar
-        </Button>
-      </Flex>
-
-      {isLoading ? <TableSkeleton /> :
-        students && students.length > 0 ? <>
-          <Box border='1px' borderColor='gray.100' px={4} borderRadius={10}>
-            <TableContainer mt={10}>
-              <Table variant='simple'>
-                <Thead>
-                  <Tr>
-                    <Th>Nome</Th>
-                    <Th>Rota</Th>
-                    <Th>Turno</Th>
-                    <Th></Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {rows && rows.length > 0 && rows.map((row: any, index) => {
-                    return <>
-                      <Tr key={index}>
-                        <Td>{row.name}</Td>
-                        <Td>{fetchRotaName(row.rota_id)}</Td>
-                        <Td>{row.shift}</Td>
-                        <Td display="flex" flexDirection="row" justifyContent="center">
-                          <Tooltip hasArrow label='Visualizar aluno' bg='gray.200' color='black'>
-                            <IconButton
-                              size="lg"
-                              variant="ghost"
-                              aria-label="visualizar"
-                              icon={<FaEye />}
-                              onClick={() => {
-                                setSelectedStudent(row);
-                                handleOpenViewDialog();
-                              }}
-                            />
-                          </Tooltip>
-                          <Tooltip hasArrow label='Editar aluno' bg='gray.200' color='black'>
-                            <IconButton
-                              size="lg"
-                              variant="ghost"
-                              aria-label="editar"
-                              icon={<FaEdit />}
-                              onClick={() => { router.push(`/estudantes/${row.id}`) }}
-                            />
-                          </Tooltip>
-                          <Tooltip hasArrow label='Deletar aluno' bg='gray.200' color='black'>
-                            <IconButton
-                              size="lg"
-                              variant="ghost"
-                              colorScheme="red"
-                              aria-label="deletar"
-                              icon={<FaTrash />}
-                              onClick={() => {
-                                setSelectedStudent(row);
-                                handleOpenDeleteDialog();
-                              }}
-                            />
-                          </Tooltip>
-                        </Td>
-                      </Tr >
-                    </>
-                  })}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </> : <Alert status='info'>
-          <AlertIcon />
-          Não há alunos cadastrados nessa sessão! Adicione alunos clicando no botão de cadastro!
-        </Alert>
-      }
-
-      {
-        students && students.length > 0 && <Pagination
-          onPageChange={handlePageChange}
-          totalCount={currentTotalResults}
-          siblingCount={1}
-          currentPage={currentPage}
-          pageSize={currentTotalPages}
-          className="mb-10"
-        />
-      }
-
-      {
-        selectedStudent && <ModalComponent
-          title={`${selectedStudent.name}`}
-          content={
-            <Details
-              fetchRotaName={fetchRotaName}
-              selectedStudent={selectedStudent}
-            />}
-          confirmButton={false}
-          cancelButton={true}
-          confirmButtonText="Sim"
-          cancelButtonText="Fechar"
-          handleConfirm={() => { }}
-          confirmButtonError={false}
-          openDialog={viewDialog}
-          setCloseDialog={handleCloseViewDialog}
-          size="6xl"
-        />
-      }
-
-      <Dialog
-        title="Deletar aluno?"
-        content={`Tem certeza que deseja deletar ${selectedStudent.name}?`}
+    <>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={12} lg={12}>
+          <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
+        </Grid>
+        <Grid item xs={12} md={12} lg={12}>
+          <Paper elevation={0} sx={{ padding: 5 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={6} md={8} lg={8}>
+                <TitlePage>
+                  Alunos
+                  <CustomTootip
+                    placement="right"
+                    content={`A tela de alunos é responsável pelo cadastro, edição, visualização e exclusão dos alunos transportados pelo CNIT, 
+												sendo possível vinculá-los às mais variadas rotas cadastradas no sistema. `}
+                  />
+                </TitlePage>
+                <Typography
+                  sx={{ fontSize: "14px", color: "#666666" }}
+                  gutterBottom
+                >
+                  Os alunos estão presente nas principais rotas de tráfego do
+                  CNIT, sendo um dos principais pilares da aplicação.
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                md={4}
+                lg={4}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "end",
+                  alignItems: "end",
+                }}
+                onClick={() => {
+                  router.push("estudantes/novo");
+                }}
+              >
+                <Button
+                  variant="contained"
+                  disableElevation
+                  sx={{
+                    color: "#fff",
+                    height: 40,
+                    fontSize: "12px",
+                  }}
+                  startIcon={<AddIcon />}
+                >
+                  Cadastar
+                </Button>
+              </Grid>
+              {students && students.length > 0 ? (
+                <>
+                  <Grid item xs={12} md={12} lg={12}>
+                    <TableContainer sx={{ paddingX: "1rem" }}>
+                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Nome
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Rota
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Turno
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}></TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rows &&
+                            rows.length > 0 &&
+                            rows.map((row) => (
+                              <TableRow
+                                key={row.id}
+                                sx={{
+                                  "&:last-child td, &:last-child th": {
+                                    border: 0,
+                                  },
+                                }}
+                              >
+                                <TableCell component="td" scope="row">
+                                  {row.name}
+                                </TableCell>
+                                <TableCell component="td" scope="row">
+                                  {fetchRotaName(row.rota_id)}
+                                </TableCell>
+                                <TableCell component="td" scope="row">
+                                  {row.shift}
+                                </TableCell>
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  align="center"
+                                >
+                                  <Tooltip
+                                    title="Visualizar Aluno"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      color="secondary"
+                                      aria-label="view student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        setSelectedStudent(row);
+                                        handleOpenViewDialog();
+                                      }}
+                                    >
+                                      <FaEye />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip
+                                    title="Editar Alunos"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      color="primary"
+                                      aria-label="edit student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        router.push(`estudantes/${row.id}`);
+                                      }}
+                                    >
+                                      <FaEdit />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip
+                                    title="Deletar Alunos"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      color="error"
+                                      aria-label="delete student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        setSelectedStudent(row);
+                                        handleOpenDeleteDialog();
+                                      }}
+                                    >
+                                      <FaTrash />
+                                    </IconButton>
+                                  </Tooltip>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    md={12}
+                    lg={12}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Pagination
+                      color="secondary"
+                      count={totalPages}
+                      page={page}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  <Grid item xs={12} md={12} lg={12}>
+                    <Alert severity="info">
+                      Não há alunos cadastrados nessa sessão! Adicione alunos
+                      clicando no botão de cadastro
+                    </Alert>
+                  </Grid>
+                </>
+              )}
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
+      <CustomizedDialogs
+        open={viewDialog}
+        handleClose={handleCloseViewDialog}
+        title={`${selectedStudent.name}`}
+        content={
+          <Details
+            fetchRotaName={fetchRotaName}
+            selectedStudent={selectedStudent}
+          />
+        }
+        confirmButton={false}
         cancelButton={true}
-        cancelButtonText="Não"
-        confirmButton={true}
-        confirmButtonError={true}
         confirmButtonText="Sim"
-        handleConfirm={handleDeleteStudent}
-        openDialog={deleteDialog}
-        setCloseDialog={handleCloseDeleteDialog}
-        size="xl"
+        cancelButtonText="fechar"
+        handleConfirm={() => {}}
+        confirmButtonError={false}
+        fullWidth={true}
+        maxWidth={"lg"}
+        dividers={true}
+        textAling="start"
       />
-    </Container >
+      <CustomizedDialogs
+        open={deleteDialog}
+        handleClose={handleCloseDeleteDialog}
+        title={`Deletar aluno`}
+        content={`Tem certeza que deseja deletar aluno ${selectedStudent.name}?`}
+        confirmButton={true}
+        cancelButton={true}
+        confirmButtonText="Sim"
+        cancelButtonText="Não"
+        handleConfirm={handleDeleteStudent}
+        confirmButtonError={true}
+        fullWidth={true}
+        maxWidth={"xs"}
+        dividers={true}
+        textAling="start"
+      />
+    </>
   );
-};
+}
 
 export default StudentsPage;

@@ -191,7 +191,7 @@ function UsersPage() {
         </Flex>
         <Button
           w="48"
-          onClick={() => router.push("/estudantes/new")}
+          onClick={() => router.push("/usuarios/new")}
           leftIcon={<FaPlus />}
           bg="primary.400"
           color={"white"}
@@ -255,7 +255,7 @@ function UsersPage() {
                                 variant="ghost"
                                 aria-label="editar usuario"
                                 icon={<FaEdit />}
-                                onClick={() => { router.push(`/estudantes/${row.id}`) }}
+                                onClick={() => { router.push(`/usuarios/${row.id}`) }}
                               />
                             </Tooltip>
                             <Tooltip hasArrow label='Deletar usuario' bg='gray.200' color='black'>

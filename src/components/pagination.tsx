@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import usePagination from "@/hooks/usePagination";
-import { Button, Flex, Text } from "@chakra-ui/react";
+import { Grid, Button, Typography } from "@mui/material";
 
 interface Props {
   onPageChange: (page: number) => void;
@@ -41,7 +41,7 @@ const Pagination: FC<Props> = ({
 
   return (
     <main id="pagination">
-      <Flex w='100%' p={4} my={3} gap={2} py={10} flexDirection={"row"} justifyContent={"center"}>
+      <Grid sx={{ padding: 4, marginY: 3, gap: 2, paddingY: 10, display: "flex", flexDirection: "row", justifyContent: "center" }}>
         <Button id="previous-pagination"
           hidden={currentPage === 1} onClick={onPrevious}>
           <svg
@@ -62,17 +62,19 @@ const Pagination: FC<Props> = ({
         {paginationRange.map((pageNumber, index) => {
           if (pageNumber === "DOTS") {
             return (
-              <Text key={`pagination-${index}`} className="select-none">
+              <Typography key={`pagination-${index}`} className="select-none">
                 ...
-              </Text>
+              </Typography>
             );
           }
           return (
             <Button
               key={`pagination-${index}`}
-              colorScheme={pageNumber === currentPage ? "primary" : ""}
-              color={pageNumber === currentPage ? "white" : "black"}
-              variant='solid'
+              variant='contained'
+              sx={{
+                backgroundColor: pageNumber === currentPage ? "primary" : "",
+                color: pageNumber === currentPage ? "white" : "black"
+              }}
               onClick={() => onPageChange(pageNumber)}
             >
               {pageNumber}
@@ -96,7 +98,7 @@ const Pagination: FC<Props> = ({
             />
           </svg>
         </Button>
-      </Flex>
+      </Grid>
     </main>
   );
 };

@@ -6,14 +6,11 @@ import {
   mapFetchStudentsPaginationResponse,
   mapFetchStudentsResponse,
 } from "@/domain/studant/studentsDTO";
-import withAuthHeader from "@/lib/withAuthHeader";
 
 export const fetchStudents = (page: number) => async (dispatch: Dispatch) => {
   try {
     const url = `api/alunos?page=${page}`;
-    const apiResponse = await api.get(url, {
-      ...withAuthHeader(),
-    });
+    const apiResponse = await api.get(url);
     const response = mapFetchStudentsResponse(apiResponse.data.data);
     const responsePagination = mapFetchStudentsPaginationResponse(
       apiResponse.data.data
@@ -34,9 +31,7 @@ export const fetchStudents = (page: number) => async (dispatch: Dispatch) => {
 export const fetchStudentId = (id: string) => async (dispatch: Dispatch) => {
   try {
     const url = `api/alunos/${id}`;
-    const apiResponse = await api.get(url, {
-      ...withAuthHeader(),
-    });
+    const apiResponse = await api.get(url);
     const response = mapFetchStudentIdResponse(apiResponse.data.data);
 
     if (apiResponse?.data.success) {
@@ -63,9 +58,7 @@ export const fetchStudentId = (id: string) => async (dispatch: Dispatch) => {
 export const createStudents = (data: any) => async (dispatch: Dispatch) => {
   try {
     const url = `api/alunos`;
-    const apiResponse = await api.post(url, data, {
-      ...withAuthHeader(),
-    });
+    const apiResponse = await api.post(url, data);
     const response = apiResponse.data;
 
     if (response.success) {
@@ -87,9 +80,7 @@ export const editStudent =
     async (dispatch: Dispatch) => {
       try {
         const url = `api/alunos/${id}`;
-        const apiResponse = await api.post(url, data, {
-          ...withAuthHeader(),
-        });
+        const apiResponse = await api.post(url, data);
         const response = apiResponse.data;
 
         if (response.success) {
@@ -111,9 +102,7 @@ export const deleteStudents =
   (studentId: string) => async (dispatch: Dispatch) => {
     try {
       const url = `api/alunos/${studentId}`;
-      const apiResponse = await api.delete(url, {
-        ...withAuthHeader(),
-      });
+      const apiResponse = await api.delete(url);
       const response = apiResponse.data;
 
       if (response.success) {

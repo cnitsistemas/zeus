@@ -1,4 +1,5 @@
-import { Container, Flex, Table, TableContainer, Tbody, Td, Tr } from "@chakra-ui/react";
+import { Grid, Table, TableBody, TableCell, TableRow } from "@mui/material";
+import moment from "moment";
 import React from "react";
 
 interface PropsDetails {
@@ -9,87 +10,80 @@ interface PropsDetails {
 const Details = ({ fetchRotaName, selectedStudent }: PropsDetails) => {
   return (
     <>
-      <Flex flexDirection={"row"} h={"full"} w={"full"} key={selectedStudent.id}>
-        <Container>
-          <TableContainer mt={10}>
-            <Table variant='simple'>
-              <Tbody>
-                <Tr>
-                  <Td fontWeight={"bold"}>Nome</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.name}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Série</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.serie}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Ensino</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.teaching}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Turno</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.shift}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Nome da escola</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.schoolName}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Horário de ida</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.departureTime}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Horário de volta</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.backTime}</Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Container>
-        <Container>
-          <TableContainer mt={10}>
-            <Table variant='simple'>
-              <Tbody>
-                <Tr>
-                  <Td fontWeight={"bold"}>CEP</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.cep}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Endereço</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.address}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Bairro</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.neighborhood}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Número</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.number}</Td>
-                </Tr>
-                {selectedStudent.complement && <><Tr>
-                  <Td fontWeight={"bold"}>Complemento</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.complement}</Td>
-                </Tr>
-                </>
-                }
-                <Tr>
-                  <Td fontWeight={"bold"}>Cidade</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.city}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Estado</Td>
-                  <Td whiteSpace="pre-wrap">{selectedStudent.state}</Td>
-                </Tr>
-                <Tr>
-                  <Td fontWeight={"bold"}>Rota</Td>
-                  <Td whiteSpace="pre-wrap">{fetchRotaName(selectedStudent.rota_id)}</Td>
-                </Tr>
-              </Tbody>
-            </Table>
-          </TableContainer>
-        </Container>
-      </Flex>
-
+      <Grid container spacing={1} sx={{ display: 'flex', flexDirection: 'row' }}>
+        <Grid item xs={12} md={6} lg={6} sx={{ paddingRight: '8px' }}>
+          <Table aria-label="simple table">
+            <TableBody>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Nome</TableCell>
+                <TableCell>{selectedStudent.name}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Série</TableCell>
+                <TableCell>{selectedStudent.serie}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Ensino</TableCell>
+                <TableCell>{selectedStudent.teaching}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Turno</TableCell>
+                <TableCell >{selectedStudent.shift}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Nome da escola</TableCell>
+                <TableCell>{selectedStudent.schoolName}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Horário de ida</TableCell>
+                <TableCell>{moment(selectedStudent.departureTime).format('HH:mm')}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Horário de volta</TableCell>
+                <TableCell>{moment(selectedStudent.backTime).format('HH:mm')}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Grid>
+        <Grid item xs={12} md={6} lg={6} sx={{ borderLeft: '1px solid #bcbcbc' }}>
+          <Table aria-label="simple table">
+            <TableBody>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>CEP</TableCell>
+                <TableCell>{selectedStudent.cep}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Endereço</TableCell>
+                <TableCell>{selectedStudent.address}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Bairro</TableCell>
+                <TableCell>{selectedStudent.neighborhood}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Número</TableCell>
+                <TableCell >{selectedStudent.number}</TableCell>
+              </TableRow>
+              {selectedStudent.complement && <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Complemento</TableCell>
+                <TableCell>{selectedStudent.complement}</TableCell>
+              </TableRow>}
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Cidade</TableCell>
+                <TableCell>{selectedStudent.city}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Estado</TableCell>
+                <TableCell>{selectedStudent.state}</TableCell>
+              </TableRow>
+              <TableRow sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell sx={{ fontWeight: "bold" }}>Rota</TableCell>
+                <TableCell >{fetchRotaName(selectedStudent.rota_id)}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Grid>
+      </Grid>
     </>
   )
 }

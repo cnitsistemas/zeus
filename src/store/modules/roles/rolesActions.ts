@@ -1,15 +1,17 @@
 import { actionTypes } from ".";
 import { Dispatch } from "redux";
 import api from "@/services/api";
-import withAuthHeader from "@/lib/withAuthHeader";
-import { mapFetchAllRolesResponse, mapFetchRolesPaginationResponse, mapFetchRolesResponse, mapFetchRolesResponseId } from "@/domain/roles/rolesDTO";
+import {
+  mapFetchAllRolesResponse,
+  mapFetchRolesPaginationResponse,
+  mapFetchRolesResponse,
+  mapFetchRolesResponseId
+} from "@/domain/roles/rolesDTO";
 
 export const fetchAllRoles = () => async (dispatch: Dispatch) => {
   try {
     const url = `api/roles-all`;
-    const apiResponse = await api.get(url, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.get(url);
 
     const response = mapFetchAllRolesResponse(apiResponse.data);
 
@@ -27,9 +29,7 @@ export const fetchAllRoles = () => async (dispatch: Dispatch) => {
 export const fetchRoles = (page: number) => async (dispatch: Dispatch) => {
   try {
     const url = `api/roles?page=${page}`;
-    const apiResponse = await api.get(url, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.get(url);
     const response = mapFetchRolesResponse(apiResponse.data.data);
     const responsePagination = mapFetchRolesPaginationResponse(apiResponse.data.data);
     dispatch({
@@ -50,9 +50,7 @@ export const fetchRoles = (page: number) => async (dispatch: Dispatch) => {
 export const fetchRoleId = (id: string) => async (dispatch: Dispatch) => {
   try {
     const url = `api/roles/${id}`;
-    const apiResponse = await api.get(url, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.get(url);
     const response = mapFetchRolesResponseId(apiResponse.data.data);
 
     dispatch({
@@ -68,9 +66,7 @@ export const fetchRoleId = (id: string) => async (dispatch: Dispatch) => {
 export const createRoles = (data: any) => async (dispatch: Dispatch) => {
   try {
     const url = `api/roles`;
-    const apiResponse = await api.post(url, data, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.post(url, data);
     const response = apiResponse.data;
 
     if (response.success) {
@@ -90,9 +86,7 @@ export const editRole = ({ id, data }: { id: string, data: any }) =>
   async (dispatch: Dispatch) => {
     try {
       const url = `api/roles/${id}`;
-      const apiResponse = await api.post(url, data, {
-        ...withAuthHeader()
-      });
+      const apiResponse = await api.post(url, data);
       const response = apiResponse.data;
 
       if (response.success) {
@@ -111,9 +105,7 @@ export const editRole = ({ id, data }: { id: string, data: any }) =>
 export const deleteRoles = (roleId: string) => async (dispatch: Dispatch) => {
   try {
     const url = `api/roles/${roleId}`;
-    const apiResponse = await api.delete(url, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.delete(url);
     const response = apiResponse.data;
 
     if (response.success) {

@@ -1,90 +1,114 @@
 "use client";
-import {
-  AbsoluteCenter,
-  Box,
-  Button,
-  Container,
-  Divider,
-  Flex,
-  FormControl,
-  FormErrorMessage,
-  FormLabel,
-  Grid,
-  GridItem,
-  Heading,
-  Input,
-  useColorMode,
-  useToast
-} from "@chakra-ui/react";
-import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { z } from "zod";
-import ControlledSelect from "@/components/controller-select";
 import { useSelector } from "react-redux";
-import CustomInputMask from "@/components/input-mask";
 import { useRouter } from "next/navigation";
-import { fetchAddressByCEP, setCEP } from "@/store/modules/address/addressActions";
-import InputMask from "react-input-mask";
-import BreadcrumbComponent from "@/components/breadcrumb";
-import { Select } from "chakra-react-select";
+import {
+  fetchAddressByCEP,
+  setCEP,
+} from "@/store/modules/address/addressActions";
+import BreadcrumbComponent from "@/components/Breadcrumb";
 import { RouteOption } from "@/domain/route/routeDTO";
-import { createStudents, editStudent, fetchStudentId } from "@/store/modules/students/studentsActions";
-import { FormValidation, selectSchema } from "@/validators/studanteSchema";
+import {
+  createStudents,
+  editStudent,
+  fetchStudentId,
+} from "@/store/modules/students/studentsActions";
 import { RouteState } from "@/store/modules/routes/routesReducers";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { fetchRoutes } from "@/store/modules/routes/routesActions";
+import { fetchAllRoutes } from "@/store/modules/routes/routesActions";
+import { TitlePage } from "../style";
+import {
+  Button,
+  Divider,
+  Grid,
+  IconButton,
+  Link,
+  Paper,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import { InputText } from "@/components/_forms/Inputs/InputText";
+import { Store } from "react-notifications-component";
+import { Form, Formik, FormikHelpers, useFormikContext, Field } from "formik";
+import { StudentSchema } from "@/validators/studanteSchema";
+import { InputSelect } from "@/components/_forms/Inputs/InputSelect";
+import { InputAutoComplete } from "@/components/_forms/Inputs/InputAutoComplete";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import { HoursMask } from "@/components/_forms/Masks/HoursMask";
+import { CepMask } from "@/components/_forms/Masks/CepMask";
+import { AddressState } from "@/store/modules/address/addressReducers";
+
+const breadcrumbItens = [
+  <Link underline="hover" key="1" color="inherit" href="/" onClick={() => {}}>
+    Inicio
+  </Link>,
+  <Link
+    underline="hover"
+    key="2"
+    color="inherit"
+    href="/estudantes"
+    onClick={() => {}}
+  >
+    Alunos
+  </Link>,
+  <Typography key="2" color="#ff7a2d" sx={{ fontSize: 14 }}>
+    Cadastrar/Editar aluno
+  </Typography>,
+];
 
 const shiftList = [
-  { value: 'Manhã', label: 'Manhã' },
-  { value: 'Tarde', label: 'Tarde' },
-  { value: 'Noite', label: 'Noite' }
+  { value: "Manhã", label: "Manhã" },
+  { value: "Tarde", label: "Tarde" },
+  { value: "Noite", label: "Noite" },
 ];
 const teachingList = [
-  { value: 'Infantil', label: 'Infantil' },
-  { value: 'Fundamental', label: 'Fundamental' },
-  { value: 'Médio', label: 'Médio' },
-  { value: 'Superior', label: 'Superior' }
+  { value: "Infantil", label: "Infantil" },
+  { value: "Fundamental", label: "Fundamental" },
+  { value: "Médio", label: "Médio" },
+  { value: "Superior", label: "Superior" },
 ];
 
-const breadcrumbItens: Array<any> = [
-  { name: "Inicio", link: "/" },
-  { name: "Alunos", link: "/estudantes" },
-  { name: "Cadastrar/Editar aluno", link: null }
-];
-
-
-type FormInput = z.infer<typeof FormValidation>;
-type SelectReason = z.infer<typeof selectSchema>;
-
-
-const defaultValues: FormInput = {
-  name: "",
-  serie: "",
-  schoolName: "",
-  teaching: { value: 'Infantil', label: 'Infantil' },
-  shift: { value: 'Manhã', label: 'Manhã' },
-  departureTime: "",
-  backTime: "",
+type FormValues = {
+  name: string;
+  schoolName: string;
+  serie: string;
+  teaching: string;
+  shift: string;
+  route: string;
+  departureTime: string;
+  backTime: string;
+  cep: string;
+  address: string;
+  neighborhood: string;
+  number: string;
+  comnplement: string;
+  city: string;
+  state: string;
 };
 
 function CreateStudantePage({ params }: { params: { id: string } }) {
-  const {
-    control,
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<FormInput>({
-    resolver: zodResolver(FormValidation),
-    defaultValues,
-  });
+  const defaultValues = {
+    name: "",
+    schoolName: "",
+    serie: "",
+    teaching: "",
+    shift: "",
+    route: "",
+    departureTime: "",
+    backTime: "",
+    cep: "",
+    address: "",
+    neighborhood: "",
+    number: "",
+    comnplement: "",
+    city: "",
+    state: "",
+  };
   const { id } = params;
   const router = useRouter();
-  const toast = useToast();
   const dispatch = useAppDispatch();
-  const { colorMode } = useColorMode();
-  const bgColorDivider = { light: "white", dark: "#1A202C" };
+  const [initialValues, setInitialValues] = useState<any>(defaultValues);
+  const [loading, setLoading] = useState<boolean>(false);
   const [routersList, setRoutersList] = useState<Array<any>>([]);
   const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null);
   const [dataCEP, setDataCEP] = useState<string>("");
@@ -96,435 +120,494 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
   const [state, setState] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const routeState = useSelector(RouteState);
-  const routes = routeState && routeState.routes || null;
+  const addresses = useSelector(AddressState);
+  const routes = (routeState && routeState.allRoutes) || null;
+  const searchCep = addresses && addresses.cep;
+  // const [controllerSubmit, setControllerSubmit] = useState<boolean>(true);
 
   useEffect(() => {
     if (routes && routes.length > 0) {
-      setRoutersList(routes.map((route: any) => { return { value: route.id, label: route.name } }));
+      setRoutersList(
+        routes.map((route: any) => {
+          return { value: route.id, label: route.name };
+        })
+      );
     }
   }, [routes]);
 
-  useEffect(() => {
-    if (id && id !== "new") {
-      dispatch(fetchStudentId(id)).then((res) => {
-        if (res.success) {
-          const routeSelected = routes.find((route: any) => route.id === res.data?.rota_id);
-          const defaultValues: FormInput = {
-            name: res.data?.name,
-            serie: res.data?.serie,
-            schoolName: res.data?.schoolName,
-            teaching: { value: res.data?.teaching, label: res.data?.teaching },
-            shift: { value: res.data?.shift, label: res.data?.shift },
-            departureTime: res.data?.departureTime,
-            backTime: res.data?.backTime,
-          };
-          reset(defaultValues);
-          setSelectedRoute({ value: routeSelected.id, label: routeSelected.name });
-          setDataCEP(res.data?.cep);
-          setAddress(res.data?.address);
-          setNeighborhood(res.data?.neighborhood);
-          setNumber(res.data?.number);
-          setComplement(res.data?.complement);
-          setCity(res.data?.city);
-          setState(res.data?.state);
-        } else {
-          toast({
-            title: 'Erro',
-            description: "Erro ao carregar dados do aluno!",
-            status: 'error',
-            duration: 7000,
-            isClosable: true,
-          })
-        }
-      })
-        .catch((e) => console.warn(e))
-    }
-  }, [id]);
-
-  const updateRoutesList = (): void => {
-    dispatch(fetchRoutes())
-  }
-
-  const clearStatesForm = (): void => {
-    reset(defaultValues);
-    setSelectedRoute(null);
-    setDataCEP('');
-    setAddress('');
-    setNeighborhood('');
-    setNumber('');
-    setComplement('');
-    setCity('');
-    setState('');
+  const AutoGetAddress = () => {
+    const { values } = useFormikContext<FormValues>();
+    useEffect(() => {
+      if (values?.cep.length === 9 && values?.cep !== searchCep) {
+        dispatch(fetchAddressByCEP(values?.cep)).then((response: any) => {
+          setInitialValues({
+            ...defaultValues,
+            address: response.address,
+            neighborhood: response.neighborhood,
+            number: response.number,
+            comnplement: response.complement,
+            city: response.city,
+            state: response.state,
+          });
+        });
+      }
+    }, [values]);
+    return null;
   };
 
-  const onSubmit: SubmitHandler<FormInput> = (data) => {
+  useEffect(() => {
+    if (id && id !== "novo") {
+      dispatch(fetchStudentId(id))
+        .then((res) => {
+          if (res.success) {
+            const routeSelected = routes.find(
+              (route: any) => route.id === res.data?.rota_id
+            );
+            const defaultValues = {
+              name: res.data?.name,
+              serie: res.data?.serie,
+              schoolName: res.data?.schoolName,
+              teaching: {
+                value: res.data?.teaching,
+                label: res.data?.teaching,
+              },
+              shift: { value: res.data?.shift, label: res.data?.shift },
+              departureTime: res.data?.departureTime,
+              backTime: res.data?.backTime,
+            };
+            setSelectedRoute({
+              value: routeSelected.id,
+              label: routeSelected.name,
+            });
+            setDataCEP(res.data?.cep);
+            setAddress(res.data?.address);
+            setNeighborhood(res.data?.neighborhood);
+            setNumber(res.data?.number);
+            setComplement(res.data?.complement);
+            setCity(res.data?.city);
+            setState(res.data?.state);
+          } else {
+            Store.addNotification({
+              title: "Error!",
+              message:
+                "Falha ao carregar dados do aluno. Por favor, tente mais tarde!",
+              type: "danger",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+          }
+        })
+        .catch((e) => console.warn(e));
+    }
+  }, [id, dispatch, routes]);
+
+  const updateRoutesList = (): void => {
+    dispatch(fetchAllRoutes());
+  };
+
+  const clearStatesForm = (): void => {
+    setInitialValues(defaultValues);
+  };
+
+  const handleFormValidation = (data: any) => {
     setIsLoading(true);
     const formData = {
       nome: data.name,
       serie: data.serie,
-      ensino: data.teaching?.value,
-      turno: data.shift.value,
+      ensino: data.teaching,
+      turno: data.shift,
       nome_escola: data.schoolName,
       hora_ida: data.departureTime,
       hora_volta: data.backTime,
-      cep: dataCEP,
-      endereco: address,
-      bairro: neighborhood,
-      numero: number,
-      complemento: complement,
-      cidade: city,
-      estado: state,
-      rota_id: selectedRoute?.value,
-      _method: id !== "new" ? "PUT" : "POST"
+      cep: data.cep,
+      endereco: data.address,
+      bairro: data.neighborhood,
+      numero: data.number,
+      complemento: data.complement,
+      cidade: data.city,
+      estado: data.state,
+      rota_id: data.route?.value,
+      _method: id !== "novo" ? "PUT" : "POST",
     };
 
-    if (id !== "new") {
-      dispatch(editStudent({ id: id, data: formData })).then((res) => {
-        if (res.success) {
-          toast({
-            title: 'Aluno Editado',
-            description: "Aluno editado com sucesso!",
-            status: 'success',
-            duration: 7000,
-            isClosable: true,
-          })
-          clearStatesForm();
-          setIsLoading(false);
-        } else {
-          toast({
-            title: 'Erro',
-            description: "Erro ao editar aluno!",
-            status: 'error',
-            duration: 7000,
-            isClosable: true,
-          })
-        }
-      })
-        .catch((e) => console.warn(e))
-
+    if (id !== "novo") {
+      dispatch(editStudent({ id: id, data: formData }))
+        .then((res) => {
+          if (res.success) {
+            Store.addNotification({
+              title: "Aluno Editado!",
+              message: "Aluno editado com sucesso!",
+              type: "success",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+            clearStatesForm();
+            setIsLoading(false);
+          } else {
+            Store.addNotification({
+              title: "Error!",
+              message:
+                "Falha ao tentar editar aluno. Por favor, tente mais tarde!",
+              type: "danger",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+          }
+        })
+        .catch((e) => console.warn(e));
     } else {
-      dispatch(createStudents(formData)).then((res) => {
-        if (res.success) {
-          toast({
-            title: 'Aluno Cadastrado',
-            description: "Aluno cadastrado com sucesso!",
-            status: 'success',
-            duration: 7000,
-            isClosable: true,
-          })
-          clearStatesForm();
-          setIsLoading(false);
-        } else {
-          toast({
-            title: 'Erro',
-            description: "Erro ao cadastrar aluno!",
-            status: 'error',
-            duration: 7000,
-            isClosable: true,
-          })
-        }
-      })
-        .catch((e) => console.warn(e))
+      dispatch(createStudents(formData))
+        .then((res) => {
+          if (res.success) {
+            Store.addNotification({
+              title: "Aluno Cadastrado!",
+              message: "Aluno cadastrado com sucesso!",
+              type: "success",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+            setIsLoading(false);
+          } else {
+            Store.addNotification({
+              title: "Error!",
+              message: "Falha ao cadastrar aluno. Por favor, tente mais tarde!",
+              type: "danger",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+          }
+        })
+        .catch((e) => console.warn(e));
     }
-
   };
 
   useEffect(() => {
     if (dataCEP && dataCEP.length === 9) {
-      dispatch(fetchAddressByCEP([{
-        name: 'address-by-cep',
-        type: 'error',
-        callback: () => {
-          console.warn('PostalCode.fetchAddressByCEP.error')
-        }
-      }, {
-        name: 'address-by-cep',
-        type: 'success',
-        callback: (response: any) => {
-          setAddress(response.main);
-          setNeighborhood(response.neighborhood);
-          setComplement(response.complement);
-          setCity(response.city);
-          setState(response.state);
-        }
-      }]))
+      dispatch(
+        fetchAddressByCEP([
+          {
+            name: "address-by-cep",
+            type: "error",
+            callback: () => {
+              console.warn("PostalCode.fetchAddressByCEP.error");
+            },
+          },
+          {
+            name: "address-by-cep",
+            type: "success",
+            callback: (response: any) => {
+              setAddress(response.main);
+              setNeighborhood(response.neighborhood);
+              setComplement(response.complement);
+              setCity(response.city);
+              setState(response.state);
+            },
+          },
+        ])
+      );
     }
-  }, [dataCEP, fetchAddressByCEP])
+  }, [dataCEP, dispatch]);
 
   return (
     <>
-      <Container maxW='container.2xl' px={{ xl: 20, sm: 0 }}>
-        <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
-        <Flex
-          flexDirection={"row"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-        >
-          <Flex flexDirection={"column"}>
-            <Flex
-              fontSize={8}
-              flexDirection={"row"}
-              alignItems={"center"}
-            >
-              <Heading size='lg' color="primary.400" mr={2}>Cadastrar Aluno</Heading>
-            </Flex>
-          </Flex>
-        </Flex>
-        <Box position='relative' py='8'>
-          <Divider />
-          <AbsoluteCenter bg={bgColorDivider[colorMode]} px='4'>
-            Dados Pessoais
-          </AbsoluteCenter>
-        </Box>
-        <form onSubmit={handleSubmit(onSubmit)} >
-          <Grid templateColumns={{ '2xl': 'repeat(6, 1fr)', xl: 'repeat(3, 1fr)', sm: 'repeat(1, 1fr)', }} gap={4}>
-            <GridItem colSpan={{ xl: 2, sm: 3 }}>
-              <FormControl id="name" isInvalid={!!errors.name}>
-                <FormLabel fontWeight="bold">Nome:</FormLabel>
-                <Input
-                  id="name"
-                  placeholder="Nome"
-                  type="text"
-                  disabled={isLoading}
-                  {...register("name")}
-                  focusBorderColor='primary.400'
-                />
-                <FormErrorMessage>{errors.name?.message}</FormErrorMessage>
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={{ xl: 2, sm: 3 }}>
-              <FormControl id="schoolName" isInvalid={!!errors.schoolName}>
-                <FormLabel fontWeight="bold">Nome da Escola:</FormLabel>
-                <Input
-                  id="schoolName"
-                  placeholder="Nome da Escola"
-                  type="text"
-                  disabled={isLoading}
-                  {...register("schoolName")}
-                  focusBorderColor='primary.400'
-                />
-                <FormErrorMessage>{errors.schoolName?.message}</FormErrorMessage>
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={{ xl: 2, sm: 3 }}>
-              <FormControl id="serie" isInvalid={!!errors.serie}>
-                <FormLabel fontWeight="bold">Série:</FormLabel>
-                <Input
-                  id="serie"
-                  placeholder="Série"
-                  type="text"
-                  disabled={isLoading}
-                  {...register("serie")}
-                  focusBorderColor='primary.400'
-                />
-                <FormErrorMessage>{errors.serie?.message}</FormErrorMessage>
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <ControlledSelect<FormInput, SelectReason, true>
-                name="teaching"
-                control={control}
-                label="Ensino:"
-                placeholder="Ensino"
-                options={teachingList}
-                isDisabled={isLoading}
-              />
-            </GridItem>
-            <GridItem colSpan={2}>
-              <ControlledSelect<FormInput, SelectReason, true>
-                name="shift"
-                control={control}
-                label="Turno:"
-                placeholder="Turno"
-                options={shiftList}
-                isDisabled={isLoading}
-              />
-            </GridItem>
-            <GridItem colSpan={2}>
-              <FormControl id="route">
-                <FormLabel fontWeight="bold">Rota:</FormLabel>
-                <Select
-                  isSearchable
-                  name="colors"
-                  options={routersList}
-                  placeholder="Selecione uma rota"
-                  value={selectedRoute}
-                  onChange={setSelectedRoute}
-                  focusBorderColor='primary.400'
-                  selectedOptionStyle="check"
-                  isDisabled={isLoading}
-                />
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={1}>
-              <GridItem colSpan={1}>
-                <CustomInputMask<FormInput>
-                  name="departureTime"
-                  control={control}
-                  label="Horário de Ida:"
-                  placeholder="Horário de Ida"
-                  mask="99:99"
-                  disabled={isLoading}
-                />
-              </GridItem>
-            </GridItem>
-            <GridItem colSpan={1}>
-              <CustomInputMask<FormInput>
-                name="backTime"
-                control={control}
-                label="Horário de Volta:"
-                placeholder="Horário de Volta"
-                mask="99:99"
-                disabled={isLoading}
-              />
-            </GridItem>
-          </Grid>
-          <Box position='relative' py='8'>
-            <Divider />
-            <AbsoluteCenter bg={bgColorDivider[colorMode]} px='4'>
-              Dados de endereço
-            </AbsoluteCenter>
-          </Box>
-          <Grid templateColumns={{ '2xl': 'repeat(6, 1fr)', xl: 'repeat(2, 1fr)', sm: 'repeat(1, 1fr)', }} gap={3}>
-            <GridItem colSpan={{ xl: 1, sm: 3 }}>
-              <FormControl id="cep">
-                <FormLabel fontWeight="bold">CEP:</FormLabel>
-                <Input
-                  id="cep"
-                  placeholder="CEP"
-                  as={InputMask}
-                  mask="99999-999"
-                  maskChar={null}
-                  type="text"
-                  disabled={isLoading}
-                  value={dataCEP}
-                  onChange={(e) => {
-                    setDataCEP(e.target.value);
-                    dispatch(setCEP(e.target.value));
-                  }}
-                  focusBorderColor='primary.400'
-                />
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={3}>
-              <FormControl id="address">
-                <FormLabel fontWeight="bold">Endereço:</FormLabel>
-                <Input
-                  id="address"
-                  placeholder="Endereço"
-                  type="text"
-                  disabled={isLoading}
-                  value={address}
-                  onChange={(e) => { setAddress(e.target.value) }}
-                  focusBorderColor='primary.400'
-                />
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={2}>
-              <FormControl id="neighborhood">
-                <FormLabel fontWeight="bold">Bairro:</FormLabel>
-                <Input
-                  id="neighborhood"
-                  placeholder="Bairro"
-                  type="text"
-                  disabled={isLoading}
-                  value={neighborhood}
-                  onChange={(e) => { setNeighborhood(e.target.value) }}
-                  focusBorderColor='primary.400'
-                />
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={1}>
-              <FormControl id="number">
-                <FormLabel fontWeight="bold">Número:</FormLabel>
-                <Input
-                  id="number"
-                  placeholder="Número"
-                  type="text"
-                  disabled={isLoading}
-                  value={number}
-                  onChange={(e) => { setNumber(e.target.value) }}
-                  focusBorderColor='primary.400'
-                />
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={{ xl: 2, sm: 3 }}>
-              <FormControl id="complement">
-                <FormLabel fontWeight="bold">Complemento:</FormLabel>
-                <Input
-                  id="complement"
-                  placeholder="Complemento"
-                  type="text"
-                  disabled={isLoading}
-                  value={complement}
-                  onChange={(e) => { setComplement(e.target.value) }}
-                  focusBorderColor='primary.400'
-                />
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={{ xl: 2, sm: 3 }}>
-              <FormControl id="city">
-                <FormLabel fontWeight="bold">Cidade:</FormLabel>
-                <Input
-                  id="city"
-                  placeholder="Cidade"
-                  type="text"
-                  disabled={isLoading}
-                  value={city}
-                  onChange={(e) => { setCity(e.target.value) }}
-                  focusBorderColor='primary.400'
-                />
-              </FormControl>
-            </GridItem>
-            <GridItem colSpan={{ xl: 1, sm: 3 }}>
-              <FormControl id="state">
-                <FormLabel fontWeight="bold">Estado:</FormLabel>
-                <Input
-                  id="state"
-                  placeholder="Estado"
-                  type="text"
-                  disabled={isLoading}
-                  value={state}
-                  onChange={(e) => { setState(e.target.value) }}
-                  focusBorderColor='primary.400'
-                />
-              </FormControl>
-            </GridItem>
-          </Grid>
-          <Divider my={6} />
-          <Flex
-            flexDirection="row"
-            justifyContent="end"
-            w="full"
-            gap={2}
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={12} lg={12}>
+          <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
+        </Grid>
+        <Grid item xs={12} md={12} lg={12}>
+          <TitlePage>Cadastrar Membro</TitlePage>
+          <Paper
+            sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+            }}
           >
-            <Button
-              size='md'
-              onClick={() => router.push("/estudantes")}
-              colorScheme="primary"
-              variant='outline'
-              w="48"
-            >
-              Voltar
-            </Button>
-            <Button
-              type="submit"
-              bg={"primary.400"}
-              color={"white"}
-              w="48"
-              _hover={{
-                bg: "orange.400",
+            <Divider variant="middle">Dados Pessoais</Divider>
+            <Formik
+              initialValues={initialValues}
+              validationSchema={StudentSchema()}
+              onSubmit={(
+                values: FormValues,
+                { setSubmitting }: FormikHelpers<FormValues>
+              ) => {
+                console.log(values);
+                handleFormValidation(values);
+                setSubmitting(false);
               }}
-              isLoading={isLoading}
-              spinnerPlacement='start'
             >
-              Salvar
-            </Button>
-          </Flex>
-        </form>
-      </Container >
+              <Form>
+                <AutoGetAddress />
+                <Grid container spacing={2} sx={{ marginBottom: "2rem" }}>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputText
+                      required
+                      id="name"
+                      name="name"
+                      type="text"
+                      variant="outlined"
+                      label="Nome"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputText
+                      required
+                      id="schoolName"
+                      name="schoolName"
+                      type="text"
+                      variant="outlined"
+                      label="Nome da escola"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4} lg={4}>
+                    <InputText
+                      required
+                      id="serie"
+                      name="serie"
+                      type="text"
+                      variant="outlined"
+                      label="Série"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4} lg={4}>
+                    <InputSelect
+                      required
+                      id="teaching"
+                      name="teaching"
+                      variant="outlined"
+                      label="Ensino"
+                      data={teachingList}
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4} lg={4}>
+                    <InputSelect
+                      required
+                      id="shift"
+                      name="shift"
+                      variant="outlined"
+                      label="Turno"
+                      data={shiftList}
+                      disabled={loading}
+                    />
+                  </Grid>
+
+                  <Grid item xs={10} md={5} lg={5}>
+                    <InputAutoComplete
+                      id="route"
+                      name="route"
+                      variant="outlined"
+                      label="Selecione uma rota"
+                      data={routersList}
+                      size="small"
+                    />
+                  </Grid>
+                  <Grid item xs={2} md={1} lg={1}>
+                    <Tooltip title="Atualizar rotas">
+                      <IconButton
+                        onClick={() => updateRoutesList()}
+                        size="large"
+                        color="primary"
+                        aria-label="atualizar-rotas"
+                        sx={{ marginTop: ".7rem" }}
+                      >
+                        <RefreshIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </Grid>
+                  <Grid item xs={12} md={3} lg={3}>
+                    <InputText
+                      type="tel"
+                      size={"small"}
+                      id="departureTime"
+                      name="departureTime"
+                      variant="outlined"
+                      label="Horário de Ida"
+                      disabled={loading}
+                      InputProps={{
+                        maxLength: 5,
+                        inputComponent: HoursMask,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={3} lg={3}>
+                    <InputText
+                      type="tel"
+                      size={"small"}
+                      id="backTime"
+                      name="backTime"
+                      variant="outlined"
+                      label="Horário de Volta"
+                      disabled={loading}
+                      InputProps={{
+                        maxLength: 5,
+                        inputComponent: HoursMask,
+                      }}
+                    />
+                  </Grid>
+                </Grid>
+                <Divider variant="middle">Dados de endereço</Divider>
+                <Grid container spacing={2} sx={{ marginBottom: "2rem" }}>
+                  <Grid item xs={12} md={4} lg={4}>
+                    <InputText
+                      type="tel"
+                      size={"small"}
+                      id="cep"
+                      name="cep"
+                      variant="outlined"
+                      label="CEP"
+                      disabled={loading}
+                      onChange={(e: any) => dispatch(setCEP(e.target.value))}
+                      InputProps={{
+                        maxLength: 9,
+                        inputComponent: CepMask,
+                      }}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={8} lg={8}>
+                    <InputText
+                      required
+                      id="address"
+                      name="address"
+                      type="text"
+                      variant="outlined"
+                      label="Endereço"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4} lg={4}>
+                    <InputText
+                      required
+                      id="neighborhood"
+                      name="neighborhood"
+                      type="text"
+                      variant="outlined"
+                      label="Bairro"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={2} lg={2}>
+                    <InputText
+                      required
+                      id="number"
+                      name="number"
+                      type="text"
+                      variant="outlined"
+                      label="Número"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={4} lg={4}>
+                    <InputText
+                      id="complement"
+                      name="complement"
+                      type="text"
+                      variant="outlined"
+                      label="Complemento"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputText
+                      required
+                      id="city"
+                      name="city"
+                      type="text"
+                      variant="outlined"
+                      label="Cidade"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputText
+                      required
+                      id="state"
+                      name="state"
+                      type="text"
+                      variant="outlined"
+                      label="Estado"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                </Grid>
+                <Divider variant="middle" />
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    marginY: "1rem",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "end",
+                  }}
+                >
+                  <Grid item xs={12} md={2} lg={2}>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => {
+                        clearStatesForm();
+                      }}
+                    >
+                      limpar
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} md={2} lg={2}>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => {
+                        router.push("/estudantes");
+                      }}
+                    >
+                      Voltar
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} md={2} lg={2}>
+                    <Button
+                      type="submit"
+                      variant="contained"
+                      fullWidth
+                      sx={{ color: "#fff" }}
+                    >
+                      Salvar
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Form>
+            </Formik>
+          </Paper>
+        </Grid>
+      </Grid>
     </>
   );
-};
+}
 
 export default CreateStudantePage;

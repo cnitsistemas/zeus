@@ -6,7 +6,7 @@ function HomeComponent() {
   const [loading, setLoading] = useState<Boolean>(true);
 
   return (
-    <Container maxW='container.2xl' px={{ xl: 20, sm: 0 }}>
+    <Container maxW="container.2xl" px={{ xl: 20, sm: 0 }}>
       <Text fontSize="2xl" fontFamily="monospace" fontWeight="bold">
         Dashboard
       </Text>

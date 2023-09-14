@@ -3,10 +3,12 @@ import { RootState } from "@/store";
 
 interface State {
   routes: any;
+  allRoutes: any;
 }
 
 const initialState: State = {
   routes: null,
+  allRoutes: null,
 };
 
 const RouteReducer = (state: State = initialState, action: any): State => {
@@ -16,6 +18,15 @@ const RouteReducer = (state: State = initialState, action: any): State => {
       newState = {
         ...state,
         routes: action.payload,
+      };
+
+      break;
+    }
+
+    case actionTypes.SET_ALL_ROUTES: {
+      newState = {
+        ...state,
+        allRoutes: action.payload,
       };
 
       break;

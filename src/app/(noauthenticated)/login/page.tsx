@@ -3,53 +3,25 @@ import { useEffect, useState } from "react";
 import Logo from "@/assets/logo.png";
 import Image from "next/image";
 import { handleSingIn } from "@/store/modules/singIn/singInActions";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import { useForm, SubmitHandler } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import {
-  Box,
-  Button,
-  Flex,
-  FormControl,
-  FormHelperText,
-  FormLabel,
-  Input,
-  Stack,
-  Text,
-  useColorModeValue,
-} from "@chakra-ui/react";
 import { Suspense } from 'react'
 import { useAppDispatch } from "@/hooks/useRedux";
+import { Box, Container, TextField, Typography } from "@mui/material";
+import { BoxFormLogin, ButtonFormSubmit, WrapperMain } from "./style";
+import { Form, Formik, FormikHelpers } from "formik";
+import { SingInSchema } from "@/validators/singInSchema";
+import { InputText } from "@/components/_forms/Inputs/InputText";
+import Copyright from "./copyright";
 
-const AcessValidation = z.object({
-  email: z.string().email({
-    message: "E-mail inválido. Por favor insira um endereço de e-mail válido",
-  }),
-  password: z
-    .string()
-    .min(4, { message: "A senha de usuário deve ter 4 caracteres ou mais" }),
-});
-
-type FormInput = z.infer<typeof AcessValidation>;
+type FormValues = {
+  email: string;
+  password: string;
+}
 
 function LoginPage() {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormInput>({
-    resolver: zodResolver(AcessValidation),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
   const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const bgFlex = useColorModeValue("gray.50", "gray.800");
-  const bgBox = useColorModeValue("white", "gray.700");
+
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -58,10 +30,15 @@ function LoginPage() {
     }, 3000);
   }, []);
 
-  const onSubmit: SubmitHandler<FormInput> = (data) => {
-    setIsLoading(true);
-    dispatch(handleSingIn(data)).then(() => {
-      setIsLoading(false);
+  const handleFormValidation = (data: FormValues) => {
+    setLoading(true);
+
+    const body = {
+      email: data.email,
+      password: data.password
+    }
+    dispatch(handleSingIn(body)).then(() => {
+      setLoading(false);
       router.push("/");
     });
   };
@@ -69,80 +46,76 @@ function LoginPage() {
   return (
     <>
       <Suspense fallback={<p>Loading feed...</p>}>
-        <Flex
-          minH={"100vh"}
-          align={"center"}
-          justify={"center"}
-          bg={bgFlex}
-        >
-          <Stack spacing={8} mx={"auto"} maxW={"lg"} py={12} px={6}>
-            <Stack align={"center"}>
+        <WrapperMain>
+          <Container component="main" maxWidth="xs"
+            sx={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              justifyContent: 'center', flexWrap: 'wrap', height: '100%'
+            }} >
+            <BoxFormLogin>
               <Image src={Logo} width={210} alt="Picture of the author" />
-              <Text fontSize={"lg"} color={"gray.600"} align={"center"}>
+              <Typography sx={{
+                textAlign: 'center',
+                color: "#bdbdbd",
+                marginY: "1rem",
+                fontSize: "14px"
+              }}>
                 Bem vindo a nova versão do painel administrativo de gestão de
-                rotas e alunos da CNIT.
-              </Text>
-            </Stack>
-            <Box
-              rounded={"lg"}
-              bg={bgBox}
-              boxShadow={"lg"}
-              p={8}
-            >
-              <form onSubmit={handleSubmit(onSubmit)}>
-                <Stack spacing={4}>
-                  <FormControl id="email">
-                    <FormLabel>Email</FormLabel>
-                    <Input
+                rotas e alunos da CNIT.</Typography>
+              <Box sx={{ mt: 1, width: "100%" }}>
+                <Formik
+                  initialValues={{
+                    email: '',
+                    password: '',
+                  }}
+                  validationSchema={SingInSchema()}
+                  onSubmit={(values: FormValues, { setSubmitting }: FormikHelpers<FormValues>) => {
+                    handleFormValidation(values)
+                    setSubmitting(false);
+                  }}
+                >
+                  <Form>
+                    <InputText
+                      required
                       id="email"
-                      placeholder="name@example.com"
-                      type="email"
-                      disabled={isLoading}
-                      {...register("email")}
-                      focusBorderColor='primary.400'
+                      name="email"
+                      type='email'
+                      variant="outlined"
+                      label="E-mail"
+                      size="small"
+                      disabled={loading}
                     />
-                    {errors?.email?.message && (
-                      <FormHelperText color={"red.400"}>{errors.email.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                  <FormControl id="password">
-                    <FormLabel>Password</FormLabel>
-                    <Input
+                    <InputText
+                      required
                       id="password"
-                      placeholder="**********"
-                      type="password"
-                      disabled={isLoading}
-                      {...register("password")}
-                      focusBorderColor='primary.400'
+                      name="password"
+                      type='password'
+                      variant="outlined"
+                      size="small"
+                      label="Senha"
+                      disabled={loading}
                     />
-                    {errors?.password?.message && (
-                      <FormHelperText color={"red.400"}>{errors.password.message}</FormHelperText>
-                    )}
-                  </FormControl>
-                  <Stack spacing={10}>
-                    <Button
+                    <ButtonFormSubmit
+                      loading={loading}
                       type="submit"
-                      bg={"primary.400"}
-                      color={"white"}
-                      _hover={{
-                        bg: "orange.400",
-                      }}
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      sx={{ mt: 3, mb: 2, color: '#fff', height: 45 }}
+                      disableElevation
                     >
                       Entrar
-                    </Button>
-                  </Stack>
-                </Stack>
-              </form>
-            </Box>
-          </Stack>
-        </Flex>     ]
+                    </ButtonFormSubmit>
+                  </Form>
+                </Formik>
+              </Box>
+            </BoxFormLogin>
+            <Copyright />
+          </Container>
+        </WrapperMain>
+
       </Suspense>
     </>
   );
 }
-const mapStateToProps = (state: any) => {
-  return {
-    accessToken: (state.singin.auth && state.singin.auth.accessToken) || null,
-  };
-};
 export default LoginPage;

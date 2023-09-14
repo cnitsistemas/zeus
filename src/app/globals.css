@@ -1,3 +1,22 @@
+
+@font-face {
+  font-family: 'Graviola Soft';
+  src: local('Graviola Soft Regular'), 
+  url(./../assets/fonts/graviola_soft_regular.otf) format('opentype');
+}
+
+body {
+  margin: 0;
+  font-family: 'Graviola Soft' !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
 * {
     scrollbar-width: thin;
     scrollbar-color: #DDDDDD;

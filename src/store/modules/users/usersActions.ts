@@ -1,16 +1,14 @@
 import { actionTypes } from ".";
 import { Dispatch } from "redux";
 import api from "@/services/api";
-import withAuthHeader from "@/lib/withAuthHeader";
+import withAuthHeader from "@/utils/withAuthHeader";
 import { mapFetchUserResponseId, mapFetchUsersPaginationResponse, mapFetchUsersResponse } from "@/domain/users/usersDTO";
 
 export const fetchUsers = (page: number) => async (dispatch: Dispatch) => {
 
   try {
     const url = `api/users?page=${page}`;
-    const apiResponse = await api.get(url, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.get(url);
     const response = mapFetchUsersResponse(apiResponse.data.data);
     const responsePagination = mapFetchUsersPaginationResponse(apiResponse.data.data);
 
@@ -33,9 +31,7 @@ export const fetchUsers = (page: number) => async (dispatch: Dispatch) => {
 export const fetchUserId = (id: any) => async (dispatch: Dispatch) => {
   try {
     const url = `api/users/${id}`;
-    const apiResponse = await api.get(url, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.get(url);
     const response = mapFetchUserResponseId(apiResponse.data.data);
 
     dispatch({
@@ -52,9 +48,7 @@ export const fetchUserId = (id: any) => async (dispatch: Dispatch) => {
 export const createUsers = (data: any) => async (dispatch: Dispatch) => {
   try {
     const url = `api/users`;
-    const apiResponse = await api.post(url, data, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.post(url, data);
     const response = apiResponse.data;
 
     if (response.success) {
@@ -73,9 +67,7 @@ export const createUsers = (data: any) => async (dispatch: Dispatch) => {
 export const editUser = ({ id, data }: { id: string, data: any }) => async (dispatch: Dispatch) => {
   try {
     const url = `api/users/${id}`;
-    const apiResponse = await api.post(url, data, {
-      ...withAuthHeader(),
-    });
+    const apiResponse = await api.post(url, data);
     const response = apiResponse.data;
 
     if (response.success) {
@@ -94,9 +86,7 @@ export const editUser = ({ id, data }: { id: string, data: any }) => async (disp
 export const deleteUsers = (roleId: string) => async (dispatch: Dispatch) => {
   try {
     const url = `api/users/${roleId}`;
-    const apiResponse = await api.delete(url, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.delete(url);
     const response = apiResponse.data;
 
     if (response.success) {
@@ -115,9 +105,7 @@ export const deleteUsers = (roleId: string) => async (dispatch: Dispatch) => {
 export const applyRoleToUser = ({ id, data }: { id: string, data: any }) => async (dispatch: Dispatch) => {
   try {
     const url = `api/user-role/${id}`;
-    const apiResponse = await api.post(url, data, {
-      ...withAuthHeader()
-    });
+    const apiResponse = await api.post(url, data);
     const response = apiResponse.data;
 
     if (response.success) {
