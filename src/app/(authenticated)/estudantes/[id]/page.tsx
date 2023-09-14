@@ -6,7 +6,7 @@ import {
   fetchAddressByCEP,
   setCEP,
 } from "@/store/modules/address/addressActions";
-import BreadcrumbComponent from "@/components/Breadcrumb";
+// import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import { RouteOption } from "@/domain/route/routeDTO";
 import {
   createStudents,
@@ -327,7 +327,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12} md={12} lg={12}>
-          <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
+          {/* <BreadcrumbComponent breadcrumbItens={breadcrumbItens} /> */}
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
           <TitlePage>Cadastrar Membro</TitlePage>

@@ -5,7 +5,7 @@ import { useSelector } from "react-redux";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import Details from "./details";
 import { useRouter } from "next/navigation";
-import BreadcrumbComponent from "@/components/Breadcrumb";
+// import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { StudantState } from "@/store/modules/students/studentsReducers";
 import { RouteState } from "@/store/modules/routes/routesReducers";
@@ -169,7 +169,7 @@ function StudentsPage() {
     <>
       <Grid container spacing={3}>
         <Grid item xs={12} md={12} lg={12}>
-          <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
+          {/* <BreadcrumbComponent breadcrumbItens={breadcrumbItens} /> */}
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
           <Paper elevation={0} sx={{ padding: 5 }}>
