@@ -6,8 +6,7 @@ import {
   fetchAddressByCEP,
   setCEP,
 } from "@/store/modules/address/addressActions";
-// import BreadcrumbComponent from "@/components/BreadcrumbComponent";
-import { RouteOption } from "@/domain/route/routeDTO";
+import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import {
   createStudents,
   editStudent,
@@ -86,44 +85,35 @@ type FormValues = {
   state: string;
 };
 
+const defaultValues = {
+  name: "",
+  schoolName: "",
+  serie: "",
+  teaching: "",
+  shift: "",
+  route: "",
+  departureTime: "",
+  backTime: "",
+  cep: "",
+  address: "",
+  neighborhood: "",
+  number: "",
+  comnplement: "",
+  city: "",
+  state: "",
+};
+
 function CreateStudantePage({ params }: { params: { id: string } }) {
-  const defaultValues = {
-    name: "",
-    schoolName: "",
-    serie: "",
-    teaching: "",
-    shift: "",
-    route: "",
-    departureTime: "",
-    backTime: "",
-    cep: "",
-    address: "",
-    neighborhood: "",
-    number: "",
-    comnplement: "",
-    city: "",
-    state: "",
-  };
   const { id } = params;
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const [initialValues, setInitialValues] = useState<any>(defaultValues);
+  const [initialValues, setInitialValues] = useState(defaultValues);
   const [loading, setLoading] = useState<boolean>(false);
   const [routersList, setRoutersList] = useState<Array<any>>([]);
-  const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null);
-  const [dataCEP, setDataCEP] = useState<string>("");
-  const [address, setAddress] = useState<string>("");
-  const [neighborhood, setNeighborhood] = useState<string>("");
-  const [number, setNumber] = useState<string>("");
-  const [complement, setComplement] = useState<string>("");
-  const [city, setCity] = useState<string>("");
-  const [state, setState] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(false);
   const routeState = useSelector(RouteState);
   const addresses = useSelector(AddressState);
   const routes = (routeState && routeState.allRoutes) || null;
   const searchCep = addresses && addresses.cep;
-  // const [controllerSubmit, setControllerSubmit] = useState<boolean>(true);
 
   useEffect(() => {
     if (routes && routes.length > 0) {
@@ -135,57 +125,51 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
     }
   }, [routes]);
 
-  const AutoGetAddress = () => {
-    const { values } = useFormikContext<FormValues>();
-    useEffect(() => {
-      if (values?.cep.length === 9 && values?.cep !== searchCep) {
-        dispatch(fetchAddressByCEP(values?.cep)).then((response: any) => {
-          setInitialValues({
-            ...defaultValues,
-            address: response.address,
-            neighborhood: response.neighborhood,
-            number: response.number,
-            comnplement: response.complement,
-            city: response.city,
-            state: response.state,
-          });
-        });
-      }
-    }, [values]);
-    return null;
-  };
+  // const AutoGetAddress = () => {
+  //   const { values } = useFormikContext<FormValues>();
+  //   useEffect(() => {
+  //     if (values?.cep.length === 9 && values?.cep !== searchCep) {
+  //       dispatch(fetchAddressByCEP(values?.cep)).then((response: any) => {
+  //         if (response.success) {
+  //           setInitialValues({
+  //             ...defaultValues,
+  //             address: response.address,
+  //             neighborhood: response.neighborhood,
+  //             number: response.number,
+  //             comnplement: response.complement,
+  //             city: response.city,
+  //             state: response.state,
+  //           });
+  //         }
+  //       });
+  //     }
+  //   }, [values]);
+  //   return null;
+  // };
 
   useEffect(() => {
     if (id && id !== "novo") {
       dispatch(fetchStudentId(id))
         .then((res) => {
           if (res.success) {
-            const routeSelected = routes.find(
-              (route: any) => route.id === res.data?.rota_id
-            );
-            const defaultValues = {
+            const values: FormValues = {
               name: res.data?.name,
               serie: res.data?.serie,
               schoolName: res.data?.schoolName,
-              teaching: {
-                value: res.data?.teaching,
-                label: res.data?.teaching,
-              },
-              shift: { value: res.data?.shift, label: res.data?.shift },
+              teaching: res.data?.teaching,
+              shift: res.data?.shift,
               departureTime: res.data?.departureTime,
               backTime: res.data?.backTime,
+              route: res.data?.rota_id,
+              cep: res.data?.cep,
+              address: res.data?.address,
+              neighborhood: res.data?.neighborhood,
+              number: res.data?.number,
+              comnplement: res.data?.comnplement,
+              city: res.data?.city,
+              state: res.data?.state,
             };
-            setSelectedRoute({
-              value: routeSelected.id,
-              label: routeSelected.name,
-            });
-            setDataCEP(res.data?.cep);
-            setAddress(res.data?.address);
-            setNeighborhood(res.data?.neighborhood);
-            setNumber(res.data?.number);
-            setComplement(res.data?.complement);
-            setCity(res.data?.city);
-            setState(res.data?.state);
+            setInitialValues(values);
           } else {
             Store.addNotification({
               title: "Error!",
@@ -208,12 +192,8 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
     dispatch(fetchAllRoutes());
   };
 
-  const clearStatesForm = (): void => {
-    setInitialValues(defaultValues);
-  };
-
-  const handleFormValidation = (data: any) => {
-    setIsLoading(true);
+  const handleFormValidation = (data: any, resetForm: any) => {
+    setLoading(true);
     const formData = {
       nome: data.name,
       serie: data.serie,
@@ -247,8 +227,8 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
               animationOut: ["animate__animated", "animate__fadeOut"],
               dismiss: { duration: 4000 },
             });
-            clearStatesForm();
-            setIsLoading(false);
+            resetForm();
+            setLoading(false);
           } else {
             Store.addNotification({
               title: "Error!",
@@ -278,7 +258,8 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
               animationOut: ["animate__animated", "animate__fadeOut"],
               dismiss: { duration: 4000 },
             });
-            setIsLoading(false);
+            resetForm();
+            setLoading(false);
           } else {
             Store.addNotification({
               title: "Error!",
@@ -296,38 +277,11 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
     }
   };
 
-  useEffect(() => {
-    if (dataCEP && dataCEP.length === 9) {
-      dispatch(
-        fetchAddressByCEP([
-          {
-            name: "address-by-cep",
-            type: "error",
-            callback: () => {
-              console.warn("PostalCode.fetchAddressByCEP.error");
-            },
-          },
-          {
-            name: "address-by-cep",
-            type: "success",
-            callback: (response: any) => {
-              setAddress(response.main);
-              setNeighborhood(response.neighborhood);
-              setComplement(response.complement);
-              setCity(response.city);
-              setState(response.state);
-            },
-          },
-        ])
-      );
-    }
-  }, [dataCEP, dispatch]);
-
   return (
     <>
       <Grid container spacing={3}>
         <Grid item xs={12} md={12} lg={12}>
-          {/* <BreadcrumbComponent breadcrumbItens={breadcrumbItens} /> */}
+          <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
           <TitlePage>Cadastrar Membro</TitlePage>
@@ -341,18 +295,19 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
             <Divider variant="middle">Dados Pessoais</Divider>
             <Formik
               initialValues={initialValues}
+              enableReinitialize={true}
               validationSchema={StudentSchema()}
               onSubmit={(
                 values: FormValues,
-                { setSubmitting }: FormikHelpers<FormValues>
+                { setSubmitting, resetForm }: FormikHelpers<FormValues>
               ) => {
                 console.log(values);
-                handleFormValidation(values);
+                handleFormValidation(values, resetForm);
                 setSubmitting(false);
               }}
             >
               <Form>
-                <AutoGetAddress />
+                {/* <AutoGetAddress /> */}
                 <Grid container spacing={2} sx={{ marginBottom: "2rem" }}>
                   <Grid item xs={12} md={6} lg={6}>
                     <InputText
@@ -478,7 +433,6 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       variant="outlined"
                       label="CEP"
                       disabled={loading}
-                      onChange={(e: any) => dispatch(setCEP(e.target.value))}
                       InputProps={{
                         maxLength: 9,
                         inputComponent: CepMask,
@@ -568,17 +522,6 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                     justifyContent: "end",
                   }}
                 >
-                  <Grid item xs={12} md={2} lg={2}>
-                    <Button
-                      variant="outlined"
-                      fullWidth
-                      onClick={() => {
-                        clearStatesForm();
-                      }}
-                    >
-                      limpar
-                    </Button>
-                  </Grid>
                   <Grid item xs={12} md={2} lg={2}>
                     <Button
                       variant="outlined"
