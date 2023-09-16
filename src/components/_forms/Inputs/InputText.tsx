@@ -1,9 +1,9 @@
-"use client"
-import { useField } from 'formik'
-import { FormControl, TextField } from '@mui/material'
+"use client";
+import { useField } from "formik";
+import { FormControl, TextField } from "@mui/material";
 
 export const InputText = (props: any) => {
-  const [field, meta, { setValue }] = useField(props.name)
+  const [field, meta, { setValue }] = useField(props.name);
 
   return (
     <FormControl fullWidth>
@@ -16,5 +16,5 @@ export const InputText = (props: any) => {
         onChange={({ target: { value } }) => setValue(value)}
       />
     </FormControl>
-  )
-}
+  );
+};

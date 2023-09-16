@@ -32,7 +32,7 @@ export const InputAutoComplete = ({ ...props }) => {
         onInputChange={(_, newInputValue: string) => {
           setInputValue(newInputValue);
         }}
-        // isOptionEqualToValue={(option, value) => option.id === value.id}
+        isOptionEqualToValue={(option, value) => option.id === value.id}
         onChange={(event: SyntheticEvent, newValue: any) => {
           setValue(newValue);
           setVal(newValue);

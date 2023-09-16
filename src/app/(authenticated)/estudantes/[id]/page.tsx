@@ -73,7 +73,7 @@ type FormValues = {
   serie: string;
   teaching: string;
   shift: string;
-  route: string;
+  route: any;
   departureTime: string;
   backTime: string;
   cep: string;
@@ -125,33 +125,38 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
     }
   }, [routes]);
 
-  // const AutoGetAddress = () => {
-  //   const { values } = useFormikContext<FormValues>();
-  //   useEffect(() => {
-  //     if (values?.cep.length === 9 && values?.cep !== searchCep) {
-  //       dispatch(fetchAddressByCEP(values?.cep)).then((response: any) => {
-  //         if (response.success) {
-  //           setInitialValues({
-  //             ...defaultValues,
-  //             address: response.address,
-  //             neighborhood: response.neighborhood,
-  //             number: response.number,
-  //             comnplement: response.complement,
-  //             city: response.city,
-  //             state: response.state,
-  //           });
-  //         }
-  //       });
-  //     }
-  //   }, [values]);
-  //   return null;
-  // };
+  const AutoGetAddress = () => {
+    const { values } = useFormikContext<FormValues>();
+    useEffect(() => {
+      if (values?.cep.length === 9 && values?.cep !== searchCep) {
+        dispatch(fetchAddressByCEP(values?.cep)).then((response: any) => {
+          if (response) {
+            setInitialValues({
+              ...defaultValues,
+              address: response.main,
+              neighborhood: response.neighborhood,
+              number: response.number,
+              comnplement: response.complement,
+              city: response.city,
+              state: response.state,
+              cep: response.cep,
+            });
+          }
+        });
+      }
+    }, [values]);
+    return null;
+  };
 
   useEffect(() => {
     if (id && id !== "novo") {
       dispatch(fetchStudentId(id))
         .then((res) => {
           if (res.success) {
+            const routeSelected = routes.find(
+              (route: any) => route.id === res.data?.rota_id
+            );
+
             const values: FormValues = {
               name: res.data?.name,
               serie: res.data?.serie,
@@ -160,7 +165,10 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
               shift: res.data?.shift,
               departureTime: res.data?.departureTime,
               backTime: res.data?.backTime,
-              route: res.data?.rota_id,
+              route: {
+                value: routeSelected.id,
+                label: routeSelected.name,
+              },
               cep: res.data?.cep,
               address: res.data?.address,
               neighborhood: res.data?.neighborhood,
@@ -228,6 +236,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
               dismiss: { duration: 4000 },
             });
             resetForm();
+            setInitialValues(defaultValues);
             setLoading(false);
           } else {
             Store.addNotification({
@@ -259,6 +268,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
               dismiss: { duration: 4000 },
             });
             resetForm();
+            setInitialValues(defaultValues);
             setLoading(false);
           } else {
             Store.addNotification({
@@ -285,6 +295,8 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
           <TitlePage>Cadastrar Membro</TitlePage>
+        </Grid>
+        <Grid item xs={12} md={12} lg={12}>
           <Paper
             sx={{
               p: 2,
@@ -301,13 +313,12 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                 values: FormValues,
                 { setSubmitting, resetForm }: FormikHelpers<FormValues>
               ) => {
-                console.log(values);
                 handleFormValidation(values, resetForm);
                 setSubmitting(false);
               }}
             >
               <Form>
-                {/* <AutoGetAddress /> */}
+                <AutoGetAddress />
                 <Grid container spacing={2} sx={{ marginBottom: "2rem" }}>
                   <Grid item xs={12} md={6} lg={6}>
                     <InputText

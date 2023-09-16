@@ -1,43 +1,93 @@
-"use client"
-import { FormControl, FormLabel, Grid, Text } from "@chakra-ui/react";
-import { Select } from "chakra-react-select";
-import React from "react";
+"use client";
+import InputSelectChip from "@/components/_forms/Inputs/InputSelectChip";
+import {
+  Button,
+  DialogActions,
+  Divider,
+  Grid,
+  Typography,
+} from "@mui/material";
+import { Form, Formik, FormikHelpers } from "formik";
+import React, { useEffect, useState } from "react";
 
 interface Props {
-  allRoles: any;
+  allRoles: Array<any>;
   selectRoles: any;
-  setSelectRoles: (roles: any) => void;
+  handleClose: () => void;
+  handleApplyRoleToUser: (role: any) => void;
 }
 
-const AssignmentRoles = ({ allRoles, selectRoles, setSelectRoles }: Props) => {
+type FormValues = {
+  roles: Array<any>;
+};
+const defaultValues = {
+  roles: [],
+};
+
+const AssignmentRoles = ({
+  allRoles,
+  selectRoles,
+  handleClose,
+  handleApplyRoleToUser,
+}: Props) => {
+  const [initialValues, setInitialValues] = useState<any>(defaultValues);
+  useEffect(() => {
+    if (selectRoles && selectRoles.length > 0) {
+      const roles = selectRoles.map((role: any) => role.name);
+      setInitialValues({
+        roles: roles,
+      });
+    }
+  }, []);
   return (
     <>
-      <Grid sx={{ display: 'flex', flexDirection: 'column' }}>
-        <Grid>
-          <Text color="gray.600" my={4} mx={2}>
-            Atribua ou remova papéis ao usuário selecionado. Basta selecionar o papel que deseja atribuir e
-            aplicar a requisição. Caso não encontre o papel desejado vá até a tela de papéis para adicionar um novo.
-          </Text>
+      <Grid
+        container
+        spacing={1}
+        sx={{ display: "flex", flexDirection: "row" }}
+      >
+        <Grid item xs={12} md={12} lg={12}>
+          <Typography
+            component={"h1"}
+            sx={{ fontSize: "13px", color: "#666666" }}
+            gutterBottom
+          >
+            Atribua ou remova papéis ao usuário selecionado. Basta selecionar o
+            papel que deseja atribuir e aplicar a requisição. Caso não encontre
+            o papel desejado vá até a tela de papéis para adicionar um novo.
+          </Typography>
         </Grid>
-        <Grid>
-          <FormControl id="roles">
-            <FormLabel fontWeight="bold">Papeis</FormLabel>
-            <Select
-              isMulti
-              name="colors"
-              options={allRoles}
-              placeholder="Selecione uma rota"
-              value={selectRoles}
-              onChange={setSelectRoles}
-              focusBorderColor='primary.400'
-              selectedOptionStyle="check"
-            />
-          </FormControl>
+        <Grid item xs={12} md={12} lg={12}>
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize={true}
+            onSubmit={(values: FormValues, { setSubmitting }) => {
+              handleApplyRoleToUser(values);
+            }}
+          >
+            <Form>
+              <InputSelectChip
+                label="Papeis"
+                id="roles"
+                name="roles"
+                data={allRoles}
+              />
+              <Divider sx={{ mt: 3 }} />
+
+              <DialogActions>
+                <Button variant="outlined" onClick={handleClose}>
+                  Fechar
+                </Button>
+                <Button variant="contained" color="success" type="submit">
+                  Salvar Papeis do usuário
+                </Button>
+              </DialogActions>
+            </Form>
+          </Formik>
         </Grid>
       </Grid>
-
     </>
-  )
-}
+  );
+};
 
 export default AssignmentRoles;

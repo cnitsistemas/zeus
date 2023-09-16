@@ -1,20 +1,20 @@
-import * as React from 'react';
-import PropTypes from 'prop-types';
-import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions';
-import IconButton from '@mui/material/IconButton';
-import CloseIcon from '@mui/icons-material/Close';
-import Typography from '@mui/material/Typography';
+import * as React from "react";
+import PropTypes from "prop-types";
+import Button from "@mui/material/Button";
+import { styled } from "@mui/material/styles";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogActions from "@mui/material/DialogActions";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import Typography from "@mui/material/Typography";
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
+  "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
   },
-  '& .MuiDialogActions-root': {
+  "& .MuiDialogActions-root": {
     padding: theme.spacing(1),
   },
 }));
@@ -30,7 +30,7 @@ function BootstrapDialogTitle(props: any) {
           aria-label="close"
           onClick={onClose}
           sx={{
-            position: 'absolute',
+            position: "absolute",
             right: 8,
             top: 8,
             color: (theme) => theme.palette.grey[500],
@@ -59,11 +59,11 @@ interface PropsDialog {
   handleConfirm: () => void;
   open: boolean;
   handleClose: () => void;
-  fullWidth: boolean | undefined
+  fullWidth: boolean | undefined;
   maxWidth: any;
   dividers: any;
-  textAling: string
-};
+  textAling: string;
+}
 
 const CustomizedDialogs = (props: PropsDialog) => {
   const {
@@ -96,26 +96,45 @@ const CustomizedDialogs = (props: PropsDialog) => {
           {title}
         </BootstrapDialogTitle>
         <DialogContent dividers={dividers}>
-          <Typography sx={{ textAlign: textAling, color: '#4f4f4f' }} gutterBottom>
+          <Typography
+            component={"h1"}
+            sx={{ textAlign: textAling, color: "#4f4f4f" }}
+            gutterBottom
+          >
             {content}
           </Typography>
         </DialogContent>
         <DialogActions>
-          {cancelButton && <Button variant="outlined" autoFocus onClick={handleClose}>
-            {cancelButtonText}
-          </Button>}
-          {confirmButton && confirmButtonError ? <Button color="error" variant="contained" autoFocus
-            onClick={handleConfirm}>
-            {confirmButtonText}
-          </Button> : confirmButton ? <Button variant="contained" autoFocus sx={{ color: '#fff' }}
-            onClick={handleConfirm}>
-            {confirmButtonText}
-          </Button> : <></>}
+          {cancelButton && (
+            <Button variant="outlined" autoFocus onClick={handleClose}>
+              {cancelButtonText}
+            </Button>
+          )}
+          {confirmButton && confirmButtonError ? (
+            <Button
+              color="error"
+              variant="contained"
+              autoFocus
+              onClick={handleConfirm}
+            >
+              {confirmButtonText}
+            </Button>
+          ) : confirmButton ? (
+            <Button
+              variant="contained"
+              autoFocus
+              sx={{ color: "#fff" }}
+              onClick={handleConfirm}
+            >
+              {confirmButtonText}
+            </Button>
+          ) : (
+            <></>
+          )}
         </DialogActions>
       </BootstrapDialog>
     </div>
   );
-}
+};
 
 export default CustomizedDialogs;
-

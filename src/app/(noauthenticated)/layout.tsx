@@ -1,9 +1,11 @@
-"use client"
+"use client";
 import { ReduxProviders } from "@/store/provider";
 import { PersistGate } from "redux-persist/integration/react";
 import { persist } from "@/store";
-import { Providers } from "../theme-provider";
 import ThemeRegistry from "../ThemeRegistry";
+import { ReactNotifications } from "react-notifications-component";
+import "react-notifications-component/dist/theme.css";
+import "animate.css";
 
 export default function NoAuthenticatedLayout({
   children,
@@ -15,7 +17,8 @@ export default function NoAuthenticatedLayout({
       <body>
         <ReduxProviders>
           <PersistGate loading={null} persistor={persist}>
-            <ThemeRegistry options={{ key: 'mui' }}>
+            <ThemeRegistry options={{ key: "mui" }}>
+              <ReactNotifications />
               {children}
             </ThemeRegistry>
           </PersistGate>

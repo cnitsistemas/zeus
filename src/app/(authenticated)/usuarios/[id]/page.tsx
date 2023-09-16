@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { connect } from "react-redux";
+import { connect, useSelector } from "react-redux";
 // import { CustomInput } from "../../components/Common/CustomInput/CustomInput";
 // import DashboardLayout from "../../themes/dashboard/DashboardLayout";
 // import Title from "../../themes/dashboard/Title";
@@ -21,6 +21,14 @@ import { connect } from "react-redux";
 // import CustomSelectChip from "../../components/CustomSelectChip";
 // import { fetchAllRoles } from "../../redux/actions/roles";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
+import BreadcrumbComponent from "@/components/BreadcrumbComponent";
+import { Form, Formik } from "formik";
+import { InputText } from "@/components/_forms/Inputs/InputText";
+import { TitlePage } from "../style";
+import { RoleState } from "@/store/modules/roles/rolesReducers";
+import InputSelectChip from "@/components/_forms/Inputs/InputSelectChip";
+import { InputPassword } from "@/components/_forms/Inputs/InputPassword";
+import { UserSchema } from "@/validators/userSchema";
 // import CustomBreadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 // import { DAFAULT_AVATAR } from "../../config";
 // import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
@@ -28,7 +36,7 @@ import PhotoCamera from "@mui/icons-material/PhotoCamera";
 // import CustomProgress from "../../components/CustomProgress";
 // import { v4 as uuidv4 } from 'uuid';
 
-const breadcrumbs = [
+const breadcrumbsItens = [
   <Link underline="hover" key="1" color="inherit" href="/" onClick={() => {}}>
     Inicio
   </Link>,
@@ -46,9 +54,28 @@ const breadcrumbs = [
   </Typography>,
 ];
 
+type FormValues = {
+  fullname: string;
+  name: string;
+  email: string;
+  password: string;
+  cpassword: string;
+  roles: any[];
+};
+
+const defaultValues: FormValues = {
+  fullname: "",
+  name: "",
+  email: "",
+  password: "",
+  cpassword: "",
+  roles: [],
+};
+
 const User = ({ params }: { params: { id: string } }) => {
   const { id } = params;
   const [userId, setUserId] = useState("");
+  const [loading, setLoading] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [cPassword, setCPassword] = useState("");
@@ -61,6 +88,10 @@ const User = ({ params }: { params: { id: string } }) => {
   const [selectRoles, setSelectRoles] = useState([]);
   const [percent, setPercent] = useState(0);
   const [viewProgressUpload, setViewProgressUpload] = useState(false);
+  const [rolesList, setRolesList] = useState([]);
+  const [initialValues, setInitialValues] = useState(defaultValues);
+  const roleState = useSelector(RoleState);
+  const allRoles = (roleState && roleState.allRoles) || null;
 
   // useEffect(() => {
   //   if (id) {
@@ -80,6 +111,15 @@ const User = ({ params }: { params: { id: string } }) => {
   //       .catch((e: any) => console.warn(e))
   //   }
   // }, [fetchUserId, id]);
+  useEffect(() => {
+    if (allRoles && allRoles.length > 0) {
+      setRolesList(
+        allRoles.map((route: any) => {
+          return { value: route.id, label: route.name };
+        })
+      );
+    }
+  }, [allRoles]);
 
   const clearStatesForm = () => {
     setName("");
@@ -160,21 +200,22 @@ const User = ({ params }: { params: { id: string } }) => {
   return (
     <>
       {/* <Loading isActive={loading} /> */}
-      {/* <NotificationContainer /> */}
       <Grid container spacing={3}>
-        {/* <Grid item xs={12} md={12} lg={12}>
-            <CustomBreadcrumbs breadcrumbs={breadcrumbs} />
-          </Grid> */}
-        <Grid item xs={12} md={4} lg={4}>
+        <Grid item xs={12} md={12} lg={12}>
+          <BreadcrumbComponent breadcrumbItens={breadcrumbsItens} />
+        </Grid>
+        <Grid item xs={12} md={12} lg={12}>
           {userId ? (
             <>
-              <Typography>Editar usuário</Typography>
+              <TitlePage>Editar usuário</TitlePage>
             </>
           ) : (
             <>
-              <Typography>Cadastrar novo usuário</Typography>
+              <TitlePage>Cadastrar novo usuário</TitlePage>
             </>
           )}
+        </Grid>
+        <Grid item xs={12} md={4} lg={4}>
           <Paper
             sx={{
               p: 2,
@@ -224,9 +265,8 @@ const User = ({ params }: { params: { id: string } }) => {
                         setAvatar(e.target.files[0]);
                         setViewAvatar(URL.createObjectURL(e.target.files[0]));
                       }}
-                      style={{
-                        display: !avatar ? "inline" : "none",
-                      }}
+                      //@ts-ignore
+                      sx={{ display: !avatar ? "inline" : "none" }}
                     />
                     <PhotoCamera
                       sx={{
@@ -299,126 +339,119 @@ const User = ({ params }: { params: { id: string } }) => {
         <Grid item xs={12} md={8} lg={8}>
           <Paper
             sx={{
-              marginTop: 5,
               p: 2,
               display: "flex",
               flexDirection: "column",
             }}
           >
-            <Grid container spacing={1} sx={{ marginBottom: "2rem" }}>
-              {/* <Grid item xs={12} md={6} lg={6}>
-                  <CustomInput
-                    margin={"normal"}
-                    required
-                    fullWidth
-                    id={"full-name"}
-                    label={"Nome Completo"}
-                    name={"full-name"}
-                    autoComplete={"full-name"}
-                    inputtype={"input"}
-                    variant={"outlined"}
-                    value={fullName}
-                    onChange={(e: any) => setFullName(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                  <CustomInput
-                    margin={"normal"}
-                    required
-                    fullWidth
-                    id={"name"}
-                    label={"Nome no app"}
-                    name={"name"}
-                    autoComplete={"name"}
-                    inputtype={"input"}
-                    variant={"outlined"}
-                    value={name}
-                    onChange={(e: any) => setName(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={12} lg={12}>
-                  <CustomInput
-                    margin={"normal"}
-                    required
-                    fullWidth
-                    id={"email"}
-                    label={"Email"}
-                    name={"email"}
-                    autoComplete={"email"}
-                    inputtype={"input"}
-                    variant={"outlined"}
-                    value={email}
-                    onChange={(e: any) => setEmail(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                  <CustomInput
-                    margin={"normal"}
-                    required
-                    fullWidth
-                    id={"password"}
-                    label={"Senha"}
-                    name={"password"}
-                    autoComplete={"password"}
-                    inputtype={"input"}
-                    variant={"outlined"}
-                    type="password"
-                    value={password}
-                    onChange={(e: any) => setPassword(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={6} lg={6}>
-                  <CustomInput
-                    margin={"normal"}
-                    required
-                    fullWidth
-                    id={"cpassword"}
-                    label={"Confirmar senha"}
-                    name={"cpassword"}
-                    autoComplete={"cpassword"}
-                    inputtype={"input"}
-                    type="password"
-                    variant={"outlined"}
-                    value={cPassword}
-                    onChange={(e: any) => setCPassword(e.target.value)}
-                  />
-                </Grid>
-                <Grid item xs={12} md={12} lg={12}>
-                  <CustomSelectChip
-                    title="Papeis"
-                    items={allRoles}
-                    selectedItems={selectRoles}
-                    setSelectedItems={setSelectRoles}
-                  />
-                </Grid> */}
-            </Grid>
-            <Divider variant="middle" />
-            <Grid
-              container
-              spacing={2}
-              sx={{
-                marginY: "1rem",
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "end",
+            <Formik
+              initialValues={initialValues}
+              enableReinitialize={true}
+              validationSchema={UserSchema()}
+              onSubmit={(values: FormValues, { setSubmitting }) => {
+                console.log(values);
               }}
             >
-              <Grid item xs={12} md={2} lg={2}>
-                <Button variant="outlined" fullWidth onClick={() => {}}>
-                  Voltar
-                </Button>
-              </Grid>
-              <Grid item xs={12} md={2} lg={2}>
-                <Button
-                  onClick={() => handleUploadSendForm()}
-                  variant="contained"
-                  fullWidth
-                  sx={{ color: "#fff" }}
+              <Form>
+                <Grid container spacing={1} sx={{ marginBottom: "2rem" }}>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputText
+                      required
+                      id="fullname"
+                      name="fullname"
+                      type="text"
+                      variant="outlined"
+                      label="Nome Completo"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputText
+                      required
+                      id="name"
+                      name="name"
+                      type="text"
+                      variant="outlined"
+                      label="Nome no app"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputPassword
+                      required
+                      id="password"
+                      name="password"
+                      type="password"
+                      variant="outlined"
+                      label="Senha"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputPassword
+                      required
+                      id="cpassword"
+                      name="cpassword"
+                      type="password"
+                      variant="outlined"
+                      label="Confirmar senha"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={12} lg={12}>
+                    <InputText
+                      required
+                      id="email"
+                      name="email"
+                      type="text"
+                      variant="outlined"
+                      label="E-mail"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                  <Grid item xs={12} md={12} lg={12}>
+                    <InputSelectChip
+                      label="Papeis"
+                      id="roles"
+                      name="roles"
+                      data={rolesList}
+                    />
+                  </Grid>
+                </Grid>
+                <Divider variant="middle" />
+                <Grid
+                  container
+                  spacing={2}
+                  sx={{
+                    marginY: "1rem",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "end",
+                  }}
                 >
-                  Salvar
-                </Button>
-              </Grid>
-            </Grid>
+                  <Grid item xs={12} md={2} lg={2}>
+                    <Button variant="outlined" fullWidth onClick={() => {}}>
+                      Voltar
+                    </Button>
+                  </Grid>
+                  <Grid item xs={12} md={2} lg={2}>
+                    <Button
+                      onClick={() => handleUploadSendForm()}
+                      variant="contained"
+                      fullWidth
+                      sx={{ color: "#fff" }}
+                    >
+                      Salvar
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Form>
+            </Formik>
           </Paper>
         </Grid>
       </Grid>

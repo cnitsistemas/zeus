@@ -1,37 +1,9 @@
 "use client";
-import {
-  Alert,
-  AlertIcon,
-  Box,
-  Button,
-  Container,
-  Flex,
-  Heading,
-  IconButton,
-  Table,
-  TableContainer,
-  Tbody,
-  Td,
-  Text,
-  Th,
-  Thead,
-  Tooltip,
-  Tr,
-  useToast,
-  Badge,
-} from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { FaEye, FaEdit, FaTrash, FaLock } from "react-icons/fa";
-import { InfoIcon } from "lucide-react";
-// import Pagination from "@/components/pagination";
-import Dialog from "@/components/dialog";
-import { FaPlus } from "react-icons/fa";
+import { FaEdit, FaTrash, FaLock } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-// import BreadcrumbComponent from "@/components/breadcrumb";
-import TableSkeleton from "@/components/table-skeleton";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { RouteState } from "@/store/modules/routes/routesReducers";
 import { UserState } from "@/store/modules/users/usersReducers";
 import {
   applyRoleToUser,
@@ -40,15 +12,41 @@ import {
 } from "@/store/modules/users/usersActions";
 import moment from "moment";
 import AssignmentRoles from "./roles";
-import ModalComponent from "@/components/modal";
 import { fetchAllRoles } from "@/store/modules/roles/rolesActions";
 import { RoleState } from "@/store/modules/roles/rolesReducers";
+import {
+  Alert,
+  Button,
+  Chip,
+  Grid,
+  IconButton,
+  Link,
+  Pagination,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import BreadcrumbComponent from "@/components/BreadcrumbComponent";
+import { TitlePage } from "./style";
+import CustomTootip from "@/components/CustomTootip";
+import AddIcon from "@mui/icons-material/Add";
+import { useToast } from "@chakra-ui/react";
+import CustomizedDialogs from "@/components/CustomDialog";
 
-const breadcrumbItens: Array<any> = [
-  { name: "Inicio", link: "/" },
-  { name: "Usuários", link: null },
+const breadcrumbItens = [
+  <Link underline="hover" key="1" color="inherit" href="/" onClick={() => {}}>
+    Inicio
+  </Link>,
+  <Typography key="2" color="#ff7a2d" sx={{ fontSize: 14 }}>
+    Usuários
+  </Typography>,
 ];
-
 function UsersPage() {
   const router = useRouter();
   const toast = useToast();
@@ -58,9 +56,6 @@ function UsersPage() {
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
   const [selectedUser, setSelectedUser] = useState<any>({});
   const [viewDialog, setViewDialog] = useState(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [currentTotalPages, setCurrentTotalPages] = useState<number>(1);
-  const [currentTotalResults, setCurrentTotalResults] = useState<number>(1);
   const [selectRoles, setSelectRoles] = useState([]);
   const [rolesList, setRolesList] = useState([]);
 
@@ -72,8 +67,6 @@ function UsersPage() {
     (userState && userState.pagination && userState.pagination.totalPages) || 1;
   const selectedPage =
     (userState && userState.pagination && userState.pagination.page) || 1;
-  const total =
-    (userState && userState.pagination && userState.pagination.total) || 1;
   const allRoles = (roleState && roleState.allRoles) || null;
 
   useEffect(() => {
@@ -103,16 +96,9 @@ function UsersPage() {
     }
   }, [users]);
 
-  useEffect(() => {
-    if (selectedPage) setCurrentPage(selectedPage);
-    if (totalPages) setCurrentTotalPages(totalPages);
-    if (total) setCurrentTotalResults(total);
-  }, [page, totalPages, total, selectedPage]);
-
-  const handlePageChange = (page: number): void => {
-    setIsLoading(true);
-    setCurrentPage(page);
-    dispatch(fetchUsers(page)).then(() => {
+  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
+    setPage(value);
+    dispatch(fetchUsers(value)).then(() => {
       setIsLoading(false);
     });
   };
@@ -162,14 +148,11 @@ function UsersPage() {
     });
   };
 
-  const handleApplyRoleToUser = () => {
+  const handleApplyRoleToUser = (role: any) => {
     handleCloseViewDialog();
-    const newRoles = selectRoles.map((role: any) => {
-      return role.label;
-    });
     dispatch(
-      applyRoleToUser({ id: selectedUser?.id, data: { roles: newRoles } })
-    ).then((response) => {
+      applyRoleToUser({ id: selectedUser?.id, data: { roles: role?.roles } })
+    ).then((response: any) => {
       if (response.success) {
         toast({
           title: "Sucesso",
@@ -198,220 +181,264 @@ function UsersPage() {
   };
 
   return (
-    <Container maxW="container.2xl" px={{ xl: 20, sm: 0 }}>
-      {/* <BreadcrumbComponent breadcrumbItens={breadcrumbItens} /> */}
-      <Flex
-        flexDirection={"row"}
-        justifyContent={"space-between"}
-        alignItems={"center"}
-      >
-        <Flex flexDirection={"column"}>
-          <Flex fontSize={8} flexDirection={"row"} alignItems={"center"}>
-            <Heading size="lg" color="primary.400" mr={2}>
-              Usuários
-            </Heading>
-            <Tooltip
-              hasArrow
-              label="Esta área é responsável por cadastrar, visualizar, 
-									editar e deletar usuários. Além disso, é possível atribuir ou remover papéis/perfis para 
-                  gerenciar as permissões de acesso desses usuários no sistema."
-              bg="gray.100"
-              color="black"
-            >
-              <InfoIcon size={15} />
-            </Tooltip>
-          </Flex>
-          <Text color="gray.600" my={4} mx={2}>
-            Os usuários são responsáveis por gerenciar e realizar ações dentro
-            do sistema.
-          </Text>
-        </Flex>
-        <Button
-          w="48"
-          onClick={() => router.push("/usuarios/new")}
-          leftIcon={<FaPlus />}
-          bg="primary.400"
-          color={"white"}
-          _hover={{
-            bg: "primary.500",
-          }}
-        >
-          Cadastrar
-        </Button>
-      </Flex>
-
-      {isLoading ? (
-        <TableSkeleton />
-      ) : users && users.length > 0 ? (
-        <>
-          <Box border="1px" borderColor="gray.100" px={4} borderRadius={10}>
-            <TableContainer mt={10}>
-              <Table variant="simple">
-                <Thead>
-                  <Tr>
-                    <Th>Nome</Th>
-                    <Th>Email</Th>
-                    <Th>Papeis</Th>
-                    <Th>Data de Criação</Th>
-                    <Th></Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {rows &&
-                    rows.length > 0 &&
-                    rows.map((row, index) => {
-                      return (
-                        <>
-                          <Tr key={index}>
-                            <Td>{row.name}</Td>
-                            <Td>{row.email}</Td>
-                            <Td>
-                              {row.roles && row.roles.length > 0 ? (
-                                row.roles.map((role: any, index: any) => (
-                                  <Badge
-                                    background="orange.500"
-                                    color="white"
-                                    key={index}
-                                    marginRight={2}
+    <>
+      <Grid container spacing={3}>
+        <Grid item xs={12} md={12} lg={12}>
+          <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
+        </Grid>
+        <Grid item xs={12} md={12} lg={12}>
+          <Paper elevation={0} sx={{ padding: 5 }}>
+            <Grid container spacing={3}>
+              <Grid item xs={6} md={8} lg={8}>
+                <TitlePage component={"h1"}>
+                  Alunos
+                  <CustomTootip
+                    placement="right"
+                    content={`Esta área é responsável por cadastrar, visualizar, 
+                    editar e deletar usuários. Além disso, é possível atribuir ou remover papéis/perfis para gerenciar as permissões de acesso desses usuários no sistema. `}
+                  />
+                </TitlePage>
+                <Typography
+                  component={"h1"}
+                  sx={{ fontSize: "14px", color: "#666666" }}
+                  gutterBottom
+                >
+                  Os usuários são responsáveis por gerenciar e realizar ações
+                  dentro do sistema.
+                </Typography>
+              </Grid>
+              <Grid
+                item
+                xs={6}
+                md={4}
+                lg={4}
+                sx={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "end",
+                  alignItems: "end",
+                }}
+                onClick={() => {
+                  router.push("usuarios/novo");
+                }}
+              >
+                <Button
+                  variant="contained"
+                  disableElevation
+                  sx={{
+                    color: "#fff",
+                    height: 40,
+                    fontSize: "12px",
+                  }}
+                  startIcon={<AddIcon />}
+                >
+                  Cadastar
+                </Button>
+              </Grid>
+              {users && users.length > 0 ? (
+                <>
+                  <Grid item xs={12} md={12} lg={12}>
+                    <TableContainer sx={{ paddingX: "1rem" }}>
+                      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <TableHead>
+                          <TableRow>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Nome
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Email
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Papeis
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}>
+                              Data da Criação
+                            </TableCell>
+                            <TableCell sx={{ fontWeight: "bold" }}></TableCell>
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {rows &&
+                            rows.length > 0 &&
+                            rows.map((row) => (
+                              <TableRow
+                                key={row.id}
+                                sx={{
+                                  "&:last-child td, &:last-child th": {
+                                    border: 0,
+                                  },
+                                }}
+                              >
+                                <TableCell component="td" scope="row">
+                                  {row.name}
+                                </TableCell>
+                                <TableCell component="td" scope="row">
+                                  {row.email}
+                                </TableCell>
+                                <TableCell component="td" scope="row">
+                                  {row.roles && row.roles.length > 0 ? (
+                                    row.roles.map((role: any) => (
+                                      <Chip
+                                        key={role.id}
+                                        label={role.name}
+                                        variant="filled"
+                                        color="info"
+                                        size="small"
+                                        sx={{ mr: 1, color: "white" }}
+                                      />
+                                    ))
+                                  ) : (
+                                    <></>
+                                  )}
+                                </TableCell>
+                                <TableCell component="td" scope="row">
+                                  {moment(row.create).format(
+                                    "DD-MM-YYYY HH:mm"
+                                  )}
+                                </TableCell>
+                                <TableCell
+                                  component="th"
+                                  scope="row"
+                                  align="center"
+                                  sx={{ minWidth: "170px" }}
+                                >
+                                  <Tooltip
+                                    title="Visualizar Aluno"
+                                    placement="top"
                                   >
-                                    {role.name}
-                                  </Badge>
-                                ))
-                              ) : (
-                                <></>
-                              )}
-                            </Td>
-                            <Td>
-                              {moment(row.create).format("DD-MM-YYYY HH:mm")}
-                            </Td>
-                            <Td
-                              display="flex"
-                              flexDirection="row"
-                              justifyContent="center"
-                            >
-                              <Tooltip
-                                hasArrow
-                                label="Editar Papeis"
-                                bg="gray.200"
-                                color="black"
-                              >
-                                <IconButton
-                                  size="lg"
-                                  variant="ghost"
-                                  aria-label="editar papeis"
-                                  color="green.500"
-                                  icon={<FaLock />}
-                                  onClick={() => {
-                                    setSelectedUser(row);
-                                    setSelectRoles(
-                                      row.roles.map((role: any) => {
-                                        return {
-                                          value: role.id,
-                                          label: role.name,
-                                        };
-                                      })
-                                    );
-                                    handleOpenViewDialog();
-                                  }}
-                                />
-                              </Tooltip>
-                              <Tooltip
-                                hasArrow
-                                label="Editar usuario"
-                                bg="gray.200"
-                                color="black"
-                              >
-                                <IconButton
-                                  size="lg"
-                                  variant="ghost"
-                                  aria-label="editar usuario"
-                                  icon={<FaEdit />}
-                                  onClick={() => {
-                                    router.push(`/usuarios/${row.id}`);
-                                  }}
-                                />
-                              </Tooltip>
-                              <Tooltip
-                                hasArrow
-                                label="Deletar usuario"
-                                bg="gray.200"
-                                color="black"
-                              >
-                                <IconButton
-                                  size="lg"
-                                  variant="ghost"
-                                  colorScheme="red"
-                                  aria-label="deletar usuario"
-                                  icon={<FaTrash />}
-                                  onClick={() => {
-                                    setSelectedUser(row);
-                                    handleOpenDeleteDialog();
-                                  }}
-                                />
-                              </Tooltip>
-                            </Td>
-                          </Tr>
-                        </>
-                      );
-                    })}
-                </Tbody>
-              </Table>
-            </TableContainer>
-          </Box>
-        </>
-      ) : (
-        <Alert status="info">
-          <AlertIcon />
-          Não há usuários cadastrados nessa sessão! Adicione usuários clicando
-          no botão de cadastro
-        </Alert>
-      )}
-      {/* 
-      {users && users.length > 0 && <Pagination
-        onPageChange={handlePageChange}
-        totalCount={currentTotalResults}
-        siblingCount={1}
-        currentPage={currentPage}
-        pageSize={currentTotalPages}
-        className="mb-10"
-      />} */}
-
-      {selectedUser && allRoles && (
-        <ModalComponent
-          title={`Editar papeis do usuário`}
-          content={
-            <AssignmentRoles
-              allRoles={rolesList}
-              selectRoles={selectRoles}
-              setSelectRoles={handleSelectRoles}
-            />
-          }
-          confirmButton={true}
-          cancelButton={true}
-          confirmButtonText="Salvar papéis do usuário"
-          cancelButtonText="Fechar"
-          handleConfirm={handleApplyRoleToUser}
-          confirmButtonError={false}
-          openDialog={viewDialog}
-          setCloseDialog={handleCloseViewDialog}
-          size="4xl"
-        />
-      )}
-
-      <Dialog
-        title="Deletar Usuário?"
-        content={`Tem certeza que deseja deletar ${selectedUser.name}?`}
-        cancelButton={true}
-        cancelButtonText="Não"
-        confirmButton={true}
-        confirmButtonError={true}
-        confirmButtonText="Sim"
-        handleConfirm={handleDeleteUser}
-        openDialog={deleteDialog}
-        setCloseDialog={handleCloseDeleteDialog}
-        size="xl"
+                                    <IconButton
+                                      color="success"
+                                      aria-label="view student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        handleSelectRoles(row.roles);
+                                        setSelectedUser(row);
+                                        handleOpenViewDialog();
+                                      }}
+                                    >
+                                      <FaLock />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip
+                                    title="Editar Alunos"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      color="primary"
+                                      aria-label="edit student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        router.push(`estudantes/${row.id}`);
+                                      }}
+                                    >
+                                      <FaEdit />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip
+                                    title="Deletar Alunos"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      color="error"
+                                      aria-label="delete student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        setSelectedUser(row);
+                                        handleOpenDeleteDialog();
+                                      }}
+                                    >
+                                      <FaTrash />
+                                    </IconButton>
+                                  </Tooltip>
+                                </TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                  </Grid>
+                  <Grid
+                    item
+                    xs={12}
+                    md={12}
+                    lg={12}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "row",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Pagination
+                      color="secondary"
+                      count={totalPages}
+                      page={page}
+                      onChange={handleChange}
+                    />
+                  </Grid>
+                </>
+              ) : (
+                <>
+                  <Grid item xs={12} md={12} lg={12}>
+                    <Alert severity="info">
+                      Não há usuários cadastrados nessa sessão! Adicione
+                      usuários clicando no botão de cadastro.
+                    </Alert>
+                  </Grid>
+                </>
+              )}
+            </Grid>
+          </Paper>
+        </Grid>
+      </Grid>
+      <CustomizedDialogs
+        open={viewDialog}
+        handleClose={handleCloseViewDialog}
+        title={`${selectedUser.name}`}
+        content={
+          <AssignmentRoles
+            allRoles={rolesList}
+            selectRoles={selectRoles}
+            handleClose={handleCloseViewDialog}
+            handleApplyRoleToUser={handleApplyRoleToUser}
+          />
+        }
+        confirmButton={false}
+        cancelButton={false}
+        confirmButtonText=""
+        cancelButtonText=""
+        handleConfirm={() => {}}
+        confirmButtonError={false}
+        fullWidth={true}
+        maxWidth={"sm"}
+        dividers={false}
+        textAling="start"
       />
-    </Container>
+      <CustomizedDialogs
+        open={deleteDialog}
+        handleClose={handleCloseDeleteDialog}
+        title={`Deletar usuário`}
+        content={`Tem certeza que deseja deletar usuário ${selectedUser.name}?`}
+        confirmButton={true}
+        cancelButton={true}
+        confirmButtonText="Sim"
+        cancelButtonText="Não"
+        handleConfirm={handleDeleteUser}
+        confirmButtonError={true}
+        fullWidth={true}
+        maxWidth={"xs"}
+        dividers={true}
+        textAling="start"
+      />
+    </>
   );
 }
 

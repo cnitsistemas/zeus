@@ -30,8 +30,8 @@ export const handleSingIn =
         return result;
       }
       return result;
-    } catch (e: unknown) {
-      console.log(e);
+    } catch (e: any) {
+      return e?.response
     }
   };
 

@@ -54,9 +54,6 @@ function StudentsPage() {
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
   const [selectedStudent, setSelectedStudent] = useState<any>({});
   const [viewDialog, setViewDialog] = useState(false);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [currentTotalPages, setCurrentTotalPages] = useState<number>(1);
-  const [currentTotalResults, setCurrentTotalResults] = useState<number>(1);
   const studantState = useSelector(StudantState);
   const routeState = useSelector(RouteState);
   const dispatch = useAppDispatch();
@@ -93,22 +90,11 @@ function StudentsPage() {
     }
   }, [students]);
 
-  useEffect(() => {
-    if (selectedPage) setCurrentPage(selectedPage);
-    if (totalPages) setCurrentTotalPages(totalPages);
-    if (total) setCurrentTotalResults(total);
-  }, [page, totalPages, total, selectedPage]);
-
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
     dispatch(fetchStudents(value)).then(() => {
       setIsLoading(false);
     });
-  };
-
-  const handlePageChange = (page: number) => {
-    setIsLoading(true);
-    setCurrentPage(page);
   };
 
   const handleOpenDeleteDialog = (): void => {
@@ -175,7 +161,7 @@ function StudentsPage() {
           <Paper elevation={0} sx={{ padding: 5 }}>
             <Grid container spacing={3}>
               <Grid item xs={6} md={8} lg={8}>
-                <TitlePage>
+                <TitlePage component={"h1"}>
                   Alunos
                   <CustomTootip
                     placement="right"
@@ -184,6 +170,7 @@ function StudentsPage() {
                   />
                 </TitlePage>
                 <Typography
+                  component={"h1"}
                   sx={{ fontSize: "14px", color: "#666666" }}
                   gutterBottom
                 >

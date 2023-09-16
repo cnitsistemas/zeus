@@ -7,7 +7,7 @@ export const fetchAddressByCEP = (cep: any) => async (dispatch: Dispatch) => {
   try {
     const noMaskCep = cep.replace(/\.|-/g, "") || "";
 
-    const url = `https://viacep.com.br/ws/${noMaskCep}/json/`;
+    const url = `https://brasilapi.com.br/api/cep/v2/${noMaskCep}`;
     const result = await axios.get(url);
     const mappedResult = mapAddressByCEP(result.data);
     const response = mappedResult;
@@ -29,4 +29,16 @@ export const setCEP = (cep: String) => (dispatch: Dispatch) => {
     type: actionTypes.SET_CEP,
     payload: cep,
   });
+}
+
+export const getAccessTokenConecta = () => async (dispatch: Dispatch) => {
+  try {
+    const url = `https://h-apigateway.conectagov.estaleiro.serpro.gov.br/oauth2/jwt-token`;
+    const result = await axios.get(url);
+
+    console.log(result);
+  }
+  catch {
+
+  }
 }

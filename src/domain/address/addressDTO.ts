@@ -1,25 +1,25 @@
 interface Address {
-  logradouro: String;
+  street: String;
   numero: String;
   complemento: String;
   reference: String;
-  bairro: String;
+  neighborhood: String;
   cep: String;
-  localidade: String;
-  uf: String;
+  city: String;
+  state: String;
   type: Number;
   erro: String;
 }
 export const mapAddressByCEP = (data: Address) => {
   return {
-    main: data["logradouro"],
+    main: data["street"],
     number: "",
     complement: data["complemento"],
     reference: "",
-    neighborhood: data["bairro"],
+    neighborhood: data["neighborhood"],
     cep: data["cep"],
-    city: data["localidade"],
-    state: data["uf"],
+    city: data["city"],
+    state: data["state"],
     type: 0,
     error: data["erro"],
   };
