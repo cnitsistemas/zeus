@@ -191,7 +191,7 @@ function UsersPage() {
             <Grid container spacing={3}>
               <Grid item xs={6} md={8} lg={8}>
                 <TitlePage component={"h1"}>
-                  Alunos
+                  Usuários
                   <CustomTootip
                     placement="right"
                     content={`Esta área é responsável por cadastrar, visualizar, 
@@ -334,7 +334,7 @@ function UsersPage() {
                                         fontSize: "16px",
                                       }}
                                       onClick={() => {
-                                        router.push(`estudantes/${row.id}`);
+                                        router.push(`usuarios/${row.id}`);
                                       }}
                                     >
                                       <FaEdit />

@@ -31,10 +31,19 @@ import { InputPassword } from "@/components/_forms/Inputs/InputPassword";
 import { UserSchema } from "@/validators/userSchema";
 // import CustomBreadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
 // import { DAFAULT_AVATAR } from "../../config";
-// import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
-// import { storage } from "../../firebase";
+import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
+import { storage } from "@/services/firebase";
 // import CustomProgress from "../../components/CustomProgress";
-// import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from "uuid";
+import { Store } from "react-notifications-component";
+import {
+  createUsers,
+  editUser,
+  fetchUserId,
+} from "@/store/modules/users/usersActions";
+import { useAppDispatch } from "@/hooks/useRedux";
+import CustomProgress from "@/components/CustomProgress";
+import { useRouter } from "next/navigation";
 
 const breadcrumbsItens = [
   <Link underline="hover" key="1" color="inherit" href="/" onClick={() => {}}>
@@ -74,18 +83,12 @@ const defaultValues: FormValues = {
 
 const User = ({ params }: { params: { id: string } }) => {
   const { id } = params;
-  const [userId, setUserId] = useState("");
+  const router = useRouter();
+  const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [cPassword, setCPassword] = useState("");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState<Blob | null>(null);
   const [viewAvatar, setViewAvatar] = useState("");
   const [urlAvatar, setUrlAvatar] = useState("");
-  const [name, setName] = useState("");
-  const [selectRoles, setSelectRoles] = useState([]);
   const [percent, setPercent] = useState(0);
   const [viewProgressUpload, setViewProgressUpload] = useState(false);
   const [rolesList, setRolesList] = useState([]);
@@ -93,24 +96,38 @@ const User = ({ params }: { params: { id: string } }) => {
   const roleState = useSelector(RoleState);
   const allRoles = (roleState && roleState.allRoles) || null;
 
-  // useEffect(() => {
-  //   if (id) {
-  //     setUserId(id);
-  //     fetchUserId(id).then((res: any) => {
-  //       if (res.success) {
-  //         setName(res.data?.name);
-  //         setEmail(res.data?.email);
-  //         setPhone(res.data?.phone);
-  //         setUrlAvatar(res.data?.avatar);
-  //         setFullName(res.data?.fullName);
-  //         setSelectRoles(res.data?.roles);
-  //       } else {
-  //         // NotificationManager.error('Erro ao carregar aluno!', 'Erro');
-  //       }
-  //     })
-  //       .catch((e: any) => console.warn(e))
-  //   }
-  // }, [fetchUserId, id]);
+  useEffect(() => {
+    if (id && id !== "novo") {
+      dispatch(fetchUserId(id))
+        .then((res: any) => {
+          if (res.success) {
+            const values: FormValues = {
+              name: res.data?.name,
+              fullname: res.data?.fullname,
+              email: res.data?.email,
+              password: "",
+              cpassword: "",
+              roles: res.data?.roles,
+            };
+            setUrlAvatar(res.data?.avatar);
+            setInitialValues(values);
+          } else {
+            Store.addNotification({
+              title: "Error!",
+              message:
+                "Falha ao carregar dados do usuário. Por favor, tente mais tarde!",
+              type: "danger",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+          }
+        })
+        .catch((e: any) => console.warn(e));
+    }
+  }, [dispatch, id]);
   useEffect(() => {
     if (allRoles && allRoles.length > 0) {
       setRolesList(
@@ -121,76 +138,122 @@ const User = ({ params }: { params: { id: string } }) => {
     }
   }, [allRoles]);
 
-  const clearStatesForm = () => {
-    setName("");
-    setEmail("");
-    setPassword("");
-    setCPassword("");
-    setFullName("");
-    setSelectRoles([]);
-    setAvatar(null);
-    setViewAvatar("");
+  const handleUploadSendForm = async (values: FormValues) => {
+    if (urlAvatar) {
+      handleSendForm(urlAvatar);
+    } else {
+      setViewProgressUpload(true);
+      if (!avatar) {
+        Store.addNotification({
+          title: "Erro Imagem!",
+          message: "É necessario adicionar uma imagem para o usuário!",
+          type: "danger",
+          insert: "top",
+          container: "top-right",
+          animationIn: ["animate__animated", "animate__fadeIn"],
+          animationOut: ["animate__animated", "animate__fadeOut"],
+          dismiss: { duration: 4000 },
+        });
+        setViewProgressUpload(false);
+        return;
+      }
+      const storageRef = ref(storage, `users/${uuidv4()}`);
+      const uploadTask = uploadBytesResumable(storageRef, avatar);
+      uploadTask.on(
+        "state_changed",
+        (snapshot) => {
+          const percent = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setPercent(percent);
+        },
+        (err) => console.log(err),
+        () => {
+          setViewProgressUpload(false);
+          getDownloadURL(uploadTask.snapshot.ref).then((url) => {
+            handleSendForm({
+              ...values,
+              url: url,
+            });
+          });
+        }
+      );
+    }
   };
 
-  const handleUploadSendForm = async () => {
-    // if (urlAvatar) {
-    //   handleSendForm(urlAvatar);
-    // } else {
-    //   setViewProgressUpload(true);
-    //   if (!avatar) {
-    //     // NotificationManager.error('É necessario adicionar uma imagem para o usuário!', 'Erro Imagem');
-    //     setViewProgressUpload(false);
-    //     return;
-    //   }
-    //   const storageRef = ref(storage, `users/${uuidv4()}`);
-    //   const uploadTask = uploadBytesResumable(storageRef, avatar);
-    //   uploadTask.on("state_changed",
-    //     (snapshot) => {
-    //       const percent = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-    //       setPercent(percent);
-    //     },
-    //     (err) => console.log(err),
-    //     () => {
-    //       setViewProgressUpload(false);
-    //       getDownloadURL(uploadTask.snapshot.ref).then((url) => { handleSendForm(url) });
-    //     }
-    //   );
-    // }
-  };
-
-  const handleSendForm = async (imgUrl: any) => {
-    // const data = {
-    //   name: name,
-    //   email: email,
-    //   password: password,
-    //   c_password: cPassword,
-    //   full_name: fullName,
-    //   phone: "",
-    //   avatar: imgUrl || DAFAULT_AVATAR,
-    //   roles: selectRoles,
-    //   _method: userId ? "PUT" : "POST",
-    // };
-    // if (userId) {
-    //   await editUser({ id: userId, data: data }).then((res) => {
-    //     if (res.success) {
-    //       NotificationManager.success('Usuário editado com sucesso!', 'Sucesso');
-    //       clearStatesForm();
-    //     } else {
-    //       NotificationManager.error('Erro ao editar usuário!', 'Erro');
-    //     }
-    //   })
-    //     .catch((e) => console.warn(e))
-    // } else {
-    //   await createUsers(data).then((res) => {
-    //     if (res.success) {
-    //       NotificationManager.success('Usuário cadastrado com sucesso!', 'Sucesso');
-    //       clearStatesForm();
-    //     } else {
-    //       NotificationManager.error('Erro ao cadastrar usuário!', 'Erro');
-    //     }
-    //   })
-    //     .catch((e) => console.warn(e))
-    // }
+  const handleSendForm = async (values: any) => {
+    const data = {
+      name: values.name,
+      email: values.email,
+      password: values.password,
+      c_password: values.cpassword,
+      full_name: values.fullName,
+      phone: "",
+      avatar: values.url || process.env.NEXT_PUBLIC_DAFAULT_AVATAR,
+      roles: values.roles,
+      _method: id !== "novo" ? "PUT" : "POST",
+    };
+    if (id !== "novo") {
+      dispatch(editUser({ id: id, data: data }))
+        .then((res) => {
+          if (res.success) {
+            Store.addNotification({
+              title: "Usuário Editado!",
+              message: "Usuário editado com sucesso!",
+              type: "success",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+            //clearStatesForm();
+          } else {
+            Store.addNotification({
+              title: "Error!",
+              message:
+                "Falha ao tentar editar usuário. Por favor, tente mais tarde!",
+              type: "danger",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+          }
+        })
+        .catch((e) => console.warn(e));
+    } else {
+      dispatch(createUsers(data))
+        .then((res) => {
+          if (res.success) {
+            Store.addNotification({
+              title: "Usuário Cadastrado!",
+              message: "Usuário cadastrado com sucesso!",
+              type: "success",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+            //clearStatesForm();
+          } else {
+            Store.addNotification({
+              title: "Error!",
+              message:
+                "Falha ao tentar cadastrar usuário. Por favor, tente mais tarde!",
+              type: "danger",
+              insert: "top",
+              container: "top-right",
+              animationIn: ["animate__animated", "animate__fadeIn"],
+              animationOut: ["animate__animated", "animate__fadeOut"],
+              dismiss: { duration: 4000 },
+            });
+          }
+        })
+        .catch((e) => console.warn(e));
+    }
   };
 
   const handleChangeAvatar = () => {
@@ -199,13 +262,12 @@ const User = ({ params }: { params: { id: string } }) => {
 
   return (
     <>
-      {/* <Loading isActive={loading} /> */}
       <Grid container spacing={3}>
         <Grid item xs={12} md={12} lg={12}>
           <BreadcrumbComponent breadcrumbItens={breadcrumbsItens} />
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          {userId ? (
+          {id ? (
             <>
               <TitlePage>Editar usuário</TitlePage>
             </>
@@ -331,7 +393,7 @@ const User = ({ params }: { params: { id: string } }) => {
                     Remover Foto
                   </Button>
                 )}
-                {/* {viewProgressUpload && <CustomProgress progress={percent} />} */}
+                {viewProgressUpload && <CustomProgress progress={percent} />}
               </Grid>
             </Grid>
           </Paper>
@@ -350,6 +412,7 @@ const User = ({ params }: { params: { id: string } }) => {
               validationSchema={UserSchema()}
               onSubmit={(values: FormValues, { setSubmitting }) => {
                 console.log(values);
+                handleUploadSendForm(values);
               }}
             >
               <Form>
@@ -435,13 +498,19 @@ const User = ({ params }: { params: { id: string } }) => {
                   }}
                 >
                   <Grid item xs={12} md={2} lg={2}>
-                    <Button variant="outlined" fullWidth onClick={() => {}}>
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      onClick={() => {
+                        router.push(`/usuarios`);
+                      }}
+                    >
                       Voltar
                     </Button>
                   </Grid>
                   <Grid item xs={12} md={2} lg={2}>
                     <Button
-                      onClick={() => handleUploadSendForm()}
+                      type="submit"
                       variant="contained"
                       fullWidth
                       sx={{ color: "#fff" }}

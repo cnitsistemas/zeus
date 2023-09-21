@@ -1,26 +1,30 @@
-import * as React from 'react';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import { Link, Tooltip } from '@mui/material';
-import { styleCustom } from '../style';
+import * as React from "react";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import { Link, Tooltip } from "@mui/material";
+import { styleCustom, styleCustomMenuItem } from "../style";
 import {
   FaUserGraduate,
   FaThLarge,
   FaUserFriends,
-  FaSuitcase
+  FaSuitcase,
 } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 
 const MainListItems = () => {
+  const pathname = usePathname();
+
   return (
     <React.Fragment>
-      <Link
-        href={`/`}
-        underline="none"
-        sx={styleCustom}
-      >
+      <Link href={`/`} underline="none" sx={styleCustom}>
         <Tooltip title="Painel" placement="right" arrow>
-          <ListItemButton>
+          <ListItemButton
+            sx={{
+              ...styleCustomMenuItem,
+              background: pathname === "/" ? "#FA6E1D" : "",
+            }}
+          >
             <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
               <FaThLarge />
             </ListItemIcon>
@@ -28,13 +32,14 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <Link
-        href={`/estudantes`}
-        underline="none"
-        sx={styleCustom}
-      >
+      <Link href={`/estudantes`} underline="none" sx={styleCustom}>
         <Tooltip title="Estudantes" placement="right" arrow>
-          <ListItemButton>
+          <ListItemButton
+            sx={{
+              ...styleCustomMenuItem,
+              background: pathname === "/estudantes" ? "#FA6E1D" : "",
+            }}
+          >
             <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
               <FaUserGraduate />
             </ListItemIcon>
@@ -42,13 +47,14 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-      <Link
-        href={`/usuarios`}
-        underline="none"
-        sx={styleCustom}
-      >
+      <Link href={`/usuarios`} underline="none" sx={styleCustom}>
         <Tooltip title="Usuários" placement="right" arrow>
-          <ListItemButton>
+          <ListItemButton
+            sx={{
+              ...styleCustomMenuItem,
+              background: pathname === "/usuarios" ? "#FA6E1D" : "",
+            }}
+          >
             <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
               <FaUserFriends />
             </ListItemIcon>
@@ -58,6 +64,6 @@ const MainListItems = () => {
       </Link>
     </React.Fragment>
   );
-}
+};
 
 export default MainListItems;

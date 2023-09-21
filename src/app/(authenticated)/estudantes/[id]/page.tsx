@@ -294,7 +294,15 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
           <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          <TitlePage>Cadastrar Membro</TitlePage>
+          {id ? (
+            <>
+              <TitlePage>Editar aluno</TitlePage>
+            </>
+          ) : (
+            <>
+              <TitlePage>Cadastrar novo aluno</TitlePage>
+            </>
+          )}{" "}
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
           <Paper

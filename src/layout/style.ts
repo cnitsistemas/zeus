@@ -91,10 +91,22 @@ export const HeaderIcon = styled(IconButton)<IconButtonProps>(() => ({
 
 export const styleCustom = {
   color: "white",
+  background: "blue",
   "&:hover": {
     color: "white",
     textDecoration: "none",
-    backgroundColor: "black",
+    background: "black",
+  },
+};
+
+export const styleCustomMenuItem = {
+  mt: 1,
+  color: "white",
+  borderRadius: "10px",
+  "&:hover": {
+    color: "white",
+    background: "#FA6E1D",
+    borderRadius: "10px"
   },
 };
 

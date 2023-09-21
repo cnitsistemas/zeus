@@ -34,12 +34,22 @@ export const fetchUserId = (id: any) => async (dispatch: Dispatch) => {
     const apiResponse = await api.get(url);
     const response = mapFetchUserResponseId(apiResponse.data.data);
 
-    dispatch({
-      type: actionTypes.GET_USERS_ID,
-      payload: response
-    })
+    if (apiResponse?.data.success) {
+      dispatch({
+        type: actionTypes.GET_USERS_ID,
+        payload: response,
+      });
 
-    return response;
+      return {
+        ...apiResponse.data,
+        data: response,
+      };
+    } else {
+      return {
+        ...apiResponse.data,
+        data: response,
+      };
+    }
   } catch (e) {
     console.log(e);
   }
