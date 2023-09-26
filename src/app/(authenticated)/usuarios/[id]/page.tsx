@@ -10,16 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { connect, useSelector } from "react-redux";
-// import { CustomInput } from "../../components/Common/CustomInput/CustomInput";
-// import DashboardLayout from "../../themes/dashboard/DashboardLayout";
-// import Title from "../../themes/dashboard/Title";
-// import Loading from "../../components/Loading";
-// import { fetchUserId, createUsers, editUser } from "../../redux/actions/users";
-// // import { NotificationContainer, NotificationManager } from 'react-notifications';
-// import 'react-notifications/lib/notifications.css';
-// import CustomSelectChip from "../../components/CustomSelectChip";
-// import { fetchAllRoles } from "../../redux/actions/roles";
+import { useSelector } from "react-redux";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import { Form, Formik } from "formik";
@@ -29,11 +20,8 @@ import { RoleState } from "@/store/modules/roles/rolesReducers";
 import InputSelectChip from "@/components/_forms/Inputs/InputSelectChip";
 import { InputPassword } from "@/components/_forms/Inputs/InputPassword";
 import { UserSchema } from "@/validators/userSchema";
-// import CustomBreadcrumbs from "../../components/Breadcrumbs/Breadcrumbs";
-// import { DAFAULT_AVATAR } from "../../config";
 import { ref, getDownloadURL, uploadBytesResumable } from "firebase/storage";
 import { storage } from "@/services/firebase";
-// import CustomProgress from "../../components/CustomProgress";
 import { v4 as uuidv4 } from "uuid";
 import { Store } from "react-notifications-component";
 import {
@@ -267,7 +255,7 @@ const User = ({ params }: { params: { id: string } }) => {
           <BreadcrumbComponent breadcrumbItens={breadcrumbsItens} />
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          {id ? (
+          {id && id !== "novo" ? (
             <>
               <TitlePage>Editar usuário</TitlePage>
             </>

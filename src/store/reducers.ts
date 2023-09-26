@@ -5,6 +5,7 @@ import RouteReducer from "./modules/routes/routesReducers";
 import AddressReducer from "./modules/address/addressReducers";
 import UserReducer from "./modules/users/usersReducers";
 import RolesReducer from "./modules/roles/rolesReducers";
+import PermissionsReducer from "./modules/permissions/permissionsReducers";
 
 const reducers = combineReducers({
   singin: SingInReducer,
@@ -12,7 +13,8 @@ const reducers = combineReducers({
   routes: RouteReducer,
   address: AddressReducer,
   users: UserReducer,
-  roles: RolesReducer
+  roles: RolesReducer,
+  permissions: PermissionsReducer
 });
 
 export default reducers;

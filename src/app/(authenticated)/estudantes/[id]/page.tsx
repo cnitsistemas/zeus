@@ -294,7 +294,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
           <BreadcrumbComponent breadcrumbItens={breadcrumbItens} />
         </Grid>
         <Grid item xs={12} md={12} lg={12}>
-          {id ? (
+          {id && id !== "novo" ? (
             <>
               <TitlePage>Editar aluno</TitlePage>
             </>

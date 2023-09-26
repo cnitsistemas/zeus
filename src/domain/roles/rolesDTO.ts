@@ -1,7 +1,7 @@
 export const mapFetchRolesResponse = (data: any) => {
     return data["data"].map((item: any) => {
         return {
-            value: item['id'],
+            id: item['id'],
             name: item['name'],
             guard_name: item['guard_name'],
             created_at: item['created_at'],

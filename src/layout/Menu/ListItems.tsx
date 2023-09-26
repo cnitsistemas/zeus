@@ -9,6 +9,7 @@ import {
   FaThLarge,
   FaUserFriends,
   FaSuitcase,
+  FaUserCog,
 } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
@@ -59,6 +60,21 @@ const MainListItems = () => {
               <FaUserFriends />
             </ListItemIcon>
             <ListItemText primary="Usuários" />
+          </ListItemButton>
+        </Tooltip>
+      </Link>
+      <Link href={`/papeis`} underline="none" sx={styleCustom}>
+        <Tooltip title="Papéis" placement="right" arrow>
+          <ListItemButton
+            sx={{
+              ...styleCustomMenuItem,
+              background: pathname === "/papeis" ? "#FA6E1D" : "",
+            }}
+          >
+            <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
+              <FaUserCog />
+            </ListItemIcon>
+            <ListItemText primary="Papéis" />
           </ListItemButton>
         </Tooltip>
       </Link>
