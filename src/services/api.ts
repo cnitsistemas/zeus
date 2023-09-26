@@ -1,14 +1,6 @@
 // api.ts
 import axios from "axios";
 
-type LoginResponse = {
-  success: boolean;
-  result: {
-    accessToken: string;
-  };
-  errors: null;
-};
-
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
@@ -25,13 +17,6 @@ export const getBearerToken = () => {
   const Authorization: string = `${sessionUser.auth.tokenType} ${sessionUser.auth.accessToken}`;
 
   return Authorization;
-};
-
-export const refreshAccessToken = async () => {
-  const response = await api.get<LoginResponse>(
-    "api/v1/Account/PreRegisterPharmacy/GenerateFlowToken",
-  );
-  return response.data;
 };
 
 api.interceptors.request.use(

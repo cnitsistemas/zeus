@@ -16,7 +16,6 @@ import Account from "./Account/Account";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { useRouter } from "next/navigation";
 import { handleSingOut } from "@/store/modules/singIn/singInActions";
-import AvatarComponent from "./Avatar/Avatar";
 import SimpleLogo from "@/assets/simple-logo.png";
 import LoadingComponent from "@/components/loading";
 

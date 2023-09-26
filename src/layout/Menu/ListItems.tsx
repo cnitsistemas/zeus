@@ -8,7 +8,7 @@ import {
   FaUserGraduate,
   FaThLarge,
   FaUserFriends,
-  FaSuitcase,
+  FaDirections,
   FaUserCog,
 } from "react-icons/fa";
 import { usePathname } from "next/navigation";
@@ -45,6 +45,21 @@ const MainListItems = () => {
               <FaUserGraduate />
             </ListItemIcon>
             <ListItemText primary="Estudantes" />
+          </ListItemButton>
+        </Tooltip>
+      </Link>
+      <Link href={`/rotas`} underline="none" sx={styleCustom}>
+        <Tooltip title="Rotas" placement="right" arrow>
+          <ListItemButton
+            sx={{
+              ...styleCustomMenuItem,
+              background: pathname === "/rotas" ? "#FA6E1D" : "",
+            }}
+          >
+            <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
+              <FaDirections />
+            </ListItemIcon>
+            <ListItemText primary="Rotas" />
           </ListItemButton>
         </Tooltip>
       </Link>

@@ -4,11 +4,13 @@ import { RootState } from "@/store";
 interface State {
   routes: any;
   allRoutes: any;
+  pagination: any;
 }
 
 const initialState: State = {
   routes: null,
   allRoutes: null,
+  pagination: null
 };
 
 const RouteReducer = (state: State = initialState, action: any): State => {
@@ -27,6 +29,14 @@ const RouteReducer = (state: State = initialState, action: any): State => {
       newState = {
         ...state,
         allRoutes: action.payload,
+      };
+
+      break;
+    }
+    case actionTypes.SET_ROUTE_PAGINATION: {
+      newState = {
+        ...state,
+        pagination: action.payload,
       };
 
       break;
