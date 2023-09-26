@@ -132,13 +132,12 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
 
   const handleFormValidation = (data: any, resetForm: any) => {
     setLoading(true);
-    console.log(data);
     const formData = {
       nome: data.name,
       tipo: data.type,
       escolas: data.schoolName,
       quantidade_alunos: data.qtdStudents,
-      quantidade_dia_mes: data.qtdDayMonth,
+      quantidade_dias_mes: data.qtdDayMonth,
       quantidade_km: data.qtdKm,
       hora_ida_inicio: data.departureTimeInit,
       hora_ida_termino: data.departureTimeFinish,
@@ -249,7 +248,6 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                 values: FormValues,
                 { setSubmitting, resetForm }: FormikHelpers<FormValues>
               ) => {
-                console.log(values);
                 handleFormValidation(values, resetForm);
                 setSubmitting(false);
               }}
