@@ -79,7 +79,7 @@ export const AccountBox = styled(Box)<BoxProps>(() => ({
   padding: ".5rem",
   borderRadius: "40px",
   textAlign: "center",
-  border: "1px solid #C63D2F",
+  border: "1px solid #ff7a2d",
   display: "flex",
   flexDirection: "row",
 }));

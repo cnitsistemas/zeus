@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
-import Logo from "@/assets/logo.png";
+import Logo from "@/assets/logotipo-tecnogatt.png";
 import Image from "next/image";
 import { handleSingIn } from "@/store/modules/singIn/singInActions";
 import { useRouter } from "next/navigation";

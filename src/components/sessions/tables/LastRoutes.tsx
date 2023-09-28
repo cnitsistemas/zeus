@@ -6,6 +6,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Alert, Typography } from "@mui/material";
+import Link from "@mui/material/Link";
 
 function preventDefault(event: any) {
   event.preventDefault();
@@ -15,7 +16,7 @@ export default function LastRoutes(props: any) {
   const { rows } = props;
   return (
     <React.Fragment>
-      <Typography component="h2" variant="h5" color="primary" gutterBottom>
+      <Typography component="h2" variant="h5" gutterBottom>
         Ultimas Rotas Cadastradas
       </Typography>
       <Table>
@@ -41,9 +42,14 @@ export default function LastRoutes(props: any) {
       {rows && rows.length === 0 && (
         <Alert severity="info">Não há rotas cadastradas nessa sessão!</Alert>
       )}
-      {/* <Link color="primary" href="#" onClick={preventDefault} sx={{ mt: 3 }}>
+      <Link
+        color="primary"
+        href="/rotas"
+        onClick={preventDefault}
+        sx={{ mt: 3 }}
+      >
         Ver todas as rotas
-      </Link> */}
+      </Link>
     </React.Fragment>
   );
 }

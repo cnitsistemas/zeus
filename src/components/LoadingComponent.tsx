@@ -1,20 +1,19 @@
-import BarLoader from "react-spinners/BarLoader";
+import PuffLoader from "react-spinners/PuffLoader";
 
 function LoadingComponent({
   loading,
-  color
+  color,
 }: {
-  loading: boolean,
-  color: string
+  loading: boolean;
+  color: string;
 }) {
-
   return (
     <div className="sweet-loading">
-      <BarLoader
+      <PuffLoader
         color={color}
         loading={loading}
         cssOverride={{}}
-        height={4}
+        size={70}
         aria-label="Loading Spinner"
         data-testid="loader"
       />

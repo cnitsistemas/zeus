@@ -34,7 +34,7 @@ const MainListItems = () => {
         </Tooltip>
       </Link>
       <Link href={`/estudantes`} underline="none" sx={styleCustom}>
-        <Tooltip title="Estudantes" placement="right" arrow>
+        <Tooltip title="Alunos" placement="right" arrow>
           <ListItemButton
             sx={{
               ...styleCustomMenuItem,
@@ -44,7 +44,7 @@ const MainListItems = () => {
             <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
               <FaUserGraduate />
             </ListItemIcon>
-            <ListItemText primary="Estudantes" />
+            <ListItemText primary="Alunos" />
           </ListItemButton>
         </Tooltip>
       </Link>

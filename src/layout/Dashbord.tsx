@@ -16,8 +16,8 @@ import Account from "./Account/Account";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { useRouter } from "next/navigation";
 import { handleSingOut } from "@/store/modules/singIn/singInActions";
-import SimpleLogo from "@/assets/simple-logo.png";
-import LoadingComponent from "@/components/loading";
+import SimpleLogo from "@/assets/icone-tecnogatt.png";
+import LoadingComponent from "@/components/LoadingComponent";
 
 export default function DashboardLayout({
   children,
@@ -73,7 +73,7 @@ export default function DashboardLayout({
               height: "100%",
             }}
           >
-            <LoadingComponent loading={loading} color="#ff7a2d" />
+            <LoadingComponent loading={loading} color="#32386f" />
           </Container>
         </WrapperMain>
       ) : (
@@ -139,12 +139,12 @@ export default function DashboardLayout({
                 <Box
                   sx={{
                     display: open ? "flex" : "none",
-
+                    ml: 1,
                     fontSize: "20px",
                     color: "white",
                   }}
                 >
-                  Sistema de Gestão CNIT
+                  Tecnogatt
                 </Box>
               </Box>
             </Toolbar>

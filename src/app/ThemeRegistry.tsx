@@ -41,10 +41,10 @@ export default function ThemeRegistry(props: any) {
         },
         palette: {
           primary: {
-            main: "#ff7a2d",
+            main: "#32386f",
           },
           secondary: {
-            main: "#303030",
+            main: "#ff7a2d",
           },
           mode,
         },

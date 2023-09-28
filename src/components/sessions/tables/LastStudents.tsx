@@ -11,7 +11,7 @@ export default function LastStudents(props: any) {
   const { rows } = props;
   return (
     <React.Fragment>
-      <Typography component="h2" variant="h5" color="primary" gutterBottom>
+      <Typography component="h2" variant="h5" gutterBottom>
         Ultimos Alunos Cadastrados
       </Typography>
       <Table>
