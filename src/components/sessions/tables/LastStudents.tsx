@@ -27,7 +27,7 @@ export default function LastStudents(props: any) {
           {rows &&
             rows.length > 0 &&
             rows.map((row: any) => (
-              <TableRow key={row.name}>
+              <TableRow key={row.id}>
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.route}</TableCell>
                 <TableCell>{row.shift}</TableCell>

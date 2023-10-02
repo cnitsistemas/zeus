@@ -1,6 +1,5 @@
-"use client"
-import { useState } from 'react'
-import { useField } from 'formik'
+"use client";
+import { useField } from "formik";
 
 import {
   Select,
@@ -8,23 +7,28 @@ import {
   InputLabel,
   FormControl,
   FormHelperText,
-  SelectChangeEvent
-} from '@mui/material'
+  SelectChangeEvent,
+} from "@mui/material";
 
 type DataProps = {
-  value: string,
-  label: string
-}
+  value: string;
+  label: string;
+};
 
 export const InputSelect = ({ ...props }) => {
-  const [field, meta, { setValue }] = useField(props.name)
+  const [field, meta, { setValue }] = useField(props.name);
 
   const handleChange = (event: SelectChangeEvent) => {
-    setValue(event.target.value)
-  }
+    setValue(event.target.value);
+  };
 
   return (
-    <FormControl fullWidth error={meta.touched && !!meta.error} sx={{ mt: 2 }} size="small">
+    <FormControl
+      fullWidth
+      error={meta.touched && !!meta.error}
+      sx={{ mt: 2 }}
+      size="small"
+    >
       <InputLabel id={props.id}>{props.label}</InputLabel>
       <Select
         {...field}
@@ -32,7 +36,6 @@ export const InputSelect = ({ ...props }) => {
         labelId={props.id}
         label={props.label}
         onChange={handleChange}
-
       >
         {props.data.map(({ value, label }: DataProps) => (
           <MenuItem key={value} value={value}>
@@ -40,9 +43,9 @@ export const InputSelect = ({ ...props }) => {
           </MenuItem>
         ))}
       </Select>
-      {(meta.touched && meta.error) && (
+      {meta.touched && meta.error && (
         <FormHelperText style={{ color: "red" }}>{meta.error}</FormHelperText>
       )}
     </FormControl>
-  )
-}
+  );
+};

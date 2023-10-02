@@ -252,10 +252,7 @@ function StudentsPage() {
                                   align="center"
                                   sx={{ minWidth: "170px" }}
                                 >
-                                  <Tooltip
-                                    title="Visualizar Aluno"
-                                    placement="top"
-                                  >
+                                  <Tooltip title="Visualizar" placement="top">
                                     <IconButton
                                       color="secondary"
                                       aria-label="view student"
@@ -271,10 +268,7 @@ function StudentsPage() {
                                       <FaEye />
                                     </IconButton>
                                   </Tooltip>
-                                  <Tooltip
-                                    title="Editar Alunos"
-                                    placement="top"
-                                  >
+                                  <Tooltip title="Editar" placement="top">
                                     <IconButton
                                       color="primary"
                                       aria-label="edit student"
@@ -289,10 +283,7 @@ function StudentsPage() {
                                       <FaEdit />
                                     </IconButton>
                                   </Tooltip>
-                                  <Tooltip
-                                    title="Deletar Alunos"
-                                    placement="top"
-                                  >
+                                  <Tooltip title="Deletar" placement="top">
                                     <IconButton
                                       color="error"
                                       aria-label="delete student"

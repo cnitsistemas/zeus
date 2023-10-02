@@ -7,6 +7,7 @@ import UserReducer from "./modules/users/usersReducers";
 import RolesReducer from "./modules/roles/rolesReducers";
 import PermissionsReducer from "./modules/permissions/permissionsReducers";
 import HomeReducer from "./modules/home/homeReducers";
+import VehiclesReducer from "./modules/vehicles/vehiclesReducers";
 
 const reducers = combineReducers({
   singin: SingInReducer,
@@ -16,7 +17,8 @@ const reducers = combineReducers({
   users: UserReducer,
   roles: RolesReducer,
   permissions: PermissionsReducer,
-  home: HomeReducer
+  home: HomeReducer,
+  vehicles: VehiclesReducer
 });
 
 export default reducers;

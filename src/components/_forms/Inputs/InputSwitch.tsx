@@ -76,11 +76,17 @@ export const InputSwitch = ({ ...props }) => {
   }, [props.checked]);
 
   return (
-    <FormControl component="fieldset" variant="standard">
-      <FormLabel component="legend">{props.label}</FormLabel>
+    <FormControl
+      component="fieldset"
+      variant="standard"
+      sx={props.topLabel ? {} : { mt: 2, ml: 2 }}
+    >
+      {props.topLabel && (
+        <FormLabel component="legend">{props.label}</FormLabel>
+      )}
       <FormGroup>
         <FormControlLabel
-          label={""}
+          label={props.topLabel ? "" : props.label}
           control={
             <CustomSwitch
               {...field}

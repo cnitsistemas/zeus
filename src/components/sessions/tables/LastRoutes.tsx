@@ -31,7 +31,7 @@ export default function LastRoutes(props: any) {
           {rows &&
             rows.length > 0 &&
             rows.map((row: any) => (
-              <TableRow key={row.name}>
+              <TableRow key={row.id}>
                 <TableCell>{row.name}</TableCell>
                 <TableCell>{row.initHours}</TableCell>
                 <TableCell>{row.finishHours}</TableCell>

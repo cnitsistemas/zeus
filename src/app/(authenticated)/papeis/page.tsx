@@ -4,7 +4,6 @@ import { useSelector } from "react-redux";
 import { FaEdit, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { UserState } from "@/store/modules/users/usersReducers";
 import moment from "moment";
 import { deleteRoles, fetchRoles } from "@/store/modules/roles/rolesActions";
 import { RoleState } from "@/store/modules/roles/rolesReducers";
@@ -49,15 +48,13 @@ function UsersPage() {
   const [page, setPage] = useState<number>(1);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
   const [selectedRole, setSelectedRole] = useState<any>({});
-  const userState = useSelector(UserState);
   const roleState = useSelector(RoleState);
   const dispatch = useAppDispatch();
   const roles = roleState && roleState.roles;
   const totalPages =
-    (userState && userState.pagination && userState.pagination.totalPages) || 1;
+    (roleState && roleState.pagination && roleState.pagination.totalPages) || 1;
   const selectedPage =
-    (userState && userState.pagination && userState.pagination.page) || 1;
-  const allRoles = (roleState && roleState.allRoles) || null;
+    (roleState && roleState.pagination && roleState.pagination.page) || 1;
 
   useEffect(() => {
     setPage(selectedPage);
@@ -233,10 +230,7 @@ function UsersPage() {
                                   align="center"
                                   sx={{ minWidth: "170px" }}
                                 >
-                                  <Tooltip
-                                    title="Editar Alunos"
-                                    placement="top"
-                                  >
+                                  <Tooltip title="Editar" placement="top">
                                     <IconButton
                                       color="primary"
                                       aria-label="edit student"
@@ -251,10 +245,7 @@ function UsersPage() {
                                       <FaEdit />
                                     </IconButton>
                                   </Tooltip>
-                                  <Tooltip
-                                    title="Deletar Alunos"
-                                    placement="top"
-                                  >
+                                  <Tooltip title="Deletar" placement="top">
                                     <IconButton
                                       color="error"
                                       aria-label="delete student"

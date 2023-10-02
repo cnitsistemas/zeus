@@ -47,6 +47,10 @@ const typeList = [
     label: "Fluvial",
     value: "Fluvial",
   },
+  {
+    label: "Terrestre/Marítimo",
+    value: "Terrestre/Marítimo",
+  },
 ];
 
 type FormValues = {
@@ -391,6 +395,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       name="checkedMatutino"
                       label="Turno Matutino"
                       checked={defaultValues.checkedMatutino}
+                      topLabel={true}
                     />
                   </Grid>
                   <Grid item xs={12} md={2} lg={2}>
@@ -399,6 +404,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       name="checkedVespertino"
                       label="Turno Vespertino"
                       checked={defaultValues.checkedVespertino}
+                      topLabel={true}
                     />
                   </Grid>
                   <Grid item xs={12} md={2} lg={2}>
@@ -407,6 +413,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       name="checkedNoturno"
                       label="Turno Noturno"
                       checked={defaultValues.checkedNoturno}
+                      topLabel={true}
                     />
                   </Grid>
                 </Grid>

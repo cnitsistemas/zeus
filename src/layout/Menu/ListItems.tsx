@@ -10,6 +10,7 @@ import {
   FaUserFriends,
   FaDirections,
   FaUserCog,
+  FaCar,
 } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
@@ -38,7 +39,10 @@ const MainListItems = () => {
           <ListItemButton
             sx={{
               ...styleCustomMenuItem,
-              background: pathname === "/estudantes" ? "#FA6E1D" : "",
+              background:
+                pathname === "/estudantes" || pathname === "/estudantes/novo"
+                  ? "#FA6E1D"
+                  : "",
             }}
           >
             <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
@@ -90,6 +94,21 @@ const MainListItems = () => {
               <FaUserCog />
             </ListItemIcon>
             <ListItemText primary="Papéis" />
+          </ListItemButton>
+        </Tooltip>
+      </Link>
+      <Link href={`/veiculos`} underline="none" sx={styleCustom}>
+        <Tooltip title="Veículos" placement="right" arrow>
+          <ListItemButton
+            sx={{
+              ...styleCustomMenuItem,
+              background: pathname === "/veiculos" ? "#FA6E1D" : "",
+            }}
+          >
+            <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
+              <FaCar />
+            </ListItemIcon>
+            <ListItemText primary="Veículos" />
           </ListItemButton>
         </Tooltip>
       </Link>
