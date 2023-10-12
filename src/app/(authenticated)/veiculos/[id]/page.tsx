@@ -9,7 +9,7 @@ import { Store } from "react-notifications-component";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { useRouter } from "next/navigation";
 import { InputSelect } from "@/components/_forms/Inputs/InputSelect";
-import { VehiclesSchema } from "@/validators/vehicles";
+import { VehiclesSchema } from "@/validators/vehicleSchema";
 import { InputSwitch } from "@/components/_forms/Inputs/InputSwitch";
 import {
   createVehicles,

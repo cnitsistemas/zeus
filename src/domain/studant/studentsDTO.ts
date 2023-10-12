@@ -1,23 +1,5 @@
-interface Students {
-  id: number;
-  name: String;
-  serie: String;
-  teaching: String;
-  shift: String;
-  schoolName: String;
-  departureTime: String;
-  backTime: String;
-  cep: String;
-  address: String;
-  neighborhood: String;
-  number: String;
-  complement: String;
-  city: String;
-  state: String;
-  rota_id: String;
-  created_at: String;
-  updated_at: String;
-  deleted_at: String;
+interface Response {
+  data: Student[];
 }
 
 interface Student {
@@ -42,11 +24,11 @@ interface Student {
   deleted_at: String;
 }
 
-export const mapFetchStudentsResponse = (students: any) => {
+export const mapFetchStudentsResponse = (response: Response) => {
   return (
-    (students["data"] &&
-      students["data"].length > 0 &&
-      students["data"].map((student: Student) => {
+    (response["data"] &&
+      response["data"].length > 0 &&
+      response["data"].map((student: Student) => {
         return {
           id: student["id"],
           name: student["nome"],
