@@ -83,7 +83,7 @@ function HomeComponent() {
                   }}
                 >
                   Acesse o menu lateral para ter acesso ao controle de alunos,
-                  rotas, usuarios e frequências disponíveis no CNIT.
+                  rotas, usuarios e frequências disponíveis no tecnogatt.
                 </Typography>
               </Grid>
               <Grid

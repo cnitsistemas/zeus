@@ -86,7 +86,7 @@ function LoginPage() {
                 }}
               >
                 Bem vindo a nova versão do painel administrativo de gestão de
-                rotas e alunos da CNIT.
+                rotas e alunos tecnogatt.
               </Typography>
               <Box sx={{ mt: 1, width: "100%" }}>
                 <Formik
