@@ -384,7 +384,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       id="type"
                       name="type"
                       variant="outlined"
-                      label="Ensino"
+                      label="Tipo"
                       data={typeList}
                       disabled={loading}
                     />
