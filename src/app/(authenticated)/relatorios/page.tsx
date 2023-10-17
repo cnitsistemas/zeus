@@ -8,6 +8,7 @@ import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { RouteState } from "@/store/modules/routes/routesReducers";
 import {
+  Alert,
   Button,
   Grid,
   Link,
@@ -193,6 +194,12 @@ function ConductorsPage() {
                   Tela de relatórios do sistema.
                 </Typography>
               </Grid>
+              <Grid item xs={12} md={12} lg={12}>
+                <Alert severity="warning">
+                  O modulo de relatórios ainda está em desenvolvimento! Está é
+                  uma versão disponivel para testes.
+                </Alert>
+              </Grid>
               <Grid item xs={6} md={4} lg={4}></Grid>
               <Grid item xs={12} md={12} lg={12}>
                 <TabContext value={value}>
@@ -229,7 +236,7 @@ function ConductorsPage() {
                         />
                       </Grid>
                       <Grid item xs={12} md={4}>
-                        <Button
+                        {/* <Button
                           variant="contained"
                           disableElevation
                           sx={{
@@ -242,7 +249,7 @@ function ConductorsPage() {
                           onClick={() => {}}
                         >
                           Gerar relatório
-                        </Button>
+                        </Button> */}
                         <Button
                           variant="contained"
                           disableElevation
@@ -259,7 +266,9 @@ function ConductorsPage() {
                       </Grid>
                     </Grid>
                   </TabPanel>
-                  <TabPanel value="frequencia">Item Two</TabPanel>
+                  <TabPanel value="frequencia">
+                    Relatórios de Frequencia.
+                  </TabPanel>
                 </TabContext>
               </Grid>
             </Grid>
