@@ -12,6 +12,7 @@ import {
   FaUserCog,
   FaCar,
   FaShip,
+  FaPrint,
 } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 
@@ -87,7 +88,16 @@ const MainListItems = () => {
           </ListItemButton>
         </Tooltip>
       </Link>
-
+      <Link href={`/relatorios`} underline="none" sx={styleCustom}>
+        <Tooltip title="Relatórios" placement="right" arrow>
+          <ListItemButton sx={styleMenu(pathname, "relatorios")}>
+            <ListItemIcon sx={{ color: "white", fontSize: "18px" }}>
+              <FaPrint />
+            </ListItemIcon>
+            <ListItemText primary="Relatórios" />
+          </ListItemButton>
+        </Tooltip>
+      </Link>
       <Divider sx={{ my: 2, background: "white" }} />
 
       <Link href={`/usuarios`} underline="none" sx={styleCustom}>
