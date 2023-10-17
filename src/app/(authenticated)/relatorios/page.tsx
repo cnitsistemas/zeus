@@ -2,33 +2,19 @@
 import { useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { FaEye } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { RouteState } from "@/store/modules/routes/routesReducers";
 import {
-  deleteStudents,
-  fetchStudents,
-} from "@/store/modules/students/studentsActions";
-import {
-  Alert,
   Button,
   Grid,
-  IconButton,
   Link,
-  Pagination,
   Paper,
   Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   Tabs,
   TextField,
-  Tooltip,
   Typography,
   styled,
 } from "@mui/material";
@@ -62,7 +48,7 @@ const StyledTabs = styled((props: StyledTabsProps) => (
   "& .MuiTabs-indicatorSpan": {
     maxWidth: 40,
     width: "100%",
-    backgroundColor: "#635ee7",
+    backgroundColor: "#ff7a2d",
   },
 });
 
@@ -77,12 +63,12 @@ const StyledTab = styled((props: StyledTabProps) => <Tab {...props} />)(
     fontWeight: theme.typography.fontWeightRegular,
     fontSize: theme.typography.pxToRem(15),
     marginRight: theme.spacing(1),
-    color: "#635ee7",
+    color: "#32386f",
     "&.Mui-selected": {
       color: "#000",
     },
     "&.Mui-focusVisible": {
-      backgroundColor: "rgba(100, 95, 228, 0.32)",
+      backgroundColor: "#ff7a2d",
     },
   })
 );
@@ -105,6 +91,7 @@ function ConductorsPage() {
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
   const [selectedConductor, setSelectedConductor] = useState<any>({});
   const [description, setDescription] = useState<any>("");
+  const [school, setSchool] = useState<any>("");
   const [viewDialog, setViewDialog] = useState(false);
   const [value, setValue] = React.useState("rota");
   const conductorState = useSelector(ConductorState);
@@ -219,7 +206,7 @@ function ConductorsPage() {
                   </StyledTabs>
                   <TabPanel value="rota">
                     <Grid container spacing={3}>
-                      <Grid item xs={12} md={6} lg={6}>
+                      <Grid item xs={12} md={4} lg={4}>
                         <TextField
                           id="description-report"
                           label="Descrição"
@@ -230,7 +217,32 @@ function ConductorsPage() {
                           onChange={(e) => setDescription(e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={12} md={6}>
+                      <Grid item xs={12} md={4} lg={4}>
+                        <TextField
+                          id="school-report"
+                          label="Escola"
+                          variant="outlined"
+                          size="small"
+                          fullWidth
+                          value={school}
+                          onChange={(e) => setSchool(e.target.value)}
+                        />
+                      </Grid>
+                      <Grid item xs={12} md={4}>
+                        <Button
+                          variant="contained"
+                          disableElevation
+                          sx={{
+                            color: "#fff",
+                            height: 40,
+                            fontSize: "12px",
+                            marginRight: "10px",
+                          }}
+                          startIcon={<FaEye />}
+                          onClick={() => {}}
+                        >
+                          Gerar relatório
+                        </Button>
                         <Button
                           variant="contained"
                           disableElevation
@@ -242,7 +254,7 @@ function ConductorsPage() {
                           startIcon={<PrintIcon />}
                           onClick={() => handleOpenDeleteDialog()}
                         >
-                          Gerar relatório
+                          Gerar PDF
                         </Button>
                       </Grid>
                     </Grid>

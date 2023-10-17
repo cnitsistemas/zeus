@@ -140,7 +140,7 @@ function RoutesPage() {
                   Rotas
                   <CustomTootip
                     placement="right"
-                    content={`A tela de rotas é responsável pelo cadastro, edição, visualização e exclusão das rotas de transporte da CNIT.`}
+                    content={`A tela de rotas é responsável pelo cadastro, edição, visualização e exclusão das rotas de transporte da Tecnogatt.`}
                   />
                 </TitlePage>
                 <Typography

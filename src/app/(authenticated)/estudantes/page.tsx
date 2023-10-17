@@ -165,7 +165,7 @@ function StudentsPage() {
                   Alunos
                   <CustomTootip
                     placement="right"
-                    content={`A tela de alunos é responsável pelo cadastro, edição, visualização e exclusão dos alunos transportados pelo CNIT, 
+                    content={`A tela de alunos é responsável pelo cadastro, edição, visualização e exclusão dos alunos transportados pelo Tecnogatt, 
 												sendo possível vinculá-los às mais variadas rotas cadastradas no sistema. `}
                   />
                 </TitlePage>

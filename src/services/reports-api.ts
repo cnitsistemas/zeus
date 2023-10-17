@@ -4,7 +4,6 @@ const apiReports = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL_REPORTS,
   headers: {
     'Accept': 'application/json',
-    'Content-Type': 'application/x-pdf; charset=utf-8'
   }
 });
 

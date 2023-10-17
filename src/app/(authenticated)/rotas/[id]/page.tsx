@@ -356,7 +356,6 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                   </Grid>
                   <Grid item xs={12} md={4} lg={4}>
                     <InputText
-                      required
                       id="qtdDayMonth"
                       name="qtdDayMonth"
                       type="text"
@@ -368,7 +367,6 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                   </Grid>
                   <Grid item xs={12} md={4} lg={4}>
                     <InputText
-                      required
                       id="qtdKm"
                       name="qtdKm"
                       type="text"

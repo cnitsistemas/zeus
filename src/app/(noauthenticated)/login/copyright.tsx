@@ -10,7 +10,7 @@ export default function Copyright() {
     >
       {"Copyright © "}
       <Link color="inherit" href="https://cnittransportes.com.br/">
-        CNIT
+        Tecnogatt
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
