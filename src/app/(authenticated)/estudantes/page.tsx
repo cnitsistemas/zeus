@@ -1,5 +1,4 @@
 "use client";
-import { useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
@@ -35,6 +34,8 @@ import CustomTootip from "@/components/CustomTootip";
 import CustomizedDialogs from "@/components/CustomDialog";
 import { TitlePage } from "./style";
 import AddIcon from "@mui/icons-material/Add";
+import { TableLoading } from "@/components/TableLoading";
+import { NOTIFICATION_TYPE, Store } from "react-notifications-component";
 
 const breadcrumbItens = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -45,9 +46,28 @@ const breadcrumbItens = [
   </Typography>,
 ];
 
+const Notification = ({
+  title,
+  message,
+  type,
+}: {
+  title: string;
+  message: string;
+  type: NOTIFICATION_TYPE | undefined;
+}) =>
+  Store.addNotification({
+    title: title,
+    message: message,
+    type: type,
+    insert: "top",
+    container: "top-right",
+    animationIn: ["animate__animated", "animate__fadeIn"],
+    animationOut: ["animate__animated", "animate__fadeOut"],
+    dismiss: { duration: 4000 },
+  });
+
 function StudentsPage() {
   const router = useRouter();
-  const toast = useToast();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [rows, setRows] = useState<Array<any>>([]);
   const [page, setPage] = useState<number>(1);
@@ -66,11 +86,7 @@ function StudentsPage() {
   const selectedPage =
     (studantState && studantState.pagination && studantState.pagination.page) ||
     1;
-  const total =
-    (studantState &&
-      studantState.pagination &&
-      studantState.pagination.total) ||
-    1;
+
   const routes = (routeState && routeState.allRoutes) || null;
 
   useEffect(() => {
@@ -127,12 +143,10 @@ function StudentsPage() {
     handleCloseDeleteDialog();
     await dispatch(deleteStudents(selectedStudent?.id)).then((res) => {
       if (res.success) {
-        toast({
+        Notification({
           title: "Aluno removido",
-          description: "Aluno removido com sucesso!",
-          status: "success",
-          duration: 7000,
-          isClosable: true,
+          message: "Aluno removido com sucesso!",
+          type: "success",
         });
         setSelectedStudent({});
         dispatch(fetchStudents(page)).then(() => {
@@ -140,12 +154,10 @@ function StudentsPage() {
         });
       } else {
         setIsLoading(false);
-        toast({
+        Notification({
           title: "Erro",
-          description: "Erro ao remover aluno!",
-          status: "error",
-          duration: 7000,
-          isClosable: true,
+          message: "Erro ao remover aluno!",
+          type: "danger",
         });
       }
     });
@@ -206,7 +218,11 @@ function StudentsPage() {
                   Cadastar
                 </Button>
               </Grid>
-              {students && students.length > 0 ? (
+              {isLoading ? (
+                <Grid item xs={12} md={12} lg={12}>
+                  <TableLoading />
+                </Grid>
+              ) : students && students.length > 0 ? (
                 <>
                   <Grid item xs={12} md={12} lg={12}>
                     <TableContainer sx={{ paddingX: "1rem" }}>

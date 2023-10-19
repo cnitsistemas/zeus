@@ -13,7 +13,7 @@ import {
 import { TitlePage } from "../style";
 import { Button, Divider, Grid, Link, Paper, Typography } from "@mui/material";
 import { InputText } from "@/components/_forms/Inputs/InputText";
-import { Store } from "react-notifications-component";
+import { NOTIFICATION_TYPE, Store } from "react-notifications-component";
 import { Form, Formik, FormikHelpers } from "formik";
 import { InputSelect } from "@/components/_forms/Inputs/InputSelect";
 import { HoursMask } from "@/components/_forms/Masks/HoursMask";
@@ -85,6 +85,26 @@ const defaultValues = {
   checkedNoturno: false,
 };
 
+const Notification = ({
+  title,
+  message,
+  type,
+}: {
+  title: string;
+  message: string;
+  type: NOTIFICATION_TYPE | undefined;
+}) =>
+  Store.addNotification({
+    title: title,
+    message: message,
+    type: type,
+    insert: "top",
+    container: "top-right",
+    animationIn: ["animate__animated", "animate__fadeIn"],
+    animationOut: ["animate__animated", "animate__fadeOut"],
+    dismiss: { duration: 4000 },
+  });
+
 function CreateStudantePage({ params }: { params: { id: string } }) {
   const { id } = params;
   const router = useRouter();
@@ -117,16 +137,11 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
             };
             setInitialValues(values);
           } else {
-            Store.addNotification({
+            Notification({
               title: "Error!",
               message:
                 "Falha ao carregar dados da rota. Por favor, tente mais tarde!",
               type: "danger",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
           }
         })
@@ -150,6 +165,10 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
       turno_matutino: data.checkedMatutino ? 1 : 0,
       turno_vespertino: data.checkedVespertino ? 1 : 0,
       turno_noturno: data.checkedNoturno ? 1 : 0,
+      latitude_inicio: "000000",
+      longitude_inicio: "000000",
+      latitude_termino: "000000",
+      longitude_termino: "000000",
       _method: id !== "novo" ? "PUT" : "POST",
     };
 
@@ -157,30 +176,20 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
       dispatch(editRoute({ id: id, data: formData }))
         .then((res: any) => {
           if (res.success) {
-            Store.addNotification({
+            Notification({
               title: "Rota Editada!",
               message: "Rota editada com sucesso!",
               type: "success",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
             resetForm();
             setInitialValues(defaultValues);
             setLoading(false);
           } else {
-            Store.addNotification({
+            Notification({
               title: "Error!",
               message:
                 "Falha ao tentar editar rota. Por favor, tente mais tarde!",
               type: "danger",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
           }
         })
@@ -189,29 +198,19 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
       dispatch(createRoutes(formData))
         .then((res: any) => {
           if (res.success) {
-            Store.addNotification({
+            Notification({
               title: "Rota Cadastrada!",
               message: "Rota cadastrada com sucesso!",
               type: "success",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
             resetForm();
             setInitialValues(defaultValues);
             setLoading(false);
           } else {
-            Store.addNotification({
+            Notification({
               title: "Error!",
               message: "Falha ao cadastrar rota. Por favor, tente mais tarde!",
               type: "danger",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
           }
         })

@@ -1,12 +1,9 @@
 "use client";
-import { useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { FaEye } from "react-icons/fa";
-import { useRouter } from "next/navigation";
 import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import { useAppDispatch } from "@/hooks/useRedux";
-import { RouteState } from "@/store/modules/routes/routesReducers";
 import {
   Alert,
   Button,
@@ -14,6 +11,11 @@ import {
   Link,
   Paper,
   Tab,
+  Table,
+  TableBody,
+  TableContainer,
+  TableHead,
+  TableRow,
   Tabs,
   TextField,
   Typography,
@@ -21,13 +23,14 @@ import {
 } from "@mui/material";
 import CustomTootip from "@/components/CustomTootip";
 import CustomizedDialogs from "@/components/CustomDialog";
-import { TitlePage } from "./style";
+import { StyledTableCell, StyledTableRow, TitlePage } from "./style";
 import PrintIcon from "@mui/icons-material/Print";
-import { fetchConductors } from "@/store/modules/conductors/conductorsActions";
-import { ConductorState } from "@/store/modules/conductors/conductorsReducers";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
 import apiReports from "@/services/reports-api";
+import { fetchReportRoutes } from "@/store/modules/reports/reportsActions";
+import { ReportState } from "@/store/modules/reports/reportsReducers";
+import { TableLoading } from "@/components/TableLoading";
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -84,48 +87,21 @@ const breadcrumbItens = [
 ];
 
 function ConductorsPage() {
-  const router = useRouter();
-  const toast = useToast();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rows, setRows] = useState<Array<any>>([]);
-  const [page, setPage] = useState<number>(1);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
-  const [selectedConductor, setSelectedConductor] = useState<any>({});
-  const [description, setDescription] = useState<any>("");
-  const [school, setSchool] = useState<any>("");
-  const [viewDialog, setViewDialog] = useState(false);
+  const [description, setDescription] = useState<string | any>("");
+  const [school, setSchool] = useState<string | any>("");
   const [value, setValue] = React.useState("rota");
-  const conductorState = useSelector(ConductorState);
-  const routeState = useSelector(RouteState);
+  const reportState = useSelector(ReportState);
   const dispatch = useAppDispatch();
-  const conductors = conductorState && conductorState.conductors;
-  const totalPages =
-    (conductorState &&
-      conductorState.pagination &&
-      conductorState.pagination.totalPages) ||
-    1;
-  const selectedPage =
-    (conductorState &&
-      conductorState.pagination &&
-      conductorState.pagination.page) ||
-    1;
-  const routes = (routeState && routeState.allRoutes) || null;
+  const routeReports = (reportState && reportState.routesReports) || [];
 
   useEffect(() => {
-    setPage(selectedPage);
-  }, [selectedPage]);
-
-  useEffect(() => {
-    if (page) {
-      dispatch(fetchConductors(page)).then(() => setIsLoading(false));
+    if (routeReports && routeReports.length > 0) {
+      setRows(routeReports);
     }
-  }, [dispatch, page]);
-
-  useEffect(() => {
-    if (conductors && conductors.length > 0) {
-      setRows(conductors);
-    }
-  }, [conductors]);
+  }, [routeReports]);
 
   const handleOpenDeleteDialog = (): void => {
     setDeleteDialog(true);
@@ -135,32 +111,29 @@ function ConductorsPage() {
     setDeleteDialog(false);
   };
 
-  const handleOpenViewDialog = (): void => {
-    setViewDialog(true);
+  const generateReportRoutes = () => {
+    setIsLoading(true);
+
+    const finalDescription = description ? `"${description}"` : null;
+    const finalSchool = school ? `"${school}"` : null;
+    dispatch(fetchReportRoutes(finalDescription, finalSchool)).then(() =>
+      setIsLoading(false)
+    );
   };
 
-  const handleCloseViewDialog = (): void => {
-    setViewDialog(false);
-  };
-
-  const fetchRotaName = (id: String) => {
-    const studentRoute =
-      routes &&
-      routes.find((item: any) => {
-        return item.id === id;
-      });
-    return studentRoute && studentRoute.name;
-  };
-
-  const handleDeleteStudent = async () => {
+  const handleRoutesReports = async () => {
     setIsLoading(true);
     handleCloseDeleteDialog();
+
+    const finalDescription = description ? `"${description}"` : null;
+    const finalSchool = school ? `"${school}"` : null;
     apiReports
       .get(
-        `/api/v1/relatorios-rotas?descricao=${description}`,
-        { responseType: "blob" } // !!!
+        `/api/v1/relatorios-rotas?descricao=${finalDescription}&escola=${finalSchool}`,
+        { responseType: "blob" }
       )
       .then((response) => {
+        setIsLoading(false);
         window.open(URL.createObjectURL(response.data));
       });
   };
@@ -200,7 +173,6 @@ function ConductorsPage() {
                   uma versão disponivel para testes.
                 </Alert>
               </Grid>
-              <Grid item xs={6} md={4} lg={4}></Grid>
               <Grid item xs={12} md={12} lg={12}>
                 <TabContext value={value}>
                   <StyledTabs
@@ -236,7 +208,7 @@ function ConductorsPage() {
                         />
                       </Grid>
                       <Grid item xs={12} md={4}>
-                        {/* <Button
+                        <Button
                           variant="contained"
                           disableElevation
                           sx={{
@@ -246,10 +218,10 @@ function ConductorsPage() {
                             marginRight: "10px",
                           }}
                           startIcon={<FaEye />}
-                          onClick={() => {}}
+                          onClick={() => generateReportRoutes()}
                         >
                           Gerar relatório
-                        </Button> */}
+                        </Button>
                         <Button
                           variant="contained"
                           disableElevation
@@ -263,6 +235,58 @@ function ConductorsPage() {
                         >
                           Gerar PDF
                         </Button>
+                      </Grid>
+                      <Grid item xs={12} md={12}>
+                        {isLoading ? (
+                          <Grid item xs={12} md={12} lg={12}>
+                            <TableLoading />
+                          </Grid>
+                        ) : (
+                          routeReports &&
+                          routeReports.length > 0 &&
+                          !isLoading && (
+                            <TableContainer component={Paper}>
+                              <Table
+                                sx={{ minWidth: 700 }}
+                                aria-label="customized table"
+                              >
+                                <TableHead>
+                                  <TableRow>
+                                    <StyledTableCell>
+                                      Descrição da rota
+                                    </StyledTableCell>
+                                    <StyledTableCell>Tipo</StyledTableCell>
+                                    <StyledTableCell>Escola</StyledTableCell>
+                                    <StyledTableCell>
+                                      Quantidade de Alunos
+                                    </StyledTableCell>
+                                  </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                  {rows.map((row) => (
+                                    <StyledTableRow key={row.id}>
+                                      <StyledTableCell
+                                        component="th"
+                                        scope="row"
+                                      >
+                                        {row.nome}
+                                      </StyledTableCell>
+                                      <StyledTableCell>
+                                        {row.tipo}
+                                      </StyledTableCell>
+                                      <StyledTableCell>
+                                        {row.escolas}
+                                      </StyledTableCell>
+                                      <StyledTableCell>
+                                        {row.quantidadeAlunos}
+                                      </StyledTableCell>
+                                    </StyledTableRow>
+                                  ))}
+                                </TableBody>
+                              </Table>
+                            </TableContainer>
+                          )
+                        )}
                       </Grid>
                     </Grid>
                   </TabPanel>
@@ -279,12 +303,12 @@ function ConductorsPage() {
         open={deleteDialog}
         handleClose={handleCloseDeleteDialog}
         title={`Deletar aluno`}
-        content={`Tem certeza que deseja imprimir relatório com os seguintes filtros: ${description}?`}
+        content={`Tem certeza que deseja imprimir relatório?`}
         confirmButton={true}
         cancelButton={true}
         confirmButtonText="Imprimir"
         cancelButtonText="Não"
-        handleConfirm={handleDeleteStudent}
+        handleConfirm={handleRoutesReports}
         confirmButtonError={false}
         fullWidth={true}
         maxWidth={"xs"}
