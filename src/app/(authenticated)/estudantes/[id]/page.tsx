@@ -27,7 +27,7 @@ import {
   Typography,
 } from "@mui/material";
 import { InputText } from "@/components/_forms/Inputs/InputText";
-import { Store } from "react-notifications-component";
+import { NOTIFICATION_TYPE, Store } from "react-notifications-component";
 import { Form, Formik, FormikHelpers, useFormikContext } from "formik";
 import { StudentSchema } from "@/validators/studanteSchema";
 import { InputSelect } from "@/components/_forms/Inputs/InputSelect";
@@ -102,6 +102,26 @@ const defaultValues = {
   city: "",
   state: "",
 };
+
+const Notification = ({
+  title,
+  message,
+  type,
+}: {
+  title: string;
+  message: string;
+  type: NOTIFICATION_TYPE | undefined;
+}) =>
+  Store.addNotification({
+    title: title,
+    message: message,
+    type: type,
+    insert: "top",
+    container: "top-right",
+    animationIn: ["animate__animated", "animate__fadeIn"],
+    animationOut: ["animate__animated", "animate__fadeOut"],
+    dismiss: { duration: 4000 },
+  });
 
 function CreateStudantePage({ params }: { params: { id: string } }) {
   const { id } = params;
@@ -179,16 +199,11 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
             };
             setInitialValues(values);
           } else {
-            Store.addNotification({
+            Notification({
               title: "Error!",
               message:
                 "Falha ao carregar dados do aluno. Por favor, tente mais tarde!",
               type: "danger",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
           }
         })
@@ -225,30 +240,20 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
       dispatch(editStudent({ id: id, data: formData }))
         .then((res) => {
           if (res.success) {
-            Store.addNotification({
+            Notification({
               title: "Aluno Editado!",
               message: "Aluno editado com sucesso!",
               type: "success",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
             resetForm();
             setInitialValues(defaultValues);
             setLoading(false);
           } else {
-            Store.addNotification({
+            Notification({
               title: "Error!",
               message:
                 "Falha ao tentar editar aluno. Por favor, tente mais tarde!",
               type: "danger",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
           }
         })
@@ -257,29 +262,19 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
       dispatch(createStudents(formData))
         .then((res) => {
           if (res.success) {
-            Store.addNotification({
+            Notification({
               title: "Aluno Cadastrado!",
               message: "Aluno cadastrado com sucesso!",
               type: "success",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
             resetForm();
             setInitialValues(defaultValues);
             setLoading(false);
           } else {
-            Store.addNotification({
+            Notification({
               title: "Error!",
               message: "Falha ao cadastrar aluno. Por favor, tente mais tarde!",
               type: "danger",
-              insert: "top",
-              container: "top-right",
-              animationIn: ["animate__animated", "animate__fadeIn"],
-              animationOut: ["animate__animated", "animate__fadeOut"],
-              dismiss: { duration: 4000 },
             });
           }
         })
