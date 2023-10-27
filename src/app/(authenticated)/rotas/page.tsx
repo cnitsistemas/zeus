@@ -156,7 +156,7 @@ function RoutesPage() {
                   Rotas
                   <CustomTootip
                     placement="right"
-                    content={`A tela de rotas é responsável pelo cadastro, edição, visualização e exclusão das rotas de transporte da Tecnogatt.`}
+                    content={`A tela de rotas é responsável pelo cadastro, edição, visualização e exclusão das rotas de transporte.`}
                   />
                 </TitlePage>
                 <Typography
@@ -164,7 +164,7 @@ function RoutesPage() {
                   sx={{ fontSize: "14px", color: "#666666" }}
                   gutterBottom
                 >
-                  As rotas são os lugares por onde os veículos da CNIT trafegam.
+                  As rotas são os lugares por onde os veículos trafegam.
                 </Typography>
               </Grid>
               <Grid
