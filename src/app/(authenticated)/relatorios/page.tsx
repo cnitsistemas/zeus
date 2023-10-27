@@ -7,9 +7,14 @@ import { useAppDispatch } from "@/hooks/useRedux";
 import {
   Alert,
   Button,
+  FormControl,
   Grid,
+  InputLabel,
   Link,
+  MenuItem,
   Paper,
+  Select,
+  SelectChangeEvent,
   Tab,
   Table,
   TableBody,
@@ -28,7 +33,10 @@ import PrintIcon from "@mui/icons-material/Print";
 import TabPanel from "@mui/lab/TabPanel";
 import TabContext from "@mui/lab/TabContext";
 import apiReports from "@/services/reports-api";
-import { fetchReportRoutes } from "@/store/modules/reports/reportsActions";
+import {
+  fetchReportRoutes,
+  setRouterResponse,
+} from "@/store/modules/reports/reportsActions";
 import { ReportState } from "@/store/modules/reports/reportsReducers";
 import { TableLoading } from "@/components/TableLoading";
 
@@ -61,6 +69,11 @@ interface StyledTabProps {
   value: string;
 }
 
+type DataProps = {
+  value: string;
+  label: string;
+};
+
 const StyledTab = styled((props: StyledTabProps) => <Tab {...props} />)(
   ({ theme }) => ({
     textTransform: "none",
@@ -86,16 +99,45 @@ const breadcrumbItens = [
   </Typography>,
 ];
 
+const typeList = [
+  {
+    label: "Terrestre",
+    value: "Terrestre",
+  },
+  {
+    label: "Fluvial",
+    value: "Fluvial",
+  },
+  {
+    label: "Terrestre/Marítimo",
+    value: "Terrestre/Marítimo",
+  },
+];
+
+const shiftList = [
+  { value: "Manhã", label: "Manhã" },
+  { value: "Tarde", label: "Tarde" },
+  { value: "Noite", label: "Noite" },
+  { value: "Manhã/Tarde", label: "Manhã/Tarde" },
+  { value: "Tarde/Noite", label: "Tarde/Noite" },
+];
+
 function ConductorsPage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [rows, setRows] = useState<Array<any>>([]);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
   const [description, setDescription] = useState<string | any>("");
   const [school, setSchool] = useState<string | any>("");
+  const [type, setType] = useState<string | any>("");
+  const [shift, setShift] = useState<string | any>("");
   const [value, setValue] = React.useState("rota");
   const reportState = useSelector(ReportState);
   const dispatch = useAppDispatch();
   const routeReports = (reportState && reportState.routesReports) || [];
+
+  useEffect(() => {
+    dispatch(setRouterResponse([]));
+  }, [dispatch]);
 
   useEffect(() => {
     if (routeReports && routeReports.length > 0) {
@@ -114,22 +156,49 @@ function ConductorsPage() {
   const generateReportRoutes = () => {
     setIsLoading(true);
 
-    const finalDescription = description ? `"${description}"` : null;
-    const finalSchool = school ? `"${school}"` : null;
-    dispatch(fetchReportRoutes(finalDescription, finalSchool)).then(() =>
-      setIsLoading(false)
-    );
+    const finalDescription = description ? `"${description}"` : "";
+    const finalSchool = school ? `"${school}"` : "";
+    const finalType = type ? `"${type}"` : "";
+    const morning =
+      shift === "Manhã" || shift === "Manhã/Tarde" ? "true" : "false";
+    const afternoon =
+      shift === "Tarde" || shift === "Manhã/Tarde" || shift === "Tarde/Noite"
+        ? "true"
+        : "false";
+    const nocturnal =
+      shift === "Noite" || shift === "Tarde/Noite" ? "true" : "false";
+
+    dispatch(
+      fetchReportRoutes(
+        finalDescription,
+        finalSchool,
+        finalType,
+        morning,
+        afternoon,
+        nocturnal
+      )
+    ).then(() => setIsLoading(false));
   };
 
   const handleRoutesReports = async () => {
     setIsLoading(true);
     handleCloseDeleteDialog();
 
-    const finalDescription = description ? `"${description}"` : null;
-    const finalSchool = school ? `"${school}"` : null;
+    const finalDescription = description ? `"${description}"` : "";
+    const finalSchool = school ? `"${school}"` : "";
+    const finalType = type ? `"${type}"` : "";
+    const morning =
+      shift === "Manhã" || shift === "Manhã/Tarde" ? "true" : "false";
+    const afternoon =
+      shift === "Tarde" || shift === "Manhã/Tarde" || shift === "Tarde/Noite"
+        ? "true"
+        : "false";
+    const nocturnal =
+      shift === "Noite" || shift === "Tarde/Noite" ? "true" : "false";
+
     apiReports
       .get(
-        `/api/v1/relatorios-rotas?descricao=${finalDescription}&escola=${finalSchool}`,
+        `/api/v1/relatorios-rotas?descricao=${finalDescription}&escola=${finalSchool}&tipo=${finalType}&matutino=${morning}&vespertino=${afternoon}&noturno=${nocturnal}`,
         { responseType: "blob" }
       )
       .then((response) => {
@@ -142,6 +211,13 @@ function ConductorsPage() {
     setValue(newValue);
   };
 
+  const handleChangeSelect = (event: SelectChangeEvent) => {
+    setType(event.target.value);
+  };
+
+  const handleChangeShift = (event: SelectChangeEvent) => {
+    setShift(event.target.value);
+  };
   return (
     <>
       <Grid container spacing={3}>
@@ -185,7 +261,7 @@ function ConductorsPage() {
                   </StyledTabs>
                   <TabPanel value="rota">
                     <Grid container spacing={3}>
-                      <Grid item xs={12} md={4} lg={4}>
+                      <Grid item xs={12} md={4} lg={3}>
                         <TextField
                           id="description-report"
                           label="Descrição"
@@ -196,7 +272,7 @@ function ConductorsPage() {
                           onChange={(e) => setDescription(e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={12} md={4} lg={4}>
+                      <Grid item xs={12} md={4} lg={3}>
                         <TextField
                           id="school-report"
                           label="Escola"
@@ -207,7 +283,51 @@ function ConductorsPage() {
                           onChange={(e) => setSchool(e.target.value)}
                         />
                       </Grid>
-                      <Grid item xs={12} md={4}>
+                      <Grid item xs={12} md={4} lg={3}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel id={"shift"}>Tipo de rota</InputLabel>
+                          <Select
+                            required
+                            id="type"
+                            name="type"
+                            value={type}
+                            variant="outlined"
+                            label="Tipo de rota"
+                            labelId={"type"}
+                            onChange={handleChangeSelect}
+                            disabled={isLoading}
+                          >
+                            {typeList.map(({ value, label }: DataProps) => (
+                              <MenuItem key={value} value={value}>
+                                {label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} md={4} lg={3}>
+                        <FormControl fullWidth size="small">
+                          <InputLabel id={"shift"}>Turno</InputLabel>
+                          <Select
+                            required
+                            id="shift"
+                            name="shift"
+                            value={shift}
+                            variant="outlined"
+                            label="Turno"
+                            labelId={"shift"}
+                            onChange={handleChangeShift}
+                            disabled={isLoading}
+                          >
+                            {shiftList.map(({ value, label }: DataProps) => (
+                              <MenuItem key={value} value={value}>
+                                {label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                      </Grid>
+                      <Grid item xs={12} md={12}>
                         <Button
                           variant="contained"
                           disableElevation
