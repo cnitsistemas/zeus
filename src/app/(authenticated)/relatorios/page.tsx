@@ -36,10 +36,12 @@ import apiReports from "@/services/reports-api";
 import {
   fetchReportRoutes,
   setRouterResponse,
+  setStudentResponse,
 } from "@/store/modules/reports/reportsActions";
 import { ReportState } from "@/store/modules/reports/reportsReducers";
 import { TableLoading } from "@/components/TableLoading";
 import StudentsTab from "./_tabs/StudantsTab";
+import { fetchAllRoutes } from "@/store/modules/routes/routesActions";
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -132,15 +134,18 @@ function ConductorsPage() {
   const [type, setType] = useState<string | any>("");
   const [shift, setShift] = useState<string | any>("");
   const [value, setValue] = React.useState("rota");
-  const reportState = useSelector(ReportState);
+  const state = useSelector(ReportState);
   const dispatch = useAppDispatch();
-  const routeReports = (reportState && reportState.routesReports) || [];
+  const routeReports = (state && state.routesReports) || [];
 
   useEffect(() => {
     dispatch(setRouterResponse([]));
+    dispatch(setStudentResponse([]));
   }, [dispatch]);
 
   useEffect(() => {
+    dispatch(fetchAllRoutes());
+
     if (routeReports && routeReports.length > 0) {
       setRows(routeReports);
     }
@@ -219,6 +224,15 @@ function ConductorsPage() {
   const handleChangeShift = (event: SelectChangeEvent) => {
     setShift(event.target.value);
   };
+
+  const disableReport = () => {
+    if (!description && !school && !type && !shift) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   return (
     <>
       <Grid container spacing={3}>
@@ -243,12 +257,6 @@ function ConductorsPage() {
                 >
                   Tela de relatórios do sistema.
                 </Typography>
-              </Grid>
-              <Grid item xs={12} md={12} lg={12}>
-                <Alert severity="warning">
-                  O modulo de relatórios ainda está em desenvolvimento! Está é
-                  uma versão disponivel para testes.
-                </Alert>
               </Grid>
               <Grid item xs={12} md={12} lg={12}>
                 <TabContext value={value}>
@@ -354,6 +362,7 @@ function ConductorsPage() {
                           }}
                           startIcon={<PrintIcon />}
                           onClick={() => handleOpenDeleteDialog()}
+                          disabled={disableReport()}
                         >
                           Gerar PDF
                         </Button>
@@ -363,51 +372,54 @@ function ConductorsPage() {
                           <Grid item xs={12} md={12} lg={12}>
                             <TableLoading />
                           </Grid>
-                        ) : (
-                          routeReports &&
+                        ) : routeReports &&
                           routeReports.length > 0 &&
-                          !isLoading && (
-                            <TableContainer component={Paper}>
-                              <Table
-                                sx={{ minWidth: 700 }}
-                                aria-label="customized table"
-                              >
-                                <TableHead>
-                                  <TableRow>
-                                    <StyledTableCell>
-                                      Descrição da rota
+                          !isLoading ? (
+                          <TableContainer component={Paper}>
+                            <Table
+                              sx={{ minWidth: 700 }}
+                              aria-label="customized table"
+                            >
+                              <TableHead>
+                                <TableRow>
+                                  <StyledTableCell>
+                                    Descrição da rota
+                                  </StyledTableCell>
+                                  <StyledTableCell>Tipo</StyledTableCell>
+                                  <StyledTableCell>Escola</StyledTableCell>
+                                  <StyledTableCell>
+                                    Quantidade de Alunos
+                                  </StyledTableCell>
+                                </TableRow>
+                              </TableHead>
+                              <TableBody>
+                                {rows.map((row) => (
+                                  <StyledTableRow key={row.id}>
+                                    <StyledTableCell component="th" scope="row">
+                                      {row.nome}
                                     </StyledTableCell>
-                                    <StyledTableCell>Tipo</StyledTableCell>
-                                    <StyledTableCell>Escola</StyledTableCell>
                                     <StyledTableCell>
-                                      Quantidade de Alunos
+                                      {row.tipo}
                                     </StyledTableCell>
-                                  </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                  {rows.map((row) => (
-                                    <StyledTableRow key={row.id}>
-                                      <StyledTableCell
-                                        component="th"
-                                        scope="row"
-                                      >
-                                        {row.nome}
-                                      </StyledTableCell>
-                                      <StyledTableCell>
-                                        {row.tipo}
-                                      </StyledTableCell>
-                                      <StyledTableCell>
-                                        {row.escolas}
-                                      </StyledTableCell>
-                                      <StyledTableCell>
-                                        {row.quantidadeAlunos}
-                                      </StyledTableCell>
-                                    </StyledTableRow>
-                                  ))}
-                                </TableBody>
-                              </Table>
-                            </TableContainer>
-                          )
+                                    <StyledTableCell>
+                                      {row.escolas}
+                                    </StyledTableCell>
+                                    <StyledTableCell>
+                                      {row.quantidadeAlunos}
+                                    </StyledTableCell>
+                                  </StyledTableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </TableContainer>
+                        ) : (
+                          <Grid>
+                            <Alert severity="warning">
+                              Nenhum dado foi encontrado! Verifique os filtros
+                              utilizados para ver se estão de acordo com a sua
+                              busca.
+                            </Alert>
+                          </Grid>
                         )}
                       </Grid>
                     </Grid>
@@ -427,7 +439,7 @@ function ConductorsPage() {
       <CustomizedDialogs
         open={deleteDialog}
         handleClose={handleCloseDeleteDialog}
-        title={`Deletar aluno`}
+        title={`Imprimir relatório`}
         content={`Tem certeza que deseja imprimir relatório?`}
         confirmButton={true}
         cancelButton={true}

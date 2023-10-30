@@ -1,7 +1,6 @@
 import { TableLoading } from "@/components/TableLoading";
 import { useAppDispatch } from "@/hooks/useRedux";
 import { ReportState } from "@/store/modules/reports/reportsReducers";
-import { fetchAllRoutes } from "@/store/modules/routes/routesActions";
 import { RouteState } from "@/store/modules/routes/routesReducers";
 import {
   Button,
@@ -18,6 +17,7 @@ import {
   TableRow,
   TextField,
   TableContainer,
+  Alert,
 } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -25,11 +25,7 @@ import { FaEye } from "react-icons/fa";
 import CustomizedDialogs from "@/components/CustomDialog";
 import { StyledTableCell, StyledTableRow } from "../style";
 import PrintIcon from "@mui/icons-material/Print";
-import {
-  fetchReportRoutes,
-  fetchReportStudents,
-  setStudentResponse,
-} from "@/store/modules/reports/reportsActions";
+import { fetchReportStudents } from "@/store/modules/reports/reportsActions";
 import apiReports from "@/services/reports-api";
 
 const shiftList = [
@@ -54,19 +50,13 @@ export default function StudentsTab() {
   const [route, setRoute] = useState<string | any>("");
   const [shift, setShift] = useState<string | any>("");
   const [routersList, setRoutersList] = useState<Array<any>>([]);
-  const reportState = useSelector(ReportState);
+  const state = useSelector(ReportState);
   const dispatch = useAppDispatch();
-  const studentsReports = (reportState && reportState.studentsReport) || [];
+  const studentsReports = (state && state.studentsReport) || [];
   const routeState = useSelector(RouteState);
   const routes = (routeState && routeState.allRoutes) || null;
 
   useEffect(() => {
-    dispatch(setStudentResponse([]));
-  }, [dispatch]);
-
-  useEffect(() => {
-    dispatch(fetchAllRoutes());
-
     if (routes && routes.length > 0) {
       setRoutersList(
         routes.map((route: any) => {
@@ -129,6 +119,14 @@ export default function StudentsTab() {
         setIsLoading(false);
         window.open(URL.createObjectURL(response.data));
       });
+  };
+
+  const disableReport = () => {
+    if (!name && !school && !route && !shift) {
+      return true;
+    } else {
+      return false;
+    }
   };
 
   return (
@@ -225,6 +223,7 @@ export default function StudentsTab() {
             }}
             startIcon={<PrintIcon />}
             onClick={() => handleOpenDialog()}
+            disabled={disableReport()}
           >
             Gerar PDF
           </Button>
@@ -234,44 +233,47 @@ export default function StudentsTab() {
             <Grid item xs={12} md={12} lg={12}>
               <TableLoading />
             </Grid>
+          ) : studentsReports && studentsReports.length > 0 && !isLoading ? (
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 700 }} aria-label="customized table">
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Nome</StyledTableCell>
+                    <StyledTableCell>Serie</StyledTableCell>
+                    <StyledTableCell>Ensino</StyledTableCell>
+                    <StyledTableCell>Turno</StyledTableCell>
+                    <StyledTableCell>Rota</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {rows.map((row) => (
+                    <StyledTableRow key={row.id}>
+                      <StyledTableCell component="th" scope="row">
+                        {row.nome}
+                      </StyledTableCell>
+                      <StyledTableCell>{row.serie}</StyledTableCell>
+                      <StyledTableCell>{row.ensino}</StyledTableCell>
+                      <StyledTableCell>{row.turno}</StyledTableCell>
+                      <StyledTableCell>{row.route}</StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
           ) : (
-            studentsReports &&
-            studentsReports.length > 0 &&
-            !isLoading && (
-              <TableContainer component={Paper}>
-                <Table sx={{ minWidth: 700 }} aria-label="customized table">
-                  <TableHead>
-                    <TableRow>
-                      <StyledTableCell>Nome</StyledTableCell>
-                      <StyledTableCell>Serie</StyledTableCell>
-                      <StyledTableCell>Ensino</StyledTableCell>
-                      <StyledTableCell>Turno</StyledTableCell>
-                      <StyledTableCell>Rota</StyledTableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {rows.map((row) => (
-                      <StyledTableRow key={row.id}>
-                        <StyledTableCell component="th" scope="row">
-                          {row.nome}
-                        </StyledTableCell>
-                        <StyledTableCell>{row.serie}</StyledTableCell>
-                        <StyledTableCell>{row.ensino}</StyledTableCell>
-                        <StyledTableCell>{row.turno}</StyledTableCell>
-                        <StyledTableCell>{row.route}</StyledTableCell>
-                      </StyledTableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            )
+            <Grid>
+              <Alert severity="warning">
+                Nenhum dado foi encontrado! Verifique os filtros utilizados para
+                ver se estão de acordo com a sua busca.
+              </Alert>
+            </Grid>
           )}
         </Grid>
       </Grid>
       <CustomizedDialogs
         open={openDialog}
         handleClose={handleCloseDialog}
-        title={`Deletar aluno`}
+        title={`Imprimir relatório`}
         content={`Tem certeza que deseja imprimir relatório?`}
         confirmButton={true}
         cancelButton={true}
