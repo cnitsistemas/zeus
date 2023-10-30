@@ -39,6 +39,7 @@ import {
 } from "@/store/modules/reports/reportsActions";
 import { ReportState } from "@/store/modules/reports/reportsReducers";
 import { TableLoading } from "@/components/TableLoading";
+import StudentsTab from "./_tabs/StudantsTab";
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -257,6 +258,7 @@ function ConductorsPage() {
                     aria-label="styled tabs example"
                   >
                     <StyledTab label="Rotas" value="rota" />
+                    <StyledTab label="Alunos" value="alunos" />
                     <StyledTab label="Frequências" value="frequencia" />
                   </StyledTabs>
                   <TabPanel value="rota">
@@ -409,6 +411,9 @@ function ConductorsPage() {
                         )}
                       </Grid>
                     </Grid>
+                  </TabPanel>
+                  <TabPanel value="alunos">
+                    <StudentsTab />
                   </TabPanel>
                   <TabPanel value="frequencia">
                     Relatórios de Frequencia.

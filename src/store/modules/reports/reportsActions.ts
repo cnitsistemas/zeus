@@ -1,7 +1,7 @@
 import { actionTypes } from ".";
 import { Dispatch } from "redux";
 import api from "@/services/api";
-import { mapReportRouterResponse } from "@/domain/reports";
+import { mapReportRouterResponse, mapReportStudentResponse } from "@/domain/reports";
 
 export const fetchReportRoutes = (
   descricao: string | null,
@@ -25,5 +25,29 @@ export const fetchReportRoutes = (
 
 export const setRouterResponse = (reports: any) => ({
   type: actionTypes.GET_ROUTER_REPORTS,
+  payload: reports
+})
+
+
+export const fetchReportStudents = (
+  name: string | null,
+  school: string | null,
+  route: string | null,
+  shift: string) => async (dispatch: Dispatch) => {
+    try {
+      const url = `api/relatorio-alunos?nome=${name}&escola=${school}&rota=${route}&turno=${shift}`;
+      const apiResponse = await api.get(url);
+      const response = mapReportStudentResponse(apiResponse.data);
+
+      dispatch(setStudentResponse(response))
+
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+export const setStudentResponse = (reports: any) => ({
+  type: actionTypes.GET_STUDENT_REPORTS,
   payload: reports
 })

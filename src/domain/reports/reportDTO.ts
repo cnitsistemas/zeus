@@ -46,3 +46,18 @@ export const mapReportRouterResponse = (response: Response) => {
     }) || []
   );
 };
+
+export const mapReportStudentResponse = (response: any) => {
+  return (
+    response["data"].map((item: any) => {
+      return {
+        id: item["id"],
+        nome: item["nome"],
+        serie: item["serie"],
+        ensino: item["ensino"],
+        turno: item["turno"],
+        route: item["route"]["nome"],
+      };
+    }) || []
+  );
+};
