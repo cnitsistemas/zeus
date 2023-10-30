@@ -3,11 +3,13 @@ import { RootState } from "@/store";
 
 interface State {
   routesReports: any;
+  studentsReport: any;
   frequencyReports: any;
 }
 
 const initialState: State = {
   routesReports: null,
+  studentsReport: null,
   frequencyReports: null,
 };
 
@@ -27,6 +29,14 @@ const ReportsReducer = (state: State = initialState, action: any): State => {
       newState = {
         ...state,
         frequencyReports: action.payload,
+      };
+
+      break;
+    }
+    case actionTypes.GET_STUDENT_REPORTS: {
+      newState = {
+        ...state,
+        studentsReport: action.payload,
       };
 
       break;

@@ -148,7 +148,12 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
   const AutoGetAddress = () => {
     const { values } = useFormikContext<FormValues>();
     useEffect(() => {
-      if (values?.cep.length === 9 && values?.cep !== searchCep) {
+      if (
+        !id &&
+        id === "novo" &&
+        values?.cep.length === 9 &&
+        values?.cep !== searchCep
+      ) {
         dispatch(fetchAddressByCEP(values?.cep)).then((response: any) => {
           if (response) {
             setInitialValues({
@@ -164,7 +169,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
           }
         });
       }
-    }, [values]);
+    }, [values, id]);
     return null;
   };
 
