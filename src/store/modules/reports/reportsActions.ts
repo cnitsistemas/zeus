@@ -1,7 +1,7 @@
 import { actionTypes } from ".";
 import { Dispatch } from "redux";
 import api from "@/services/api";
-import { mapReportRouterResponse, mapReportStudentResponse } from "@/domain/reports";
+import { mapReportFrequencyResponse, mapReportRouterResponse, mapReportStudentResponse } from "@/domain/reports";
 
 export const fetchReportRoutes = (
   descricao: string | null,
@@ -49,5 +49,29 @@ export const fetchReportStudents = (
 
 export const setStudentResponse = (reports: any) => ({
   type: actionTypes.GET_STUDENT_REPORTS,
+  payload: reports
+})
+
+
+export const fetchReportFrequency = (
+  finishInitialDate: string | null,
+  finishFinalDate: string | null,
+  route: string | null,
+  shift: string) => async (dispatch: Dispatch) => {
+    try {
+      const url = `api/relatorio-frequencias?from_data_chamada=${finishInitialDate}&to_data_chamada=${finishFinalDate}&rota=${route}&turno=${shift}`;
+      const apiResponse = await api.get(url);
+      const response = mapReportFrequencyResponse(apiResponse.data);
+
+      dispatch(setFrequencyResponse(response))
+
+      return response;
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+export const setFrequencyResponse = (reports: any) => ({
+  type: actionTypes.GET_FREQUENCY_REPORTS,
   payload: reports
 })

@@ -35,6 +35,7 @@ import TabContext from "@mui/lab/TabContext";
 import apiReports from "@/services/reports-api";
 import {
   fetchReportRoutes,
+  setFrequencyResponse,
   setRouterResponse,
   setStudentResponse,
 } from "@/store/modules/reports/reportsActions";
@@ -42,6 +43,8 @@ import { ReportState } from "@/store/modules/reports/reportsReducers";
 import { TableLoading } from "@/components/TableLoading";
 import StudentsTab from "./_tabs/StudantsTab";
 import { fetchAllRoutes } from "@/store/modules/routes/routesActions";
+import FrequencyTab from "./_tabs/FrequencyTab";
+import moment from "moment";
 
 interface StyledTabsProps {
   children?: React.ReactNode;
@@ -137,10 +140,12 @@ function ConductorsPage() {
   const state = useSelector(ReportState);
   const dispatch = useAppDispatch();
   const routeReports = (state && state.routesReports) || [];
+  const startOfQ12022 = moment(new Date(), "YYYY-M-D").subtract(1, "year");
 
   useEffect(() => {
     dispatch(setRouterResponse([]));
     dispatch(setStudentResponse([]));
+    dispatch(setFrequencyResponse([]));
   }, [dispatch]);
 
   useEffect(() => {
@@ -428,7 +433,7 @@ function ConductorsPage() {
                     <StudentsTab />
                   </TabPanel>
                   <TabPanel value="frequencia">
-                    Relatórios de Frequencia.
+                    <FrequencyTab startOfQ12022={startOfQ12022} />
                   </TabPanel>
                 </TabContext>
               </Grid>
