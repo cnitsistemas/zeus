@@ -61,3 +61,19 @@ export const mapReportStudentResponse = (response: any) => {
     }) || []
   );
 };
+
+export const mapReportFrequencyResponse = (response: any) => {
+  return (
+    response["data"].map((item: any) => {
+      return {
+        id: item["id"],
+        dataChamada: item["data_chamada"],
+        turno: item["turno"],
+        realizada: item["realizada"],
+        route: item["route"]["nome"],
+        sentido: item["sentido"],
+        horario: item["horario"],
+      };
+    }) || []
+  );
+};
