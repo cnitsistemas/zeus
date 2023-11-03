@@ -110,3 +110,60 @@ export const deleteConductors = (roleId: string) => async (dispatch: Dispatch) =
     console.log(e);
   }
 }
+
+export const getVehiclesConductors = (id: string) => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/veiculo-condutores?id=${id}`;
+    const apiResponse = await api.get(url);
+    const response = apiResponse.data;
+
+    if (response.success) {
+      dispatch({
+        type: actionTypes.GET_CONDUCTORS_VEHICLES,
+        payload: response
+      })
+
+      return response;
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const relationVehiclesConductors = (data: any) => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/veiculo-condutores`;
+    const apiResponse = await api.post(url, data);
+    const response = apiResponse.data;
+
+    if (response.success) {
+      dispatch({
+        type: actionTypes.CREATE_CONDUCTORS_VEHICLES,
+        payload: response
+      })
+
+      return response;
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const deleteVehiclesConductors = (id: string) => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/veiculo-condutores/${id}`;
+    const apiResponse = await api.delete(url);
+    const response = apiResponse.data;
+
+    if (response.success) {
+      dispatch({
+        type: actionTypes.DELETE_CONDUCTORS_VEHICLES,
+        payload: response
+      })
+
+      return response;
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}

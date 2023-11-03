@@ -391,7 +391,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       id="checkedMatutino"
                       name="checkedMatutino"
                       label="Turno Matutino"
-                      checked={defaultValues.checkedMatutino}
+                      checked={initialValues?.checkedMatutino}
                       topLabel={true}
                     />
                   </Grid>
@@ -400,7 +400,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       id="checkedVespertino"
                       name="checkedVespertino"
                       label="Turno Vespertino"
-                      checked={defaultValues.checkedVespertino}
+                      checked={initialValues?.checkedVespertino}
                       topLabel={true}
                     />
                   </Grid>
@@ -409,7 +409,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       id="checkedNoturno"
                       name="checkedNoturno"
                       label="Turno Noturno"
-                      checked={defaultValues.checkedNoturno}
+                      checked={initialValues?.checkedNoturno}
                       topLabel={true}
                     />
                   </Grid>

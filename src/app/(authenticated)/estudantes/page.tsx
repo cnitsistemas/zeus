@@ -96,9 +96,12 @@ function StudentsPage() {
   useEffect(() => {
     if (page) {
       dispatch(fetchStudents(page)).then(() => setIsLoading(false));
-      dispatch(fetchAllRoutes());
     }
-  }, [dispatch, page]);
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAllRoutes());
+  }, [dispatch]);
 
   useEffect(() => {
     if (students && students.length > 0) {

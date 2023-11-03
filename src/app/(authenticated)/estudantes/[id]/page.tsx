@@ -9,6 +9,7 @@ import {
 import BreadcrumbComponent from "@/components/BreadcrumbComponent";
 import {
   createStudents,
+  createStudentsBreak,
   editStudent,
   fetchStudentId,
 } from "@/store/modules/students/studentsActions";
@@ -83,6 +84,7 @@ type FormValues = {
   comnplement: string;
   city: string;
   state: string;
+  boarding: string;
 };
 
 const defaultValues = {
@@ -101,6 +103,7 @@ const defaultValues = {
   comnplement: "",
   city: "",
   state: "",
+  boarding: "",
 };
 
 const Notification = ({
@@ -201,6 +204,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
               comnplement: res.data?.comnplement,
               city: res.data?.city,
               state: res.data?.state,
+              boarding: "",
             };
             setInitialValues(values);
           } else {
@@ -275,6 +279,14 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
             resetForm();
             setInitialValues(defaultValues);
             setLoading(false);
+
+            const dataBreak = {
+              descricao: data.boarding,
+              rota_id: data.route?.value,
+              aluno_id: res.data.id,
+            };
+
+            dispatch(createStudentsBreak(dataBreak));
           } else {
             Notification({
               title: "Error!",
@@ -525,6 +537,21 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       type="text"
                       variant="outlined"
                       label="Estado"
+                      size="small"
+                      disabled={loading}
+                    />
+                  </Grid>
+                </Grid>
+                <Divider variant="middle">Ponto de embarque</Divider>
+                <Grid container spacing={2} sx={{ marginBottom: "2rem" }}>
+                  <Grid item xs={12} md={6} lg={6}>
+                    <InputText
+                      required
+                      id="boarding"
+                      name="boarding"
+                      type="text"
+                      variant="outlined"
+                      label="Descrição do ponto de embarque"
                       size="small"
                       disabled={loading}
                     />

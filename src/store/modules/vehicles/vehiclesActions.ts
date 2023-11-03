@@ -1,7 +1,7 @@
 import { actionTypes } from ".";
 import { Dispatch } from "redux";
 import api from "@/services/api";
-import { mapFetchVehiclesPaginationResponse, mapFetchVehiclesResponse, mapFetchVehiclesResponseId } from "@/domain/vehicles/vehiclesDTO";
+import { mapFetchAllVehiclesResponse, mapFetchVehiclesPaginationResponse, mapFetchVehiclesResponse, mapFetchVehiclesResponseId } from "@/domain/vehicles/vehiclesDTO";
 
 export const fetchVehicles = (page: number) => async (dispatch: Dispatch) => {
   try {
@@ -9,7 +9,6 @@ export const fetchVehicles = (page: number) => async (dispatch: Dispatch) => {
     const apiResponse = await api.get(url);
     const response = mapFetchVehiclesResponse(apiResponse.data);
     const responsePagination = mapFetchVehiclesPaginationResponse(apiResponse.data.data);
-    console.log(response)
     dispatch({
       type: actionTypes.GET_VEHICLES_PAGINATION,
       payload: responsePagination
@@ -24,6 +23,23 @@ export const fetchVehicles = (page: number) => async (dispatch: Dispatch) => {
     console.log(e);
   }
 }
+
+export const fetchAllVehicles = () => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/veiculos-all`;
+    const apiResponse = await api.get(url);
+    const response = mapFetchAllVehiclesResponse(apiResponse.data);
+
+    dispatch({
+      type: actionTypes.GET_ALL_ROUTES,
+      payload: response,
+    });
+
+    return response;
+  } catch (e) {
+    console.log(e);
+  }
+};
 
 export const fetchVehiclesId = (id: string) => async (dispatch: Dispatch) => {
   try {
@@ -108,5 +124,62 @@ export const deleteVehicles = (roleId: string) => async (dispatch: Dispatch) => 
     }
   } catch (e) {
     console.log(e);
+  }
+}
+
+export const getVehiclesRoutes = (id: string) => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/veiculo-rotas?id=${id}`;
+    const apiResponse = await api.get(url);
+    const response = apiResponse.data;
+
+    if (response.success) {
+      dispatch({
+        type: actionTypes.GET_VEHICLES_ROUTES,
+        payload: response
+      })
+
+      return response;
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const relationVehiclesRoutes = (data: any) => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/veiculo-rotas`;
+    const apiResponse = await api.post(url, data);
+    const response = apiResponse.data;
+
+    if (response.success) {
+      dispatch({
+        type: actionTypes.CREATE_VEHICLES_ROUTES,
+        payload: response
+      })
+
+      return response;
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+export const deleteVehiclesRoutes = (id: string) => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/veiculo-rotas/${id}`;
+    const apiResponse = await api.delete(url);
+    const response = apiResponse.data;
+
+    if (response.success) {
+      dispatch({
+        type: actionTypes.DELETE_VEHICLES_ROUTES,
+        payload: response
+      })
+
+      return response;
+    }
+  } catch (e) {
+    console.log(e)
   }
 }

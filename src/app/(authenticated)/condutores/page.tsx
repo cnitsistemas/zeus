@@ -2,7 +2,7 @@
 import { useToast } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { FaEye, FaEdit, FaTrash } from "react-icons/fa";
+import { FaEye, FaEdit, FaTrash, FaCar } from "react-icons/fa";
 import Details from "./details";
 import { useRouter } from "next/navigation";
 import BreadcrumbComponent from "@/components/BreadcrumbComponent";
@@ -35,6 +35,7 @@ import { TitlePage } from "./style";
 import AddIcon from "@mui/icons-material/Add";
 import { fetchConductors } from "@/store/modules/conductors/conductorsActions";
 import { ConductorState } from "@/store/modules/conductors/conductorsReducers";
+import RelationshipModal from "./_relationship/RelationshipModal";
 
 const breadcrumbItens = [
   <Link underline="hover" key="1" color="inherit" href="/">
@@ -52,6 +53,7 @@ function ConductorsPage() {
   const [rows, setRows] = useState<Array<any>>([]);
   const [page, setPage] = useState<number>(1);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
+  const [relationDialog, setRelationDialog] = useState<boolean>(false);
   const [selectedConductor, setSelectedConductor] = useState<any>({});
   const [viewDialog, setViewDialog] = useState(false);
   const conductorState = useSelector(ConductorState);
@@ -103,6 +105,14 @@ function ConductorsPage() {
 
   const handleOpenViewDialog = (): void => {
     setViewDialog(true);
+  };
+
+  const handleOpenRelationDialog = (): void => {
+    setRelationDialog(true);
+  };
+
+  const handleCloseRelationDialog = (): void => {
+    setRelationDialog(false);
   };
 
   const handleCloseViewDialog = (): void => {
@@ -247,7 +257,7 @@ function ConductorsPage() {
                                   component="th"
                                   scope="row"
                                   align="center"
-                                  sx={{ minWidth: "170px" }}
+                                  sx={{ minWidth: "240px" }}
                                 >
                                   <Tooltip title="Visualizar" placement="top">
                                     <IconButton
@@ -263,6 +273,25 @@ function ConductorsPage() {
                                       }}
                                     >
                                       <FaEye />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Tooltip
+                                    title="Vincular à veículo"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      color="success"
+                                      aria-label="view student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        setSelectedConductor(row);
+                                        handleOpenRelationDialog();
+                                      }}
+                                    >
+                                      <FaCar />
                                     </IconButton>
                                   </Tooltip>
                                   <Tooltip title="Editar" placement="top">
@@ -368,6 +397,24 @@ function ConductorsPage() {
         dividers={true}
         textAling="start"
       />
+      {relationDialog && (
+        <CustomizedDialogs
+          open={relationDialog}
+          handleClose={handleCloseRelationDialog}
+          title={`Vicular rotas ao veículo ${selectedConductor.name}`}
+          content={<RelationshipModal selectedConductor={selectedConductor} />}
+          confirmButton={false}
+          cancelButton={true}
+          confirmButtonText="Sim"
+          cancelButtonText="Fechar"
+          handleConfirm={() => {}}
+          confirmButtonError={false}
+          fullWidth={true}
+          maxWidth={"md"}
+          dividers={true}
+          textAling="start"
+        />
+      )}
     </>
   );
 }

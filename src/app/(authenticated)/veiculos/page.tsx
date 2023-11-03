@@ -1,10 +1,9 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaEdit, FaMapSigns, FaTrash } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import { useAppDispatch } from "@/hooks/useRedux";
-import moment from "moment";
 import {
   Alert,
   Button,
@@ -34,6 +33,7 @@ import {
   fetchVehicles,
 } from "@/store/modules/vehicles/vehiclesActions";
 import { VehicleState } from "@/store/modules/vehicles/vehiclesReducers";
+import RelationshipModal from "./_relationship/RelationshipModal";
 
 const breadcrumbItens = [
   <Link underline="hover" key="1" color="inherit" href="/" onClick={() => {}}>
@@ -50,7 +50,8 @@ function UsersPage() {
   const [rows, setRows] = useState<Array<any>>([]);
   const [page, setPage] = useState<number>(1);
   const [deleteDialog, setDeleteDialog] = useState<boolean>(false);
-  const [selectedRole, setSelectedRole] = useState<any>({});
+  const [relationDialog, setRelationDialog] = useState<boolean>(false);
+  const [selectedVehicles, setSelectedVehicles] = useState<any>({});
   const vehiclesState = useSelector(VehicleState);
   const dispatch = useAppDispatch();
   const vehicles = vehiclesState && vehiclesState.vehicles;
@@ -96,10 +97,18 @@ function UsersPage() {
     setDeleteDialog(false);
   };
 
+  const handleOpenRelationDialog = (): void => {
+    setRelationDialog(true);
+  };
+
+  const handleCloseRelationDialog = (): void => {
+    setRelationDialog(false);
+  };
+
   const handleDeleteUser = async () => {
     setIsLoading(true);
     handleCloseDeleteDialog();
-    await dispatch(deleteVehicles(selectedRole?.id)).then((res) => {
+    await dispatch(deleteVehicles(selectedVehicles?.id)).then((res) => {
       if (res.success) {
         toast({
           title: "Veículo removido",
@@ -108,7 +117,7 @@ function UsersPage() {
           duration: 7000,
           isClosable: true,
         });
-        setSelectedRole({});
+        setSelectedVehicles({});
         dispatch(fetchVehicles(page)).then(() => {
           setIsLoading(false);
         });
@@ -163,9 +172,6 @@ function UsersPage() {
                   justifyContent: "end",
                   alignItems: "end",
                 }}
-                onClick={() => {
-                  router.push("veiculos/novo");
-                }}
               >
                 <Button
                   variant="contained"
@@ -174,6 +180,9 @@ function UsersPage() {
                     color: "#fff",
                     height: 40,
                     fontSize: "12px",
+                  }}
+                  onClick={() => {
+                    router.push("veiculos/novo");
                   }}
                   startIcon={<AddIcon />}
                 >
@@ -236,6 +245,26 @@ function UsersPage() {
                                   align="center"
                                   sx={{ minWidth: "170px" }}
                                 >
+                                  <Tooltip
+                                    title="Vincular à rotas"
+                                    placement="top"
+                                  >
+                                    <IconButton
+                                      color="secondary"
+                                      aria-label="edit student"
+                                      sx={{
+                                        marginX: ".4rem",
+                                        fontSize: "16px",
+                                      }}
+                                      onClick={() => {
+                                        setSelectedVehicles(row);
+                                        handleOpenRelationDialog();
+                                      }}
+                                      disabled={row.active !== 1}
+                                    >
+                                      <FaMapSigns />
+                                    </IconButton>
+                                  </Tooltip>
                                   <Tooltip title="Editar" placement="top">
                                     <IconButton
                                       color="primary"
@@ -260,7 +289,7 @@ function UsersPage() {
                                         fontSize: "16px",
                                       }}
                                       onClick={() => {
-                                        setSelectedRole(row);
+                                        setSelectedVehicles(row);
                                         handleOpenDeleteDialog();
                                       }}
                                     >
@@ -311,7 +340,7 @@ function UsersPage() {
         open={deleteDialog}
         handleClose={handleCloseDeleteDialog}
         title={`Deletar Veículo`}
-        content={`Tem certeza que deseja deletar o veículo ${selectedRole.name}?`}
+        content={`Tem certeza que deseja deletar o veículo ${selectedVehicles.name}?`}
         confirmButton={true}
         cancelButton={true}
         confirmButtonText="Sim"
@@ -323,6 +352,24 @@ function UsersPage() {
         dividers={true}
         textAling="start"
       />
+      {relationDialog && (
+        <CustomizedDialogs
+          open={relationDialog}
+          handleClose={handleCloseRelationDialog}
+          title={`Vicular rotas ao veículo ${selectedVehicles.name}`}
+          content={<RelationshipModal selectedVehicles={selectedVehicles} />}
+          confirmButton={false}
+          cancelButton={true}
+          confirmButtonText="Sim"
+          cancelButtonText="Fechar"
+          handleConfirm={handleDeleteUser}
+          confirmButtonError={false}
+          fullWidth={true}
+          maxWidth={"md"}
+          dividers={true}
+          textAling="start"
+        />
+      )}
     </>
   );
 }
