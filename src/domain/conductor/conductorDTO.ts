@@ -1,3 +1,5 @@
+import { Moment } from "moment";
+
 interface Response {
   data: Conductor[];
 }
@@ -8,7 +10,7 @@ interface Conductor {
   tipo_habilitacao: string;
   categoria_habilitacao: string;
   identificador_documento_habilitacao: string;
-  validade_habilitacao: string;
+  validade_habilitacao: Moment;
   idade: string;
   cep: string;
   endereco: string;

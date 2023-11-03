@@ -268,7 +268,7 @@ const User = ({ params }: { params: { id: string } }) => {
                       id="active"
                       name="active"
                       label="Ativo"
-                      checked={defaultValues.active}
+                      checked={initialValues?.active}
                     />
                   </Grid>
                 </Grid>

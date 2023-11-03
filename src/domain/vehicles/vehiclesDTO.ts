@@ -18,6 +18,17 @@ interface Pagination {
   per_page: number;
 }
 
+export const mapFetchAllVehiclesResponse = (response: any) => {
+  return (
+    response["data"].map((item: any) => {
+      return {
+        id: item["id"],
+        name: item["descricao"],
+      };
+    }) || []
+  );
+};
+
 export const mapFetchVehiclesResponse = (data: Vehicles) => {
   return data["data"] &&
     data["data"].length > 0 &&

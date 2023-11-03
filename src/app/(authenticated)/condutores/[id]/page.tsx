@@ -22,6 +22,7 @@ import {
 import { InputDate } from "@/components/_forms/Inputs/InputDate";
 import { InputSwitch } from "@/components/_forms/Inputs/InputSwitch";
 import { ConductorSchema } from "@/validators/conductorSchema";
+import moment, { Moment } from "moment";
 
 const breadcrumbItens = [
   <Link underline="hover" key="1" color="inherit" href="/" onClick={() => {}}>
@@ -59,7 +60,7 @@ type FormValues = {
   typeLicence: string;
   categorieLicence: string;
   licenseDocumentIdentifier: string;
-  validateLicence: number;
+  validateLicence: Moment;
   age: string;
   cep: string;
   address: string;
@@ -72,7 +73,7 @@ const defaultValues = {
   typeLicence: "",
   categorieLicence: "",
   licenseDocumentIdentifier: "",
-  validateLicence: 0,
+  validateLicence: moment(Date.now()),
   age: "",
   cep: "",
   address: "",
@@ -121,7 +122,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
               licenseDocumentIdentifier: res.data?.licenseDocumentIdentifier,
               age: res.data?.age,
               cep: res.data?.cep,
-              validateLicence: Date.parse(res.data?.validateLicence),
+              validateLicence: moment(res.data?.validateLicence),
               address: res.data?.address,
               active: res.data?.active == 1 ? true : false,
               city: res.data?.city,
@@ -334,6 +335,7 @@ function CreateStudantePage({ params }: { params: { id: string } }) {
                       variant="outlined"
                       label="Validade da Habilitação"
                       disabled={loading}
+                      format="DD/MM/YYYY"
                     />
                   </Grid>
                 </Grid>

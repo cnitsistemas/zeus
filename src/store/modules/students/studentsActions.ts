@@ -118,3 +118,23 @@ export const deleteStudents =
       console.log(e);
     }
   };
+
+export const createStudentsBreak = (data: any) => async (dispatch: Dispatch) => {
+  try {
+    const url = `api/paradas`;
+    const apiResponse = await api.post(url, data);
+    const response = apiResponse.data;
+
+    if (response.success) {
+      dispatch({
+        type: actionTypes.SET_STUDENTS_BREAK,
+        payload: response,
+      });
+      return response;
+    } else {
+      return response;
+    }
+  } catch (e) {
+    console.log(e);
+  }
+};
