@@ -401,7 +401,7 @@ function ConductorsPage() {
         <CustomizedDialogs
           open={relationDialog}
           handleClose={handleCloseRelationDialog}
-          title={`Vicular rotas ao veículo ${selectedConductor.name}`}
+          title={`Vicular veículo ao condutor ${selectedConductor.name}`}
           content={<RelationshipModal selectedConductor={selectedConductor} />}
           confirmButton={false}
           cancelButton={true}
